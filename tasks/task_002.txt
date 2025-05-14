@@ -1,0 +1,11 @@
+# Task ID: 2
+# Title: Database Schema Design
+# Status: done
+# Dependencies: 1
+# Priority: P0
+# Description: Design and implement the database schema for the core entities
+# Details:
+Create the database schema for users, content, tags, tools, reviews, and other core entities. Implement migrations for creating the schema and seed data for development.
+
+# Test Strategy:
+

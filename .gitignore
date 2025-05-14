@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+.next/
+out/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-*
+*.swp
+*.swo
+
+# Operating System Files
+.DS_Store
+Thumb.db
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temp files
+temp/
+tmp/
+
+# Cache
+.npm
+.eslintcache
+
+# Project specific
+uploads/*
+!uploads/.gitkeep
+**/.claude/settings.local.json
+
+# Supabase
+supabase/.temp/

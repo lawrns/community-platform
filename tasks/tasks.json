@@ -1,0 +1,242 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Project Setup and Configuration",
+      "status": "done",
+      "dependencies": [],
+      "priority": "P0",
+      "description": "Set up the initial project structure and configuration",
+      "details": "Initialize the project repository, set up the directory structure, configure environment variables, and install core dependencies.",
+      "test_strategy": "Verify that the project structure matches the documentation and all configuration files are properly set up.",
+      "acceptance_criteria": [
+        "Project directory structure follows Scotty framework standards",
+        "Environment configuration files are properly set up",
+        "Core dependencies are installed and working",
+        "Documentation is complete and accurate"
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Database Schema Design",
+      "status": "done",
+      "dependencies": [
+        1
+      ],
+      "priority": "P0",
+      "description": "Design and implement the database schema for the core entities",
+      "details": "Create the database schema for users, content, tags, tools, reviews, and other core entities. Implement migrations for creating the schema and seed data for development.",
+      "test_strategy": "Verify that the schema supports all required queries and relationships. Test migrations and rollbacks.",
+      "acceptance_criteria": [
+        "Schema includes all core entities from the PRD",
+        "Migrations successfully create and update the schema",
+        "Seed data is available for development",
+        "Vector search capabilities are properly configured"
+      ]
+    },
+    {
+      "id": 3,
+      "title": "User Authentication System",
+      "status": "done",
+      "dependencies": [
+        1
+      ],
+      "priority": "P0",
+      "description": "Implement the user authentication system (FEAT-001)",
+      "details": "Implement user registration, login, email verification, and profile setup. Integrate with Auth0 or Cognito for OAuth authentication. Ensure performance meets the <300ms login response requirement.",
+      "test_strategy": "Test all authentication flows including edge cases like duplicate emails and social-to-email merges. Measure login response time.",
+      "acceptance_criteria": [
+        "Users can register with email or OAuth",
+        "Email verification works correctly",
+        "Profile setup is intuitive and complete",
+        "Login response time is <300ms",
+        "Edge cases are handled properly"
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Content Creation & Editing",
+      "status": "in-progress",
+      "dependencies": [
+        2,
+        3
+      ],
+      "priority": "P0",
+      "description": "Implement content creation and editing functionality (FEAT-002)",
+      "details": "Implement rich-text editor with code blocks and image upload capabilities. Add version history, rollback functionality, and autosave every 20 seconds.",
+      "test_strategy": "Test content creation, editing, and version history. Verify autosave functionality and rollback capabilities.",
+      "acceptance_criteria": [
+        "Rich-text editor supports all required formatting",
+        "Code blocks with syntax highlighting work correctly",
+        "Image upload and management functions properly",
+        "Version history tracks all changes",
+        "Autosave works every 20 seconds",
+        "Rollback to previous versions works correctly"
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Taxonomy & Tagging System",
+      "status": "done",
+      "dependencies": [
+        2
+      ],
+      "priority": "P0",
+      "description": "Implement taxonomy and tagging system (FEAT-003)",
+      "details": "Implement hierarchical topics and free-form tags. Add tag suggestion for typos and limit to 5 tags per post.",
+      "test_strategy": "Test tag creation, suggestion, and limits. Verify hierarchical topics work correctly.",
+      "acceptance_criteria": [
+        "Hierarchical topics are implemented correctly",
+        "Free-form tags can be added to content",
+        "System suggests existing tags for typos",
+        "Maximum of 5 tags per post is enforced",
+        "Tags are searchable and filterable"
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Search Functionality",
+      "status": "in-progress",
+      "dependencies": [
+        4,
+        5
+      ],
+      "priority": "P0",
+      "description": "Implement keyword and semantic search (FEAT-004)",
+      "details": "Implement vector search using pgvector with lexical fallback. Ensure latency is ≤700ms for 95th percentile.",
+      "test_strategy": "Test search functionality with various queries. Measure search latency under different loads.",
+      "acceptance_criteria": [
+        "Vector search returns relevant results",
+        "Lexical fallback works when semantic search fails",
+        "Search latency is ≤700ms for 95th percentile",
+        "Search results can be filtered by tags and content type",
+        "Search handles edge cases like empty queries gracefully"
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Reputation System",
+      "status": "in-progress",
+      "dependencies": [
+        3,
+        4
+      ],
+      "priority": "P0",
+      "description": "Implement the reputation system (FEAT-005)",
+      "details": "Implement upvotes, accepted answers, and badges. Set up privilege tiers unlocked at reputation levels 250, 1k, and 5k.",
+      "test_strategy": "Test reputation calculations, privilege unlocking, and badge awards.",
+      "acceptance_criteria": [
+        "Upvotes and accepted answers increase reputation correctly",
+        "Badges are awarded for specific achievements",
+        "Privilege tiers unlock at the specified reputation levels",
+        "Reputation history is tracked and viewable",
+        "Reputation changes are reflected in real-time"
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Notification Engine",
+      "status": "in-progress",
+      "dependencies": [
+        3,
+        7
+      ],
+      "priority": "P0",
+      "description": "Implement the notification engine (FEAT-006)",
+      "details": "Implement real-time in-app notifications and email digests. Add granular user preferences for notification settings.",
+      "test_strategy": "Test notification delivery, preferences, and email digests.",
+      "acceptance_criteria": [
+        "Real-time in-app notifications work correctly",
+        "Email digests are sent according to user preferences",
+        "Users can customize notification preferences",
+        "Notifications are marked as read correctly",
+        "Notification history is available to users"
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Moderation & Governance",
+      "status": "completed",
+      "dependencies": [
+        4
+      ],
+      "priority": "P0",
+      "description": "Implement moderation and governance system (FEAT-007)",
+      "details": "Implement AI spam filter with >95% precision. Add flag/queue workflow for human moderators and immutable audit log.",
+      "test_strategy": "Test spam detection accuracy, moderation workflow, and audit logging.",
+      "acceptance_criteria": [
+        "AI spam filter has >95% precision",
+        "Flag/queue workflow works correctly for human moderators",
+        "Audit log is immutable and comprehensive",
+        "Content can be hidden or removed by moderators",
+        "Users can appeal moderation decisions"
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Tool Directory",
+      "status": "in-progress",
+      "dependencies": [
+        2,
+        3
+      ],
+      "priority": "P0",
+      "description": "Implement the tool directory (FEAT-008)",
+      "details": "Create structured pages for AI tools with reviews, use cases, and pricing information. Implement vendor claimed-listing workflow.",
+      "test_strategy": "Test tool listing creation, reviews, and vendor claiming process.",
+      "acceptance_criteria": [
+        "Tool listings include all required information",
+        "Users can submit and read reviews",
+        "Vendors can claim and manage their listings",
+        "Tools can be searched and filtered",
+        "Pricing and feature information is clearly displayed"
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Personalized Feed & Dashboard",
+      "status": "completed",
+      "dependencies": [
+        4,
+        5,
+        6
+      ],
+      "priority": "P0",
+      "description": "Implement personalized feed and dashboard (FEAT-009)",
+      "details": "Create ML model for content recommendations based on user interactions and profile. Implement cold-start handling via onboarding interests survey.",
+      "test_strategy": "Test recommendation quality, cold-start handling, and dashboard customization.",
+      "acceptance_criteria": [
+        "Recommendations are relevant to user interests",
+        "Cold-start is handled via onboarding survey",
+        "Dashboard is customizable by users",
+        "Feed updates with new relevant content",
+        "Performance meets specified requirements"
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Frontend-Backend Integration",
+      "status": "pending",
+      "dependencies": [
+        4,
+        6,
+        7,
+        8,
+        10
+      ],
+      "priority": "P0",
+      "description": "Connect frontend components to backend APIs",
+      "details": "Complete the frontend integration with existing backend APIs for content creation, search, notifications, tool directory, and reputation system.",
+      "test_strategy": "Test each API integration with various input scenarios. Verify UI state management for loading, error, and success states.",
+      "acceptance_criteria": [
+        "Content editor saves to and loads from backend successfully",
+        "Search functionality returns and displays real results",
+        "Notifications display real-time updates from WebSocket",
+        "Tool directory shows real tool data and allows reviews",
+        "Reputation system displays accurate user points and badges",
+        "All components handle loading, error, and empty states gracefully",
+        "UI remains responsive during API operations"
+      ]
+    }
+  ]
+}

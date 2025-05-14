@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= digestPeriod === 'daily' ? 'Daily' : 'Weekly' %> Notification Digest</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      background-color: #4F46E5;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .content {
+      padding: 20px;
+      background-color: #fff;
+    }
+    .footer {
+      background-color: #f9f9f9;
+      padding: 15px;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
+    .notification-group {
+      margin-bottom: 25px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 20px;
+    }
+    .notification-group-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #4F46E5;
+    }
+    .notification-item {
+      margin-bottom: 15px;
+      padding-left: 15px;
+      border-left: 3px solid #4F46E5;
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 15px;
+      background-color: #4F46E5;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    .unsubscribe {
+      margin-top: 20px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Your <%= digestPeriod === 'daily' ? 'Daily' : 'Weekly' %> Digest</h2>
+    </div>
+    
+    <div class="content">
+      <p>Hello <%= username %>,</p>
+      
+      <p>Here's a summary of what happened in your Community.io network since your last digest. You have <%= notificationCount %> new notifications.</p>
+      
+      <% if (notifications.mention && notifications.mention.length > 0) { %>
+        <div class="notification-group">
+          <div class="notification-group-title">Mentions (<%= notifications.mention.length %>)</div>
+          <% notifications.mention.forEach(notification => { %>
+            <div class="notification-item">
+              <p><strong><%= notification.content.mentionedBy.username %></strong> mentioned you in a <%= notification.content.contentType %>:</p>
+              <p>"<%= notification.content.contentPreview %>"</p>
+              <a href="<%= process.env.FRONTEND_URL %>/view/<%= notification.content.contentId %>" class="button">View mention</a>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      
+      <% if (notifications.comment && notifications.comment.length > 0) { %>
+        <div class="notification-group">
+          <div class="notification-group-title">Comments (<%= notifications.comment.length %>)</div>
+          <% notifications.comment.forEach(notification => { %>
+            <div class="notification-item">
+              <p><strong><%= notification.content.commentedBy.username %></strong> commented on your <%= notification.content.contentType %>:</p>
+              <p>"<%= notification.content.commentPreview %>"</p>
+              <a href="<%= process.env.FRONTEND_URL %>/view/<%= notification.content.contentId %>" class="button">View comment</a>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      
+      <% if (notifications.answer && notifications.answer.length > 0) { %>
+        <div class="notification-group">
+          <div class="notification-group-title">Answers (<%= notifications.answer.length %>)</div>
+          <% notifications.answer.forEach(notification => { %>
+            <div class="notification-item">
+              <p><strong><%= notification.content.answeredBy.username %></strong> answered your question "<%= notification.content.questionTitle %>":</p>
+              <p>"<%= notification.content.answerPreview %>"</p>
+              <a href="<%= process.env.FRONTEND_URL %>/view/<%= notification.content.questionId %>#answer-<%= notification.content.answerId %>" class="button">View answer</a>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      
+      <% if (notifications.upvote && notifications.upvote.length > 0) { %>
+        <div class="notification-group">
+          <div class="notification-group-title">Upvotes (<%= notifications.upvote.length %>)</div>
+          <% notifications.upvote.forEach(notification => { %>
+            <div class="notification-item">
+              <p>Your <%= notification.content.contentType %> "<%= notification.content.contentTitle %>" received an upvote</p>
+              <a href="<%= process.env.FRONTEND_URL %>/view/<%= notification.content.contentId %>" class="button">View content</a>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      
+      <% if (notifications.follow && notifications.follow.length > 0) { %>
+        <div class="notification-group">
+          <div class="notification-group-title">New Followers (<%= notifications.follow.length %>)</div>
+          <% notifications.follow.forEach(notification => { %>
+            <div class="notification-item">
+              <p><strong><%= notification.content.follower.username %></strong> is now following you</p>
+              <a href="<%= process.env.FRONTEND_URL %>/profile/<%= notification.content.follower.id %>" class="button">View profile</a>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      
+      <% if (notifications.badge && notifications.badge.length > 0) { %>
+        <div class="notification-group">
+          <div class="notification-group-title">Badges Earned (<%= notifications.badge.length %>)</div>
+          <% notifications.badge.forEach(notification => { %>
+            <div class="notification-item">
+              <p>You earned the <strong><%= notification.content.badge.name %></strong> badge: <%= notification.content.badge.description %></p>
+              <a href="<%= process.env.FRONTEND_URL %>/profile/badges" class="button">View all badges</a>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      
+      <% if (notifications.system && notifications.system.length > 0) { %>
+        <div class="notification-group">
+          <div class="notification-group-title">System Notifications (<%= notifications.system.length %>)</div>
+          <% notifications.system.forEach(notification => { %>
+            <div class="notification-item">
+              <p><strong><%= notification.content.title %></strong></p>
+              <p><%= notification.content.message %></p>
+              <% if (notification.content.action) { %>
+                <a href="<%= notification.content.action.url %>" class="button"><%= notification.content.action.text %></a>
+              <% } %>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      
+      <p>
+        <a href="<%= process.env.FRONTEND_URL %>/notifications" class="button">View all notifications</a>
+      </p>
+      
+      <div class="unsubscribe">
+        <p>To change your notification preferences, <a href="<%= unsubscribeUrl %>">click here</a>.</p>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>&copy; <%= new Date().getFullYear() %> Community.io. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

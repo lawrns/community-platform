@@ -1,0 +1,11 @@
+# Task ID: 5
+# Title: Taxonomy & Tagging System
+# Status: pending
+# Dependencies: 2
+# Priority: P0
+# Description: Implement taxonomy and tagging system (FEAT-003)
+# Details:
+Implement hierarchical topics and free-form tags. Add tag suggestion for typos and limit to 5 tags per post.
+
+# Test Strategy:
+

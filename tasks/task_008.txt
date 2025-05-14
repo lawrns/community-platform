@@ -1,0 +1,30 @@
+# Task ID: 8
+# Title: Notification Engine
+# Status: in-progress
+# Dependencies: 3, 7
+# Priority: P0
+# Description: Implement the notification engine (FEAT-006)
+# Details:
+Implement real-time in-app notifications and email digests. Add granular user preferences for notification settings.
+
+# Test Strategy:
+1. Test real-time notification delivery via WebSockets
+2. Verify email notification delivery and formatting
+3. Test notification preference settings
+4. Verify notification history and marking as read
+5. Test scheduled email digests
+
+# Implementation Notes:
+1. Backend notification service fully implemented
+2. WebSocket integration for real-time notifications in place
+3. Email templates for notifications and digests created
+4. Notification database schema and API endpoints implemented
+5. Frontend notification components use mock data and are not connected to backend
+6. User preferences for notification settings implemented in backend
+
+# Remaining Work:
+1. Connect frontend notification components to WebSocket service
+2. Implement notification preference controls in UI
+3. Connect notification badge and dropdown to live data
+4. Implement notification history page with real data
+5. Test email digests with real user data

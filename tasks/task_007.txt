@@ -1,0 +1,31 @@
+# Task ID: 7
+# Title: Reputation System
+# Status: in-progress
+# Dependencies: 3, 4
+# Priority: P0
+# Description: Implement the reputation system (FEAT-005)
+# Details:
+Implement upvotes, accepted answers, and badges. Set up privilege tiers unlocked at reputation levels 250, 1k, and 5k.
+
+# Test Strategy:
+1. Test reputation point calculation for various actions
+2. Verify badge awarding based on achievements
+3. Test privilege unlocking at specified reputation levels
+4. Verify reputation history tracking and display
+5. Test upvote and accept answer functionality
+
+# Implementation Notes:
+1. Backend reputation system fully implemented with point tracking
+2. Badge system and repository implemented in backend
+3. Reputation history tracking implemented in backend
+4. API endpoints for reputation and badges implemented
+5. Frontend UI components for reputation display not implemented
+6. Badge display and progress tracking UI not implemented
+
+# Remaining Work:
+1. Implement reputation display in user profile UI
+2. Create badge display UI with earned and available badges
+3. Implement upvote and accept answer UI components
+4. Connect frontend components to backend reputation API
+5. Add reputation notification UI for earned points and badges
+6. Implement privilege level indicators and explanations

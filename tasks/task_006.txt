@@ -1,0 +1,28 @@
+# Task ID: 6
+# Title: Search Functionality
+# Status: in-progress
+# Dependencies: 4, 5
+# Priority: P0
+# Description: Implement keyword and semantic search (FEAT-004)
+# Details:
+Implement vector search using pgvector with lexical fallback. Ensure latency is ≤700ms for 95th percentile.
+
+# Test Strategy:
+1. Test search functionality with various query types
+2. Measure search latency under different loads
+3. Verify lexical fallback when vector search isn't available
+4. Test filtering by content type, tags, and other metadata
+
+# Implementation Notes:
+1. Backend implementation is complete with both vector and lexical search
+2. PostgreSQL pgvector extension configured and working
+3. Search API endpoints implemented and functional
+4. Frontend search page exists but not connected to the backend
+5. Search results display and filtering UI needs implementation
+
+# Remaining Work:
+1. Connect frontend search component to backend API
+2. Implement search results display with proper formatting
+3. Add filter functionality for search results
+4. Optimize search performance for latency requirements
+5. Implement search analytics to improve results over time
