@@ -50,7 +50,7 @@ LLMs represent a significant step forward in AI, but understanding their strengt
 export default function EditContentPage({ params }: { params: { id: string } }) {
   // In a real app, we would fetch the content based on the id from the params
   const content = sampleContent;
-  
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
@@ -60,7 +60,7 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
             Last edited: {new Date(content.updated_at).toLocaleString()}
           </p>
         </div>
-        
+
         <div className="space-y-6">
           <div>
             <label htmlFor="title" className="block text-sm font-medium mb-2">Title</label>
@@ -71,42 +71,42 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          
+
           <div>
             <label htmlFor="content-type" className="block text-sm font-medium mb-2">Content Type</label>
             <div className="flex flex-wrap gap-2">
-              <Button 
-                variant={content.type === 'Article' ? 'default' : 'outline'} 
+              <Button
+                variant={content.type === 'Article' ? 'default' : 'outline'}
                 className="rounded-full"
               >
                 Article
               </Button>
-              <Button 
-                variant={content.type === 'Question' ? 'default' : 'outline'} 
+              <Button
+                variant={content.type === 'Question' ? 'default' : 'outline'}
                 className="rounded-full"
               >
                 Question
               </Button>
-              <Button 
-                variant={content.type === 'Tutorial' ? 'default' : 'outline'} 
+              <Button
+                variant={content.type === 'Tutorial' ? 'default' : 'outline'}
                 className="rounded-full"
               >
                 Tutorial
               </Button>
-              <Button 
-                variant={content.type === 'Tool Review' ? 'default' : 'outline'} 
+              <Button
+                variant={content.type === 'Tool Review' ? 'default' : 'outline'}
                 className="rounded-full"
               >
                 Tool Review
               </Button>
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Content</label>
             <Editor initialContent={content.content} />
           </div>
-          
+
           <div>
             <label htmlFor="tags" className="block text-sm font-medium mb-2">Tags (maximum 5)</label>
             <input
@@ -119,7 +119,7 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
               Tags help others discover your content. Choose relevant tags for better visibility.
             </p>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2">Visibility</label>
             <div className="flex items-center space-x-4">
@@ -155,7 +155,7 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-4 pt-4 border-t">
             <div className="flex-1">
               <Button variant="outline" className="text-red-500">
@@ -184,7 +184,7 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
             <Button variant="outline">Save Draft</Button>
             <Button>Update</Button>
           </div>
-          
+
           <div className="text-xs text-gray-500 pt-2">
             <p>Version history: 3 previous versions</p>
           </div>
@@ -192,4 +192,36 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
       </div>
     </div>
   );
+}
+
+// This function tells Next.js which dynamic routes to pre-render for static export
+export async function generateStaticParams() {
+  // For a static export, we need to provide a list of all possible [id] values
+  // Include a comprehensive list of IDs that might be used in your application
+  return [
+    // Content types
+    { id: 'profile' },
+    { id: 'post' },
+    { id: 'event' },
+    { id: 'resource' },
+    { id: 'announcement' },
+    { id: 'guide' },
+    { id: 'tutorial' },
+    { id: 'faq' },
+
+    // Sample IDs for each content type
+    { id: 'post-1' },
+    { id: 'post-2' },
+    { id: 'post-3' },
+    { id: 'event-1' },
+    { id: 'event-2' },
+    { id: 'resource-1' },
+    { id: 'resource-2' },
+    { id: 'announcement-1' },
+    { id: 'announcement-2' },
+
+    // Placeholder for client-side routing
+    { id: 'placeholder' },
+    { id: 'new' }
+  ]
 }

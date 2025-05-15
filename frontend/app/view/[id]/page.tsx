@@ -61,14 +61,14 @@ LLMs represent a significant step forward in AI, but understanding their strengt
 export default function ViewContentPage({ params }: { params: { id: string } }) {
   // In a real app, we would fetch the content based on the id from the params
   const content = sampleContent;
-  
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
         {/* Content Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-4">{content.title}</h1>
-          
+
           <div className="flex flex-wrap items-center justify-between mb-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
@@ -101,7 +101,7 @@ export default function ViewContentPage({ params }: { params: { id: string } }) 
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2 mt-2 sm:mt-0">
               <Button variant="outline" size="sm">
                 <svg
@@ -159,7 +159,7 @@ export default function ViewContentPage({ params }: { params: { id: string } }) 
               </Button>
             </div>
           </div>
-          
+
           <div className="flex flex-wrap gap-2 mb-4">
             {content.tags.map(tag => (
               <Link
@@ -172,10 +172,10 @@ export default function ViewContentPage({ params }: { params: { id: string } }) 
             ))}
           </div>
         </div>
-        
+
         {/* Content Body */}
         <div className="prose prose-lg max-w-none mb-10 pb-10 border-b">
-          <div dangerouslySetInnerHTML={{ 
+          <div dangerouslySetInnerHTML={{
             __html: content.content
               .replace(/^# (.*$)/gm, '<h1>$1</h1>')
               .replace(/^## (.*$)/gm, '<h2>$1</h2>')
@@ -185,11 +185,11 @@ export default function ViewContentPage({ params }: { params: { id: string } }) 
               .replace(/<li>.*<\/li>/g, match => `<ul>${match}</ul>`)
           }} />
         </div>
-        
+
         {/* Comments Section */}
         <div className="mb-8">
           <h3 className="text-xl font-semibold mb-4">Comments ({content.stats.comments})</h3>
-          
+
           <div className="space-y-4 mb-6">
             <div className="p-4 border rounded-lg">
               <div className="flex items-start mb-2">
@@ -244,7 +244,7 @@ export default function ViewContentPage({ params }: { params: { id: string } }) 
                 </div>
               </div>
             </div>
-            
+
             <div className="p-4 border rounded-lg">
               <div className="flex items-start mb-2">
                 <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
@@ -299,7 +299,7 @@ export default function ViewContentPage({ params }: { params: { id: string } }) 
               </div>
             </div>
           </div>
-          
+
           <div>
             <h4 className="text-md font-medium mb-2">Add a comment</h4>
             <textarea
@@ -311,7 +311,7 @@ export default function ViewContentPage({ params }: { params: { id: string } }) 
             </div>
           </div>
         </div>
-        
+
         {/* Related Content */}
         <div>
           <h3 className="text-xl font-semibold mb-4">Related Content</h3>
@@ -343,4 +343,47 @@ export default function ViewContentPage({ params }: { params: { id: string } }) 
       </div>
     </div>
   );
+}
+
+// This function tells Next.js which dynamic routes to pre-render for static export
+export async function generateStaticParams() {
+  // For a static export, we need to provide a list of all possible [id] values
+  // Include a comprehensive list of content IDs that might be viewed
+  return [
+    // Content categories
+    { id: 'post' },
+    { id: 'event' },
+    { id: 'resource' },
+    { id: 'announcement' },
+    { id: 'guide' },
+    { id: 'tutorial' },
+    { id: 'faq' },
+
+    // Sample content IDs
+    { id: 'post-1' },
+    { id: 'post-2' },
+    { id: 'post-3' },
+    { id: 'post-4' },
+    { id: 'post-5' },
+    { id: 'event-1' },
+    { id: 'event-2' },
+    { id: 'event-3' },
+    { id: 'resource-1' },
+    { id: 'resource-2' },
+    { id: 'resource-3' },
+    { id: 'announcement-1' },
+    { id: 'announcement-2' },
+
+    // Featured content
+    { id: 'welcome' },
+    { id: 'getting-started' },
+    { id: 'community-guidelines' },
+    { id: 'code-of-conduct' },
+
+    // Special IDs
+    { id: 'latest' },
+    { id: 'featured' },
+    { id: 'trending' },
+    { id: 'placeholder' }
+  ]
 }
