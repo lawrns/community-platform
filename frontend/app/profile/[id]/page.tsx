@@ -17,7 +17,8 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const defaultTab = searchParams.get('tab') || 'profile';
+  // Ensure searchParams is not null before using it
+  const defaultTab = searchParams ? searchParams.get('tab') || 'profile' : 'profile';
   const [activeTab, setActiveTab] = useState(defaultTab);
   
   useEffect(() => {
