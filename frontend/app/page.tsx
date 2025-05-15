@@ -30,7 +30,7 @@ export default function Home() {
               ease: 'linear',
             }}
           />
-          
+
           {/* Floating decorative elements */}
           {[...Array(6)].map((_, i) => (
             <motion.div
@@ -56,7 +56,7 @@ export default function Home() {
             />
           ))}
         </div>
-        
+
         <div className="container relative z-10 px-4 md:px-6">
           <div className="flex flex-col items-center space-y-8 text-center">
             {/* Staggered text animations */}
@@ -83,8 +83,8 @@ export default function Home() {
                 <Sparkles className="mr-1 h-3.5 w-3.5" />
                 <span>The Future of AI Community</span>
               </motion.div>
-              
-              <motion.h1 
+
+              <motion.h1
                 variants={{
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
@@ -92,10 +92,10 @@ export default function Home() {
                 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70"
               >
                 Where AI Innovators <br className="hidden md:inline" />
-                Connect & Collaborate
+                Connect & Collaborate Together
               </motion.h1>
-              
-              <motion.p 
+
+              <motion.p
                 variants={{
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
@@ -106,9 +106,9 @@ export default function Home() {
                 share knowledge, and build connections in one intelligent, unified platform.
               </motion.p>
             </motion.div>
-            
+
             {/* Enhanced CTA buttons with animations */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.5 }}
@@ -117,7 +117,7 @@ export default function Home() {
               <Button size="lg" className="group relative overflow-hidden px-8 py-6 text-lg" asChild>
                 <Link href="/signup">
                   <span className="relative z-10">Join Our Community</span>
-                  <motion.span 
+                  <motion.span
                     className="absolute inset-0 bg-primary/90"
                     initial={{ x: '-100%' }}
                     whileHover={{ x: 0 }}
@@ -129,7 +129,7 @@ export default function Home() {
               <Button variant="outline" size="lg" className="group px-8 py-6 text-lg border-primary/20 hover:bg-primary/5" asChild>
                 <Link href="/tools">
                   <span>Explore AI Tools</span>
-                  <motion.span 
+                  <motion.span
                     className="ml-2 inline-block"
                     whileHover={{ x: 5 }}
                     transition={{ duration: 0.2 }}
@@ -139,7 +139,7 @@ export default function Home() {
                 </Link>
               </Button>
             </motion.div>
-            
+
             {/* Social proof */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -164,7 +164,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
+
       {/* Features Section */}
       <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
         {/* Background pattern */}
@@ -194,7 +194,7 @@ export default function Home() {
             <rect width="100%" height="100%" fill="url(#grid-pattern)" />
           </svg>
         </div>
-        
+
         <div className="container relative z-10 px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
             <motion.div
@@ -213,7 +213,7 @@ export default function Home() {
               </p>
             </motion.div>
           </div>
-          
+
           {/* Feature cards with enhanced visuals and animations */}
           <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 md:grid-cols-3 lg:gap-16">
             {/* Tool Directory Feature */}
@@ -226,7 +226,7 @@ export default function Home() {
               className="group relative overflow-hidden rounded-2xl border border-primary/10 bg-background p-6 shadow-lg transition-all hover:shadow-xl dark:bg-muted/5 dark:hover:border-primary/30"
             >
               <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-primary/10 transition-all group-hover:bg-primary/20" />
-              
+
               <div className="relative z-10 flex flex-col items-start space-y-4">
                 <div className="rounded-xl bg-primary/10 p-3 text-primary">
                   <svg
@@ -251,13 +251,13 @@ export default function Home() {
                 <div className="space-y-2 text-left">
                   <h3 className="text-xl font-bold">Comprehensive Tool Directory</h3>
                   <p className="text-muted-foreground">
-                    Discover, compare, and evaluate AI tools with detailed reviews, ratings, and real user experiences. 
+                    Discover, compare, and evaluate AI tools with detailed reviews, ratings, and real user experiences.
                     Never miss the next game-changing AI solution.
                   </p>
                 </div>
                 <div className="pt-2">
-                  <Link 
-                    href="/tools" 
+                  <Link
+                    href="/tools"
                     className="inline-flex items-center text-sm font-medium text-primary hover:underline"
                   >
                     Explore Tools
@@ -266,7 +266,7 @@ export default function Home() {
                 </div>
               </div>
             </motion.div>
-            
+
             {/* Q&A Platform Feature */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -277,7 +277,7 @@ export default function Home() {
               className="group relative overflow-hidden rounded-2xl border border-primary/10 bg-background p-6 shadow-lg transition-all hover:shadow-xl dark:bg-muted/5 dark:hover:border-primary/30"
             >
               <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-primary/10 transition-all group-hover:bg-primary/20" />
-              
+
               <div className="relative z-10 flex flex-col items-start space-y-4">
                 <div className="rounded-xl bg-primary/10 p-3 text-primary">
                   <svg
@@ -299,13 +299,13 @@ export default function Home() {
                 <div className="space-y-2 text-left">
                   <h3 className="text-xl font-bold">Expert Q&A Platform</h3>
                   <p className="text-muted-foreground">
-                    Get precise answers from leading AI experts with our reputation-based system that 
+                    Get precise answers from leading AI experts with our reputation-based system that
                     rewards quality contributions and verified expertise.
                   </p>
                 </div>
                 <div className="pt-2">
-                  <Link 
-                    href="/q-and-a" 
+                  <Link
+                    href="/q-and-a"
                     className="inline-flex items-center text-sm font-medium text-primary hover:underline"
                   >
                     Ask a Question
@@ -314,7 +314,7 @@ export default function Home() {
                 </div>
               </div>
             </motion.div>
-            
+
             {/* Personalized Feed Feature */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -325,7 +325,7 @@ export default function Home() {
               className="group relative overflow-hidden rounded-2xl border border-primary/10 bg-background p-6 shadow-lg transition-all hover:shadow-xl dark:bg-muted/5 dark:hover:border-primary/30"
             >
               <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-primary/10 transition-all group-hover:bg-primary/20" />
-              
+
               <div className="relative z-10 flex flex-col items-start space-y-4">
                 <div className="rounded-xl bg-primary/10 p-3 text-primary">
                   <svg
@@ -357,13 +357,13 @@ export default function Home() {
                 <div className="space-y-2 text-left">
                   <h3 className="text-xl font-bold">AI-Powered Content Feed</h3>
                   <p className="text-muted-foreground">
-                    Experience a personalized content stream that adapts to your interests, expertise level, 
+                    Experience a personalized content stream that adapts to your interests, expertise level,
                     and learning goals with our advanced recommendation engine.
                   </p>
                 </div>
                 <div className="pt-2">
-                  <Link 
-                    href="/dashboard" 
+                  <Link
+                    href="/dashboard"
                     className="inline-flex items-center text-sm font-medium text-primary hover:underline"
                   >
                     View Your Feed
@@ -373,9 +373,9 @@ export default function Home() {
               </div>
             </motion.div>
           </div>
-          
+
           {/* Additional features showcase */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -388,7 +388,7 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-      
+
       {/* CTA Section */}
       <section className="relative w-full py-24 md:py-32 lg:py-40 overflow-hidden">
         {/* Background gradient effect */}
@@ -410,7 +410,7 @@ export default function Home() {
             }}
           />
         </div>
-        
+
         {/* Animated shapes */}
         <div className="absolute inset-0 overflow-hidden">
           {[...Array(3)].map((_, i) => (
@@ -438,7 +438,7 @@ export default function Home() {
             />
           ))}
         </div>
-        
+
         <div className="container relative z-10 px-4 md:px-6">
           <div className="mx-auto max-w-3xl">
             <div className="rounded-2xl border border-primary/20 bg-background/80 backdrop-blur-sm p-8 md:p-12 shadow-xl">
@@ -457,12 +457,12 @@ export default function Home() {
                       Join Our Thriving AI Community
                     </h2>
                     <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed">
-                      Connect with over 100,000 AI practitioners, researchers, and enthusiasts. Share knowledge, 
+                      Connect with over 100,000 AI practitioners, researchers, and enthusiasts. Share knowledge,
                       discover opportunities, and stay at the forefront of AI innovation.
                     </p>
                   </div>
                 </motion.div>
-                
+
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -471,13 +471,13 @@ export default function Home() {
                   className="w-full max-w-md space-y-4"
                 >
                   <div className="grid gap-4">
-                    <Button 
-                      size="lg" 
-                      className="group relative overflow-hidden px-8 py-6 text-lg font-medium transition-all hover:shadow-lg" 
+                    <Button
+                      size="lg"
+                      className="group relative overflow-hidden px-8 py-6 text-lg font-medium transition-all hover:shadow-lg"
                       asChild
                     >
                       <Link href="/signup">
-                        <motion.span 
+                        <motion.span
                           className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80"
                           initial={{ x: '-100%' }}
                           whileHover={{ x: 0 }}
@@ -489,7 +489,7 @@ export default function Home() {
                         </span>
                       </Link>
                     </Button>
-                    
+
                     <div className="relative">
                       <div className="absolute inset-0 flex items-center">
                         <div className="w-full border-t border-muted"></div>
@@ -498,11 +498,11 @@ export default function Home() {
                         <span className="bg-background px-2 text-muted-foreground">Or</span>
                       </div>
                     </div>
-                    
-                    <Button 
-                      variant="outline" 
-                      size="lg" 
-                      className="border-primary/20 hover:bg-primary/5 text-lg py-6" 
+
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="border-primary/20 hover:bg-primary/5 text-lg py-6"
                       asChild
                     >
                       <Link href="/signin">
@@ -510,12 +510,12 @@ export default function Home() {
                       </Link>
                     </Button>
                   </div>
-                  
+
                   <p className="text-sm text-muted-foreground text-center">
                     By signing up, you agree to our <Link href="#" className="underline underline-offset-2 hover:text-primary">Terms of Service</Link> and <Link href="#" className="underline underline-offset-2 hover:text-primary">Privacy Policy</Link>.
                   </p>
                 </motion.div>
-                
+
                 {/* Testimonial preview */}
                 <motion.div
                   initial={{ opacity: 0 }}
