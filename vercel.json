@@ -1,5 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "cd frontend/minimal && npm install && npm run build",
-  "outputDirectory": "frontend/minimal/.next"
+  "buildCommand": "cd frontend/complete && npm install && npm run build",
+  "outputDirectory": "frontend/complete/.next"
 }
