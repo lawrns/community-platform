@@ -1,0 +1,16 @@
+[build]
+  base = "frontend"
+  command = "npm run build:netlify"
+  publish = "out"
+
+[build.environment]
+  NEXT_TELEMETRY_DISABLED = "1"
+  NODE_VERSION = "18.17.0"
+  NEXT_PUBLIC_IS_NETLIFY = "true"
+  NEXT_PUBLIC_STATIC_EXPORT = "true"
+
+# Handle all routes with a fallback to index.html for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
