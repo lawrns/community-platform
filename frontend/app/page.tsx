@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import MotionWrapper from '@/components/motion/MotionWrapper';
+import { MotionWrapper } from '@/components/motion';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Users, Zap } from 'lucide-react';
 

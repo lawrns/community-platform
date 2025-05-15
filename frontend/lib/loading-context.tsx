@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { AnimatePresence } from "framer-motion";
 import { LoadingPage } from "@/components/ui/loading-page";
-import { AnimatedToast } from "@/components/motion/AnimatedToast";
+import { AnimatedToast } from "@/components/motion";
 
 type LoadingState = {
   isLoading: boolean;
@@ -89,17 +89,17 @@ export function LoadingProvider({ children }: { children: ReactNode }) {
   return (
     <LoadingContext.Provider value={contextValue}>
       {children}
-      
+
       {/* Loading Overlay */}
       <AnimatePresence>
         {loading.isLoading && (
-          <LoadingPage 
-            fullscreen={loading.isOverlay} 
+          <LoadingPage
+            fullscreen={loading.isOverlay}
             text={loading.message}
           />
         )}
       </AnimatePresence>
-      
+
       {/* Toast Notifications */}
       <AnimatedToast
         open={toast.isOpen}

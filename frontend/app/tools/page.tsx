@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Filter, ChevronDown, Loader2 } from 'lucide-react'
-import MotionWrapper from '@/components/motion/MotionWrapper'
+import { MotionWrapper } from '@/components/motion'
 import ToolCard from '@/components/tools/ToolCard'
 import { api } from '@/lib/api'
 import { Tool } from '@/lib/types'
@@ -19,17 +19,17 @@ export default function ToolsPage() {
   const [priceFilter, setPriceFilter] = useState("All")
   const [ratingFilter, setRatingFilter] = useState(0)
   const { toast } = useToast()
-  
+
   // Fetch tools and categories on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        
+
         // Fetch tools
         const toolsResponse = await api.tools.listTools({})
         setTools(toolsResponse.tools || [])
-        
+
         // Fetch categories
         const categoriesResponse = await api.tools.getToolCategories()
         setCategories(["All Categories", ...(categoriesResponse.categories || [])])
@@ -44,17 +44,17 @@ export default function ToolsPage() {
         setLoading(false)
       }
     }
-    
+
     fetchData()
   }, [toast])
-  
+
   // Handle search input changes with debounce
   useEffect(() => {
     const handler = setTimeout(async () => {
       if (searchQuery.trim()) {
         try {
           setLoading(true)
-          const response = await api.tools.listTools({ 
+          const response = await api.tools.listTools({
             search: searchQuery,
             category: selectedCategory !== "All Categories" ? selectedCategory : undefined,
             pricing: priceFilter !== "All" ? priceFilter.toLowerCase() : undefined,
@@ -68,10 +68,10 @@ export default function ToolsPage() {
         }
       }
     }, 300)
-    
+
     return () => clearTimeout(handler)
   }, [searchQuery])
-  
+
   // Handle filter changes
   const applyFilters = async () => {
     try {
@@ -94,14 +94,14 @@ export default function ToolsPage() {
       setLoading(false)
     }
   }
-  
+
   // Apply filters when they change
   useEffect(() => {
     if (!loading) {
       applyFilters()
     }
   }, [selectedCategory, priceFilter, ratingFilter])
-  
+
   // Clear all filters
   const clearFilters = () => {
     setSearchQuery("")
@@ -109,7 +109,7 @@ export default function ToolsPage() {
     setPriceFilter("All")
     setRatingFilter(0)
   }
-  
+
   // Animation variants for list items
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -131,7 +131,7 @@ export default function ToolsPage() {
           </p>
         </div>
       </MotionWrapper>
-      
+
       {/* Search and Filter Section */}
       <div className="mb-12">
         <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -147,7 +147,7 @@ export default function ToolsPage() {
               <Search className="absolute left-4 top-3.5 text-gray-400" size={20} />
             </div>
           </MotionWrapper>
-          
+
           <MotionWrapper delay={0.2} className="w-full md:w-64">
             <div className="relative">
               <select
@@ -162,25 +162,25 @@ export default function ToolsPage() {
               <ChevronDown className="absolute right-4 top-3.5 text-gray-400" size={20} />
             </div>
           </MotionWrapper>
-          
+
           <MotionWrapper delay={0.3}>
-            <button 
+            <button
               className="px-4 py-3 border rounded-lg flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               onClick={() => setFilterOpen(!filterOpen)}
             >
               <Filter size={20} />
               Filters
-              <ChevronDown 
-                size={16} 
-                className={`transform transition-transform ${filterOpen ? 'rotate-180' : ''}`} 
+              <ChevronDown
+                size={16}
+                className={`transform transition-transform ${filterOpen ? 'rotate-180' : ''}`}
               />
             </button>
           </MotionWrapper>
         </div>
-        
+
         {/* Advanced Filters */}
         {filterOpen && (
-          <motion.div 
+          <motion.div
             className="p-6 border rounded-lg mb-6 grid grid-cols-1 md:grid-cols-2 gap-6"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
@@ -204,7 +204,7 @@ export default function ToolsPage() {
                 ))}
               </div>
             </div>
-            
+
             <div>
               <h3 className="font-medium mb-3">Minimum Rating</h3>
               <input
@@ -224,7 +224,7 @@ export default function ToolsPage() {
           </motion.div>
         )}
       </div>
-      
+
       {/* Loading State */}
       {loading && (
         <div className="flex justify-center items-center py-20">
@@ -232,10 +232,10 @@ export default function ToolsPage() {
           <span className="ml-2 text-lg">Loading tools...</span>
         </div>
       )}
-      
+
       {/* Tools Grid */}
       {!loading && tools.length > 0 ? (
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           variants={containerVariants}
           initial="hidden"
@@ -248,7 +248,7 @@ export default function ToolsPage() {
       ) : !loading && (
         <div className="text-center py-12">
           <p className="text-xl text-gray-500 dark:text-gray-400">No tools found matching your criteria.</p>
-          <button 
+          <button
             className="mt-4 text-primary hover:underline"
             onClick={clearFilters}
           >
