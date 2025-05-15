@@ -6,6 +6,11 @@ module.exports = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    // Add JS/JSX files for completeness
+    './pages/**/*.{js,jsx}',
+    './components/**/*.{js,jsx}',
+    './app/**/*.{js,jsx}',
+    './src/**/*.{js,jsx}',
   ],
   theme: {
     container: {
@@ -73,4 +78,14 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
+  // Ensure CSS is generated during build
+  safelist: [
+    // Include common classes that might be dynamically generated
+    'bg-primary',
+    'text-primary-foreground',
+    'bg-secondary',
+    'text-secondary-foreground',
+    'bg-background',
+    'text-foreground',
+  ],
 }
