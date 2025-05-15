@@ -8,26 +8,27 @@ import { Button } from "@/components/ui/button"
 import { MobileActionButton } from "@/components/ui/mobile-action-button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { 
-  Plus, 
-  MessageSquare, 
-  Bell, 
-  Heart, 
-  Settings, 
-  Share2, 
-  Upload, 
-  Download, 
-  Bookmark, 
+import {
+  Plus,
+  MessageSquare,
+  Bell,
+  Heart,
+  Settings,
+  Share2,
+  Upload,
+  Download,
+  Bookmark,
   Edit,
   Trash,
   Send,
   Star,
-  LayoutGrid
+  LayoutGrid,
+  Wrench
 } from "lucide-react"
 
 export default function MobileActionDemoPage() {
   const [currentContext, setCurrentContext] = useState("default")
-  
+
   return (
     <div className="py-10">
       <ResponsiveContainer maxWidth="4xl" background="primary" shadow="md" rounded="lg" verticalPadding="md">
@@ -46,7 +47,7 @@ export default function MobileActionDemoPage() {
               <TabsTrigger value="variants">Variants</TabsTrigger>
               <TabsTrigger value="context">Context Aware</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="overview">
               <div className="space-y-8">
                 <section>
@@ -56,9 +57,9 @@ export default function MobileActionDemoPage() {
                       <div className="relative h-64 border rounded-lg bg-surface-2 p-4 flex items-center justify-center">
                         <p className="text-content-secondary">The basic FloatingActionButton component fixed in the corner.</p>
                         <div className="absolute bottom-4 right-4">
-                          <FloatingActionButton 
-                            position="bottom-right" 
-                            size="lg" 
+                          <FloatingActionButton
+                            position="bottom-right"
+                            size="lg"
                             variant="primary"
                             onClick={() => {}}
                           />
@@ -70,7 +71,7 @@ export default function MobileActionDemoPage() {
                     </CardContent>
                   </Card>
                 </section>
-                
+
                 <section>
                   <h2 className="text-2xl font-semibold mb-4">Speed Dial with Multiple Actions</h2>
                   <Card>
@@ -110,7 +111,7 @@ export default function MobileActionDemoPage() {
                     </CardContent>
                   </Card>
                 </section>
-                
+
                 <section>
                   <h2 className="text-2xl font-semibold mb-4">Extended FAB with Label</h2>
                   <Card>
@@ -118,9 +119,9 @@ export default function MobileActionDemoPage() {
                       <div className="relative h-64 border rounded-lg bg-surface-2 p-4 flex items-center justify-center">
                         <p className="text-content-secondary">An extended FAB with a text label.</p>
                         <div className="absolute bottom-4 right-4">
-                          <FloatingActionButton 
-                            position="bottom-right" 
-                            size="lg" 
+                          <FloatingActionButton
+                            position="bottom-right"
+                            size="lg"
                             variant="primary"
                             extended
                             label="Create"
@@ -136,7 +137,7 @@ export default function MobileActionDemoPage() {
                 </section>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="variants">
               <div className="space-y-8">
                 <section>
@@ -161,7 +162,7 @@ export default function MobileActionDemoPage() {
                     </CardContent>
                   </Card>
                 </section>
-                
+
                 <section>
                   <h2 className="text-2xl font-semibold mb-4">Sizes</h2>
                   <Card>
@@ -183,7 +184,7 @@ export default function MobileActionDemoPage() {
                     </CardContent>
                   </Card>
                 </section>
-                
+
                 <section>
                   <h2 className="text-2xl font-semibold mb-4">Color Variants</h2>
                   <Card>
@@ -217,7 +218,7 @@ export default function MobileActionDemoPage() {
                     </CardContent>
                   </Card>
                 </section>
-                
+
                 <section>
                   <h2 className="text-2xl font-semibold mb-4">Speed Dial Directions</h2>
                   <Card>
@@ -283,63 +284,63 @@ export default function MobileActionDemoPage() {
                     </CardContent>
                   </Card>
                 </section>
-                
+
                 <section>
                   <h2 className="text-2xl font-semibold mb-4">Custom Icons</h2>
                   <Card>
                     <CardContent className="pt-6">
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                         <div className="flex flex-col items-center justify-center">
-                          <FloatingActionButton 
-                            variant="primary" 
-                            icon={<Edit />} 
-                            onClick={() => {}} 
-                            position="bottom-center" 
+                          <FloatingActionButton
+                            variant="primary"
+                            icon={<Edit />}
+                            onClick={() => {}}
+                            position="bottom-center"
                           />
                           <p className="text-center mt-2 text-sm">Edit</p>
                         </div>
                         <div className="flex flex-col items-center justify-center">
-                          <FloatingActionButton 
-                            variant="accent" 
-                            icon={<MessageSquare />} 
-                            onClick={() => {}} 
-                            position="bottom-center" 
+                          <FloatingActionButton
+                            variant="accent"
+                            icon={<MessageSquare />}
+                            onClick={() => {}}
+                            position="bottom-center"
                           />
                           <p className="text-center mt-2 text-sm">Message</p>
                         </div>
                         <div className="flex flex-col items-center justify-center">
-                          <FloatingActionButton 
-                            variant="destructive" 
-                            icon={<Trash />} 
-                            onClick={() => {}} 
-                            position="bottom-center" 
+                          <FloatingActionButton
+                            variant="destructive"
+                            icon={<Trash />}
+                            onClick={() => {}}
+                            position="bottom-center"
                           />
                           <p className="text-center mt-2 text-sm">Delete</p>
                         </div>
                         <div className="flex flex-col items-center justify-center">
-                          <FloatingActionButton 
-                            variant="secondary" 
-                            icon={<Send />} 
-                            onClick={() => {}} 
-                            position="bottom-center" 
+                          <FloatingActionButton
+                            variant="secondary"
+                            icon={<Send />}
+                            onClick={() => {}}
+                            position="bottom-center"
                           />
                           <p className="text-center mt-2 text-sm">Send</p>
                         </div>
                         <div className="flex flex-col items-center justify-center">
-                          <FloatingActionButton 
-                            variant="success" 
-                            icon={<Upload />} 
-                            onClick={() => {}} 
-                            position="bottom-center" 
+                          <FloatingActionButton
+                            variant="success"
+                            icon={<Upload />}
+                            onClick={() => {}}
+                            position="bottom-center"
                           />
                           <p className="text-center mt-2 text-sm">Upload</p>
                         </div>
                         <div className="flex flex-col items-center justify-center">
-                          <FloatingActionButton 
-                            variant="success" 
-                            icon={<Heart />} 
-                            onClick={() => {}} 
-                            position="bottom-center" 
+                          <FloatingActionButton
+                            variant="success"
+                            icon={<Heart />}
+                            onClick={() => {}}
+                            position="bottom-center"
                           />
                           <p className="text-center mt-2 text-sm">Like</p>
                         </div>
@@ -349,7 +350,7 @@ export default function MobileActionDemoPage() {
                 </section>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="context">
               <div className="space-y-8">
                 <section>
@@ -358,7 +359,7 @@ export default function MobileActionDemoPage() {
                     The MobileActionButton component changes its functionality based on the current page context.
                     Try selecting different contexts below to see how it adapts.
                   </p>
-                  
+
                   <Card>
                     <CardHeader>
                       <CardTitle>Simulated Context Navigation</CardTitle>
@@ -366,7 +367,7 @@ export default function MobileActionDemoPage() {
                     <CardContent>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                         {["default", "dashboard", "profile", "tools", "topics", "create", "view"].map((context) => (
-                          <Button 
+                          <Button
                             key={context}
                             variant={currentContext === context ? "default" : "outline"}
                             onClick={() => setCurrentContext(context)}
@@ -376,7 +377,7 @@ export default function MobileActionDemoPage() {
                           </Button>
                         ))}
                       </div>
-                      
+
                       <div className="relative h-96 border rounded-lg bg-surface-2 mt-6 p-4 flex flex-col items-center justify-center">
                         <div className="bg-surface-1 p-4 rounded-lg shadow-md max-w-md w-full mb-4">
                           <div className="flex items-center justify-between mb-2">
@@ -388,14 +389,14 @@ export default function MobileActionDemoPage() {
                             to provide relevant actions for this context.
                           </p>
                         </div>
-                        
+
                         <div className="bg-surface-3 p-4 rounded-lg max-w-md w-full">
                           <p className="text-sm text-content-secondary">
                             <span className="font-medium">Instructions:</span> Click the floating action button in the
                             bottom right corner to see the available actions for this context.
                           </p>
                         </div>
-                        
+
                         {/* Dynamically insert an appropriate FAB for this context */}
                         {currentContext === "default" && (
                           <SpeedDial
@@ -413,7 +414,7 @@ export default function MobileActionDemoPage() {
                             ]}
                           />
                         )}
-                        
+
                         {currentContext === "dashboard" && (
                           <SpeedDial
                             position="bottom-right"
@@ -430,7 +431,7 @@ export default function MobileActionDemoPage() {
                             ]}
                           />
                         )}
-                        
+
                         {currentContext === "profile" && (
                           <FloatingActionButton
                             position="bottom-right"
@@ -442,7 +443,7 @@ export default function MobileActionDemoPage() {
                             onClick={() => {}}
                           />
                         )}
-                        
+
                         {currentContext === "tools" && (
                           <FloatingActionButton
                             position="bottom-right"
@@ -454,7 +455,7 @@ export default function MobileActionDemoPage() {
                             onClick={() => {}}
                           />
                         )}
-                        
+
                         {currentContext === "topics" && (
                           <SpeedDial
                             position="bottom-right"
@@ -470,7 +471,7 @@ export default function MobileActionDemoPage() {
                             ]}
                           />
                         )}
-                        
+
                         {currentContext === "create" && (
                           <SpeedDial
                             position="bottom-right"
@@ -485,7 +486,7 @@ export default function MobileActionDemoPage() {
                             ]}
                           />
                         )}
-                        
+
                         {currentContext === "view" && (
                           <SpeedDial
                             position="bottom-right"
@@ -505,7 +506,7 @@ export default function MobileActionDemoPage() {
                     </CardContent>
                   </Card>
                 </section>
-                
+
                 <div className="flex justify-center pt-8">
                   <Button asChild>
                     <a href="/design-system">Back to Design System</a>

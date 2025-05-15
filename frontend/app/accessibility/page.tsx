@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-import { AnimatedButton } from "@/components/motion/AnimatedButton";
+import { AnimatedButton } from "@/components/motion";
 import { MotionWrapper } from "@/components/motion/MotionWrapper";
 
 import { SkipLink } from "@/components/a11y/SkipLink";
@@ -18,11 +18,11 @@ import { useKeyboardNavigation, useAriaControls, useAnnouncer } from "@/componen
 
 export default function AccessibilityDemo() {
   const [activeTab, setActiveTab] = useState("intro");
-  
+
   return (
     <div className="container mx-auto px-4 py-16">
       <SkipLink href="#main-content" />
-      
+
       <div className="mb-16 text-center">
         <h1 className="text-display-2xl font-bold text-content-primary mb-4">
           Accessibility Features
@@ -31,9 +31,9 @@ export default function AccessibilityDemo() {
           This page showcases accessibility features and components designed to make the platform more inclusive.
         </p>
       </div>
-      
-      <Tabs 
-        defaultValue="intro" 
+
+      <Tabs
+        defaultValue="intro"
         value={activeTab}
         onValueChange={setActiveTab}
         className="w-full"
@@ -45,24 +45,24 @@ export default function AccessibilityDemo() {
           <TabsTrigger value="aria">ARIA Controls</TabsTrigger>
           <TabsTrigger value="focus">Focus Management</TabsTrigger>
         </TabsList>
-        
+
         <div id="main-content" tabIndex={-1} className="outline-none">
           <TabsContent value="intro">
             <IntroTab />
           </TabsContent>
-          
+
           <TabsContent value="components">
             <ComponentsTab />
           </TabsContent>
-          
+
           <TabsContent value="keyboard">
             <KeyboardNavigationTab />
           </TabsContent>
-          
+
           <TabsContent value="aria">
             <AriaControlsTab />
           </TabsContent>
-          
+
           <TabsContent value="focus">
             <FocusManagementTab />
           </TabsContent>
@@ -86,7 +86,7 @@ function IntroTab() {
           <p className="text-content-secondary">
             This platform has been designed with accessibility as a core principle, not an afterthought. We've implemented comprehensive accessibility features to ensure that all users, regardless of ability, can use our platform effectively.
           </p>
-          
+
           <h3 className="text-display-sm font-medium text-content-primary mt-8">Key Accessibility Features</h3>
           <ul className="space-y-4 list-disc pl-6">
             <li className="text-content-secondary">
@@ -108,7 +108,7 @@ function IntroTab() {
               <span className="font-medium text-content-primary">Responsive Design</span>: The platform is fully usable at various screen sizes and zoom levels to accommodate different needs.
             </li>
           </ul>
-          
+
           <div className="bg-surface-2 p-6 rounded-lg border mt-8">
             <h3 className="text-display-sm font-medium text-content-primary mb-4">Standards We Follow</h3>
             <ul className="space-y-2 list-disc pl-6">
@@ -118,7 +118,7 @@ function IntroTab() {
               <li className="text-content-secondary">Mobile accessibility guidelines</li>
             </ul>
           </div>
-          
+
           <p className="text-content-secondary mt-6">
             The demos on this page showcase many of our accessibility features, but they represent only a portion of our ongoing commitment to inclusive design.
           </p>
@@ -131,10 +131,10 @@ function IntroTab() {
 function ComponentsTab() {
   const [announcement, setAnnouncement] = useState("");
   const { announce, announcePolite, announceAssertive } = useAnnouncer();
-  
+
   const handleAnnounce = (message: string, type: string) => {
     setAnnouncement(message);
-    
+
     if (type === "polite") {
       announcePolite(message);
     } else if (type === "assertive") {
@@ -143,7 +143,7 @@ function ComponentsTab() {
       announce(message, type as "polite" | "assertive");
     }
   };
-  
+
   return (
     <MotionWrapper variant="fadeIn">
       <Card>
@@ -167,20 +167,20 @@ function ComponentsTab() {
                   </svg>
                   Add Item
                 </Button>
-                
+
                 <Button className="w-fit">
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 4v16m8-8H4" />
                   </svg>
                   <VisuallyHidden>Add Item</VisuallyHidden>
                 </Button>
-                
+
                 <p className="text-xs text-content-tertiary italic">
                   The second button uses VisuallyHidden to provide text for screen readers while maintaining the icon-only visual appearance.
                 </p>
               </div>
             </div>
-            
+
             <div>
               <h3 className="text-display-sm font-medium mb-4">Skip Link</h3>
               <p className="text-content-secondary mb-4">
@@ -199,7 +199,7 @@ function ComponentsTab() {
               </div>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
             <div>
               <h3 className="text-display-sm font-medium mb-4">Live Regions</h3>
@@ -208,33 +208,33 @@ function ComponentsTab() {
               </p>
               <div className="flex flex-col space-y-4 mt-6">
                 <div className="flex flex-wrap gap-2">
-                  <Button 
-                    variant="secondary" 
+                  <Button
+                    variant="secondary"
                     onClick={() => handleAnnounce("Your settings have been saved.", "polite")}
                   >
                     Polite Announcement
                   </Button>
-                  <Button 
-                    variant="destructive" 
+                  <Button
+                    variant="destructive"
                     onClick={() => handleAnnounce("Error: Connection lost!", "assertive")}
                   >
                     Assertive Announcement
                   </Button>
                 </div>
-                
+
                 {announcement && (
                   <div className="border p-4 rounded-md mt-4 bg-surface-2">
                     <p className="font-medium">Last announcement:</p>
                     <p className="text-content-secondary">{announcement}</p>
                   </div>
                 )}
-                
+
                 <LiveRegion>
                   {announcement}
                 </LiveRegion>
               </div>
             </div>
-            
+
             <div>
               <h3 className="text-display-sm font-medium mb-4">Focus Trap</h3>
               <p className="text-content-secondary mb-4">
@@ -275,11 +275,11 @@ function KeyboardNavigationTab() {
   const [focusedItem, setFocusedItem] = useState<number>(-1);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
-  
+
   const items = [
     "Home", "About", "Products", "Services", "Contact"
   ];
-  
+
   const { keyDownHandler } = useKeyboardNavigation({
     container: listRef,
     onArrowUp: () => setFocusedItem(prev => Math.max(prev - 1, 0)),
@@ -288,14 +288,14 @@ function KeyboardNavigationTab() {
     onHome: () => setFocusedItem(0),
     onEnd: () => setFocusedItem(items.length - 1),
   });
-  
+
   // Set initial focused item if none is set
   React.useEffect(() => {
     if (focusedItem === -1) {
       setFocusedItem(0);
     }
   }, [focusedItem]);
-  
+
   return (
     <MotionWrapper variant="fadeIn">
       <Card>
@@ -309,15 +309,15 @@ function KeyboardNavigationTab() {
           <p className="text-content-secondary">
             Our platform is fully navigable using only a keyboard. Below is a demo of keyboard-navigable components using our custom useKeyboardNavigation hook.
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <h3 className="text-display-sm font-medium mb-4">Navigable List</h3>
               <p className="text-content-secondary mb-4">
                 This list can be navigated using arrow keys, and items can be selected with Enter.
               </p>
-              
-              <div 
+
+              <div
                 className="border rounded-md p-4 mt-4"
                 tabIndex={0}
                 onKeyDown={keyDownHandler}
@@ -344,7 +344,7 @@ function KeyboardNavigationTab() {
                   ))}
                 </ul>
               </div>
-              
+
               <div className="mt-4 text-sm text-content-tertiary">
                 <p>Navigation keys:</p>
                 <ul className="list-disc pl-5 space-y-1 mt-2">
@@ -355,7 +355,7 @@ function KeyboardNavigationTab() {
                 </ul>
               </div>
             </div>
-            
+
             <div className="space-y-6">
               <div>
                 <h3 className="text-display-sm font-medium mb-4">Key Navigation Guidelines</h3>
@@ -377,7 +377,7 @@ function KeyboardNavigationTab() {
                   </li>
                 </ul>
               </div>
-              
+
               <div className="p-4 border rounded-md bg-surface-2 mt-4">
                 <h4 className="font-medium mb-2">Why Keyboard Navigation Matters</h4>
                 <p className="text-content-secondary text-sm">
@@ -386,7 +386,7 @@ function KeyboardNavigationTab() {
               </div>
             </div>
           </div>
-          
+
           <div className="rounded-md border p-6 bg-surface-2 mt-6">
             <h3 className="text-display-sm font-medium mb-4">Implementation with useKeyboardNavigation</h3>
             <pre className="bg-surface-3 p-3 rounded-md text-xs overflow-x-auto">
@@ -400,7 +400,7 @@ const { keyDownHandler } = useKeyboardNavigation({
 });
 
 // Component JSX
-<div 
+<div
   tabIndex={0}
   onKeyDown={keyDownHandler}
   role="listbox"
@@ -436,7 +436,7 @@ function AriaControlsTab() {
   } = useAriaControls({
     defaultExpanded: false,
   });
-  
+
   const {
     buttonProps: tabTriggerProps,
     getItemProps,
@@ -445,7 +445,7 @@ function AriaControlsTab() {
   } = useAriaControls({
     multiple: true,
   });
-  
+
   return (
     <MotionWrapper variant="fadeIn">
       <Card>
@@ -459,14 +459,14 @@ function AriaControlsTab() {
           <p className="text-content-secondary">
             ARIA attributes help make complex interactive components accessible to assistive technologies. Our useAriaControls hook simplifies applying the correct ARIA attributes.
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <h3 className="text-display-sm font-medium mb-4">Disclosure Component</h3>
               <p className="text-content-secondary mb-4">
                 An accessible disclosure component (expandable section) with proper ARIA attributes.
               </p>
-              
+
               <div className="border rounded-md overflow-hidden">
                 <button
                   className="w-full px-4 py-3 bg-surface-2 text-left font-medium flex justify-between items-center"
@@ -474,27 +474,27 @@ function AriaControlsTab() {
                   onClick={toggle}
                 >
                   <span>Accessibility Information</span>
-                  <svg 
+                  <svg
                     className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
-                    fill="none" 
-                    stroke="currentColor" 
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                
+
                 {isExpanded && (
                   <div {...contentProps} className="p-4">
                     <p className="text-content-secondary">
-                      This disclosure component uses proper ARIA attributes to ensure it's accessible to screen readers. 
-                      The button is automatically linked to its content through aria-controls, and the expanded state 
+                      This disclosure component uses proper ARIA attributes to ensure it's accessible to screen readers.
+                      The button is automatically linked to its content through aria-controls, and the expanded state
                       is communicated through aria-expanded.
                     </p>
                   </div>
                 )}
               </div>
-              
+
               <div className="mt-4 text-sm text-content-tertiary">
                 <p>Applied ARIA attributes:</p>
                 <ul className="list-disc pl-5 space-y-1 mt-2">
@@ -504,19 +504,19 @@ function AriaControlsTab() {
                 </ul>
               </div>
             </div>
-            
+
             <div>
               <h3 className="text-display-sm font-medium mb-4">Selectable List</h3>
               <p className="text-content-secondary mb-4">
                 A multi-selectable list with proper ARIA roles and states.
               </p>
-              
+
               <div className="border rounded-md p-4" {...tabTriggerProps} role="listbox" aria-multiselectable="true">
                 <ul className="space-y-2">
                   {["Option 1", "Option 2", "Option 3", "Option 4"].map((option, index) => {
                     const itemId = `option-${index}`;
                     const isSelected = selectedItems.includes(itemId);
-                    
+
                     return (
                       <li
                         key={index}
@@ -543,7 +543,7 @@ function AriaControlsTab() {
               </div>
             </div>
           </div>
-          
+
           <div className="rounded-md border p-6 bg-surface-2 mt-6">
             <h3 className="text-display-sm font-medium mb-4">Implementation with useAriaControls</h3>
             <pre className="bg-surface-3 p-3 rounded-md text-xs overflow-x-auto">
@@ -600,12 +600,12 @@ function FocusManagementTab() {
     useRef<HTMLDivElement>(null),
     useRef<HTMLDivElement>(null),
   ];
-  
+
   const focusArea = (index: number) => {
     setActiveFocusArea(index);
     focusAreaRefs[index]?.current?.focus();
   };
-  
+
   return (
     <MotionWrapper variant="fadeIn">
       <Card>
@@ -619,30 +619,30 @@ function FocusManagementTab() {
           <p className="text-content-secondary">
             Proper focus management is crucial for keyboard users to navigate your application effectively. We implement several techniques to ensure focus is always properly managed.
           </p>
-          
+
           <div className="space-y-6">
             <h3 className="text-display-sm font-medium mb-4">Focus Indicators</h3>
             <p className="text-content-secondary mb-4">
               All interactive elements have visible focus indicators that meet WCAG 2.1 requirements for focus visibility.
             </p>
-            
+
             <div className="flex flex-wrap gap-4">
               <Button>Default Focus Style</Button>
               <AnimatedButton variant="secondary">Animated Button</AnimatedButton>
               <Input placeholder="Input Focus Style" className="max-w-xs" />
             </div>
-            
+
             <p className="text-sm text-content-tertiary mt-4">
               Try tabbing through these elements to see the consistent focus indicators. Each element has a clearly visible outline when focused.
             </p>
           </div>
-          
+
           <div className="space-y-6">
             <h3 className="text-display-sm font-medium mb-4">Focus Management in Page Sections</h3>
             <p className="text-content-secondary mb-4">
               In complex interfaces, you should guide focus to the appropriate section when users perform actions.
             </p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[0, 1, 2].map((index) => (
                 <div
@@ -657,8 +657,8 @@ function FocusManagementTab() {
                   <p className="text-sm text-content-secondary mb-4">
                     This is an example content section that can receive focus.
                   </p>
-                  <Button 
-                    variant="secondary" 
+                  <Button
+                    variant="secondary"
                     size="sm"
                     onClick={() => focusArea((index + 1) % 3)}
                   >
@@ -668,17 +668,17 @@ function FocusManagementTab() {
               ))}
             </div>
           </div>
-          
+
           <div className="space-y-6 mt-8">
             <h3 className="text-display-sm font-medium mb-4">Focus Containment</h3>
             <p className="text-content-secondary mb-4">
               When modal dialogs are open, focus should be trapped within them to prevent keyboard users from accidentally interacting with content that's visually hidden.
             </p>
-            
+
             <Button onClick={() => setModalOpen(true)}>
               Open Modal with Focus Trap
             </Button>
-            
+
             {modalOpen && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                 <FocusTrap onDeactivate={() => setModalOpen(false)}>
@@ -703,7 +703,7 @@ function FocusManagementTab() {
               </div>
             )}
           </div>
-          
+
           <div className="border-t pt-6 mt-6">
             <h3 className="text-display-sm font-medium mb-4">Focus Management Best Practices</h3>
             <ul className="space-y-2 list-disc pl-6">

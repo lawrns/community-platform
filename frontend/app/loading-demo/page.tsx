@@ -8,8 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingPage } from "@/components/ui/loading-page";
 import { useLoading } from "@/lib/loading-context";
 import { useLoadingState } from "@/lib/hooks/useLoadingState";
-import { AnimatedButton } from "@/components/motion/AnimatedButton";
-import { HoverCard } from "@/components/motion/HoverCard";
+import { AnimatedButton, HoverCard } from "@/components/motion";
 import { MotionWrapper } from "@/components/motion/MotionWrapper";
 import {
   SkeletonAvatar,
@@ -28,21 +27,21 @@ import {
 export default function LoadingDemo() {
   const { showLoading, hideLoading, showToast } = useLoading();
   const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
-  
+
   // Demo loading state hooks
   const cardLoading = useLoadingState({
     duration: 3000,
     simulateError: true,
   });
-  
+
   const feedLoading = useLoadingState({
     duration: 4000,
   });
-  
+
   const profileLoading = useLoadingState({
     duration: 5000,
   });
-  
+
   const showPageLoading = () => {
     showLoading("Loading page content...");
     setTimeout(() => {
@@ -54,7 +53,7 @@ export default function LoadingDemo() {
       });
     }, 3000);
   };
-  
+
   const renderSelectedDemo = () => {
     switch (selectedDemo) {
       case "spinners":
@@ -94,7 +93,7 @@ export default function LoadingDemo() {
         );
     }
   };
-  
+
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="mb-16 text-center">
@@ -105,7 +104,7 @@ export default function LoadingDemo() {
           This page demonstrates the various loading states and animations available in the Community Platform.
         </p>
       </div>
-      
+
       <div className="flex flex-wrap mb-8 gap-2 justify-center">
         <AnimatedButton
           variant={selectedDemo === "spinners" ? "default" : "outline"}
@@ -186,7 +185,7 @@ function SpinnerDemo() {
               <Spinner size="xl" variant="circle" />
             </div>
           </div>
-          
+
           <div className="flex flex-col items-center space-y-6">
             <h3 className="text-content-primary font-semibold">Dot Spinners</h3>
             <div className="flex flex-col items-center gap-4">
@@ -197,7 +196,7 @@ function SpinnerDemo() {
               <Spinner size="xl" variant="dots" />
             </div>
           </div>
-          
+
           <div className="flex flex-col items-center space-y-6">
             <h3 className="text-content-primary font-semibold">Pulse Spinners</h3>
             <div className="flex flex-col items-center gap-4">
@@ -209,7 +208,7 @@ function SpinnerDemo() {
             </div>
           </div>
         </div>
-        
+
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <h3 className="text-content-primary font-semibold">With Text</h3>
@@ -219,7 +218,7 @@ function SpinnerDemo() {
               <Spinner variant="pulse" text="Please wait..." textPosition="bottom" />
             </div>
           </div>
-          
+
           <div className="space-y-4">
             <h3 className="text-content-primary font-semibold">Colored Spinners</h3>
             <div className="space-y-6">
@@ -230,17 +229,17 @@ function SpinnerDemo() {
             </div>
           </div>
         </div>
-        
+
         <div className="mt-12">
           <h3 className="text-content-primary font-semibold mb-4">Full Page Loading</h3>
           <div className="border rounded-lg p-6">
             <LoadingPage fullscreen={false} variant="spinner" />
           </div>
-          
+
           <div className="border rounded-lg p-6 mt-6">
             <LoadingPage fullscreen={false} variant="dots" text="Loading page content..." />
           </div>
-          
+
           <div className="border rounded-lg p-6 mt-6">
             <LoadingPage fullscreen={false} variant="progress" text="Uploading file (67%)..." />
           </div>
@@ -268,7 +267,7 @@ function SkeletonDemo() {
                 <SkeletonAvatar size="lg" />
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <h4 className="text-body text-content-secondary">Text</h4>
               <div className="space-y-2">
@@ -278,14 +277,14 @@ function SkeletonDemo() {
                 <SkeletonText width="full" height="md" />
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <h4 className="text-body text-content-secondary">Paragraph</h4>
               <SkeletonParagraph lines={3} />
             </div>
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <h3 className="text-content-primary font-semibold">Cards</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -299,7 +298,7 @@ function SkeletonDemo() {
             </div>
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <h3 className="text-content-primary font-semibold">List Items</h3>
           <div className="border rounded-lg p-4">
@@ -308,12 +307,12 @@ function SkeletonDemo() {
             <SkeletonListItem />
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <h3 className="text-content-primary font-semibold">Forms</h3>
           <SkeletonForm inputs={3} />
         </div>
-        
+
         <div className="space-y-4">
           <h3 className="text-content-primary font-semibold">Comment Section</h3>
           <SkeletonComments count={3} />
@@ -323,12 +322,12 @@ function SkeletonDemo() {
   );
 }
 
-function CardLoadingDemo({ 
-  isLoading, 
-  error, 
-  onRetry 
-}: { 
-  isLoading: boolean; 
+function CardLoadingDemo({
+  isLoading,
+  error,
+  onRetry
+}: {
+  isLoading: boolean;
   error: Error | null;
   onRetry: () => void;
 }) {
@@ -343,7 +342,7 @@ function CardLoadingDemo({
       </MotionWrapper>
     );
   }
-  
+
   if (isLoading) {
     return (
       <MotionWrapper variant="fadeIn">
@@ -355,7 +354,7 @@ function CardLoadingDemo({
       </MotionWrapper>
     );
   }
-  
+
   return (
     <MotionWrapper variant="fadeIn">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -384,11 +383,11 @@ function CardLoadingDemo({
   );
 }
 
-function FeedLoadingDemo({ 
-  isLoading, 
-  onRefresh 
-}: { 
-  isLoading: boolean; 
+function FeedLoadingDemo({
+  isLoading,
+  onRefresh
+}: {
+  isLoading: boolean;
   onRefresh: () => void;
 }) {
   if (isLoading) {
@@ -398,7 +397,7 @@ function FeedLoadingDemo({
       </MotionWrapper>
     );
   }
-  
+
   return (
     <MotionWrapper variant="fadeIn">
       <div className="space-y-4">
@@ -436,11 +435,11 @@ function FeedLoadingDemo({
   );
 }
 
-function ProfileLoadingDemo({ 
-  isLoading, 
-  onRefresh 
-}: { 
-  isLoading: boolean; 
+function ProfileLoadingDemo({
+  isLoading,
+  onRefresh
+}: {
+  isLoading: boolean;
   onRefresh: () => void;
 }) {
   if (isLoading) {
@@ -450,7 +449,7 @@ function ProfileLoadingDemo({
       </MotionWrapper>
     );
   }
-  
+
   return (
     <MotionWrapper variant="fadeIn">
       <div className="space-y-6">
@@ -467,7 +466,7 @@ function ProfileLoadingDemo({
             </div>
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <h3 className="text-display-sm font-medium">About</h3>
           <p className="text-content-secondary">
@@ -475,7 +474,7 @@ function ProfileLoadingDemo({
             The content is loaded with animated skeletons to improve the perceived performance.
           </p>
         </div>
-        
+
         <div className="space-y-4">
           <h3 className="text-display-sm font-medium">Recent Activity</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -497,7 +496,7 @@ function ProfileLoadingDemo({
             </Card>
           </div>
         </div>
-        
+
         <div className="text-center mt-8">
           <AnimatedButton onClick={onRefresh} withRipple withScale>
             Reload Profile
