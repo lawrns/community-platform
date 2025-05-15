@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { BellRing, Loader2 } from 'lucide-react';
-import NotificationItem from './NotificationItem';
+import NotificationItem, { NotificationType } from './NotificationItem';
 import { useNotifications } from './NotificationProvider';
 import { useAuth } from '@/components/auth/AuthContext';
 import { useOnClickOutside } from '@/lib/hooks';
@@ -79,12 +79,21 @@ export default function NotificationDropdown() {
           <div className="max-h-[400px] overflow-y-auto">
             {notifications.length > 0 ? (
               <div className="divide-y">
-                {notifications.slice(0, 5).map(notification => (
-                  <NotificationItem
-                    key={notification.id}
-                    {...notification}
-                  />
-                ))}
+                {notifications.slice(0, 5).map(notification => {
+                  // Cast the notification to the correct type
+                  const typedNotification = {
+                    ...notification,
+                    type: notification.type as NotificationType,
+                    timestamp: notification.created_at
+                  };
+                  
+                  return (
+                    <NotificationItem
+                      key={notification.id}
+                      {...typedNotification}
+                    />
+                  );
+                })}
               </div>
             ) : (
               <div className="p-4 text-center text-gray-500">

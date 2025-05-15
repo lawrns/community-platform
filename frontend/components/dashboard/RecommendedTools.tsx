@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Recommended Tools Component
  * Shows personalized tool recommendations or popular tools for users
@@ -7,7 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpRight, Star, Tool, Trending, TrendingUp, Wrench } from 'lucide-react';
+import { ArrowUpRight, Star, TrendingUp, Wrench } from 'lucide-react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/AuthContext';
@@ -15,7 +17,19 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 
 // Tool Card Component
-const ToolCard = ({ tool }) => {
+interface ToolCardProps {
+  tool: {
+    id: string;
+    name: string;
+    description?: string;
+    icon_url?: string;
+    tags?: string[];
+    avg_rating?: string | number;
+    upvotes?: number;
+  };
+}
+
+const ToolCard = ({ tool }: ToolCardProps) => {
   const { id, name, description, icon_url, tags, avg_rating, upvotes } = tool;
   
   // Format description as excerpt
@@ -43,10 +57,10 @@ const ToolCard = ({ tool }) => {
               {avg_rating && (
                 <span className="flex items-center text-xs text-amber-500">
                   <Star className="h-3 w-3 mr-0.5 fill-amber-500" />
-                  {parseFloat(avg_rating).toFixed(1)}
+                  {typeof avg_rating === 'string' ? parseFloat(avg_rating).toFixed(1) : (avg_rating as number).toFixed(1)}
                 </span>
               )}
-              {upvotes > 0 && (
+              {upvotes && upvotes > 0 && (
                 <span className="flex items-center text-xs text-muted-foreground">
                   <ArrowUpRight className="h-3 w-3 mr-0.5" />
                   {upvotes}
@@ -67,28 +81,34 @@ const ToolCard = ({ tool }) => {
 
 const RecommendedTools = () => {
   const { user, isAuthenticated } = useAuth();
-  const [tools, setTools] = useState([]);
+  const [tools, setTools] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
     const fetchTools = async () => {
       setIsLoading(true);
       try {
-        // Different endpoint logic based on authentication status
-        let endpoint = '/tools';
-        let params = { limit: 5, sort: 'popular' };
+        // Prepare parameters for tool listing
+        const params: {
+          limit: number;
+          sort: string;
+          recommended?: boolean;
+        } = { 
+          limit: 5, 
+          sort: 'popular' 
+        };
         
         // If user is authenticated, adjust for personalized recommendations
         if (isAuthenticated && user?.id) {
-          params.user_id = user.id;
-          // Use recommendation query parameter to get personalized tool recommendations
+          // Use recommendation parameter to get personalized tool recommendations
           params.recommended = true;
         }
         
-        const response = await api.get(endpoint, { params });
+        const response = await api.tools.listTools(params);
         
-        if (response.data.success) {
-          setTools(response.data.tools);
+        if (response) {
+          // Ensure we're setting an array to the state
+          setTools(Array.isArray(response) ? response : []);
         }
       } catch (error) {
         console.error('Error fetching tools:', error);
@@ -166,7 +186,7 @@ const RecommendedTools = () => {
         </CardHeader>
         <CardContent className="text-center py-6">
           <div className="mx-auto rounded-full bg-muted w-12 h-12 flex items-center justify-center mb-3">
-            <Tool className="h-6 w-6 text-muted-foreground" />
+            <Wrench className="h-6 w-6 text-muted-foreground" />
           </div>
           <p className="text-muted-foreground mb-4">
             We're still learning your preferences. Check back soon for tool recommendations!

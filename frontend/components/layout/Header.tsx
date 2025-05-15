@@ -8,7 +8,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
 import MobileNav from './MobileNav';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, LayoutDashboard, Search, Wrench, MessagesSquare, Hash, User } from 'lucide-react';
+import { ChevronDown, Plus, LayoutDashboard, Search, Wrench, MessagesSquare, Hash, User, Paintbrush, Image, Accessibility, Layout, Columns } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Header() {
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   // Animation variants for menu items
@@ -180,6 +180,68 @@ export default function Header() {
                 </Link>
               </Button>
             </motion.div>
+            
+            {/* Design System Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="px-3 text-sm font-medium flex items-center gap-1 h-9"
+                  onMouseEnter={() => setHoveredItem('design')}
+                  onMouseLeave={() => setHoveredItem(null)}
+                >
+                  <Paintbrush className="h-4 w-4 mr-1" />
+                  Design System
+                  <motion.span
+                    animate={hoveredItem === 'design' ? { rotate: 180 } : { rotate: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </motion.span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link href="/design-system" className="flex items-center cursor-pointer">
+                    <Paintbrush className="mr-2 h-4 w-4" />
+                    <span>Design System Overview</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/responsive-demo" className="flex items-center cursor-pointer">
+                    <Columns className="mr-2 h-4 w-4" />
+                    <span>Responsive Container</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/responsive-layout-demo" className="flex items-center cursor-pointer">
+                    <Layout className="mr-2 h-4 w-4" />
+                    <span>Responsive Layout</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/loading-demo" className="flex items-center cursor-pointer">
+                    <span className="flex h-3 w-3 mr-2 items-center justify-center">
+                      <span className="animate-spin h-3 w-3 rounded-full border-2 border-content-secondary border-t-transparent"></span>
+                    </span>
+                    <span>Loading States</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/image-demo" className="flex items-center cursor-pointer">
+                    <Image className="mr-2 h-4 w-4" />
+                    <span>Image Optimization</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/accessibility" className="flex items-center cursor-pointer">
+                    <Accessibility className="mr-2 h-4 w-4" />
+                    <span>Accessibility</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
         </div>
         <div className="flex items-center gap-3">
@@ -273,7 +335,7 @@ export default function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
-                    onClick={() => signOut()}
+                    onClick={() => logout()}
                     className="cursor-pointer text-destructive focus:text-destructive"
                   >
                     Sign Out

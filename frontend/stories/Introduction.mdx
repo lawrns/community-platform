@@ -1,0 +1,105 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Introduction" />
+
+# Community Platform Design System
+
+Welcome to the Community Platform design system documentation. This Storybook serves as both an interactive playground and a living documentation for our UI components and design tokens.
+
+## Getting Started
+
+Use the navigation sidebar to explore the various components in our design system. Each component page includes:
+
+- Interactive examples
+- Props documentation
+- Different variants and states
+- Code snippets for usage
+
+## Design Principles
+
+Our design system is built on the following principles:
+
+### Systematic
+Use a consistent design language and reusable components for a coherent experience.
+
+### Accessible
+Design for all users, regardless of ability or situation.
+
+### Responsive
+Create interfaces that work across all device sizes and platforms.
+
+### Delightful
+Add thoughtful animations and micro-interactions that enhance the experience.
+
+## Design Token Structure
+
+Our design tokens are structured in a semantic way to provide meaning and context:
+
+- **Surface Colors**: For backgrounds and containers
+- **Content Colors**: For text and icons
+- **Brand Colors**: For branded elements
+- **Semantic Colors**: For status and feedback
+- **Accent Colors**: For UI emphasis
+
+## Component Categories
+
+The design system is organized into several categories:
+
+### Foundation
+- Color System
+- Typography
+- Spacing
+- Border Radius
+- Shadows
+
+### Layout
+- ResponsiveContainer
+- ResponsiveLayout
+- ResponsiveGrid
+
+### Form Components
+- Button
+- Input
+- Form
+- Label
+- Select
+
+### UI Elements
+- Card
+- Badge
+- Avatar
+- Dialog
+- FloatingActionButton
+- SpeedDial
+
+### Feedback Components
+- Skeleton
+- Spinner
+- Toast
+- LoadingPage
+
+## Usage
+
+To use components from this design system in your code:
+
+```tsx
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+
+// Example usage
+function MyComponent() {
+  return (
+    <Card>
+      <CardHeader>My Card Title</CardHeader>
+      <CardContent>Card content goes here</CardContent>
+      <CardFooter>
+        <Button>Action</Button>
+      </CardFooter>
+    </Card>
+  );
+}
+```
+
+## Theme Toggle
+
+Use the theme toggle in the Storybook toolbar to switch between light and dark mode to see how components adapt to different color schemes.

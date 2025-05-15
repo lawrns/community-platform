@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Dashboard Component
  * Comprehensive dashboard layout that integrates all dashboard widgets
@@ -27,12 +29,12 @@ const WelcomeCard = () => {
       
       try {
         // Check for unread notifications
-        const notifResponse = await api.get(`/users/${user.id}/notifications`, {
-          params: { unread_only: true, count_only: true }
+        const notifResponse = await api.notifications.getNotifications({
+          unread_only: true
         });
         
-        if (notifResponse.data.success) {
-          setUnreadNotifications(notifResponse.data.count || 0);
+        if (notifResponse && notifResponse.unread_count !== undefined) {
+          setUnreadNotifications(notifResponse.unread_count || 0);
         }
         
         // Check user account age
@@ -82,7 +84,7 @@ const WelcomeCard = () => {
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold">Welcome back, {user.name || user.username}</h2>
+            <h2 className="text-2xl font-bold">Welcome back, {user?.name || user?.username || 'User'}</h2>
             <p className="text-muted-foreground mt-1">
               {isNew ? 'Thanks for joining our community!' : 'Here\'s what\'s happening in your personalized dashboard'}
             </p>
@@ -123,32 +125,31 @@ const QuickSetup = () => {
       
       try {
         // Check if user has completed profile
-        const profileResponse = await api.get(`/users/${user.id}`);
-        if (profileResponse.data.success) {
-          const profile = profileResponse.data.user;
+        const profileResponse = await api.users.getProfile(user.id);
+        if (profileResponse) {
           setCompletedSteps(prev => ({
             ...prev,
-            profile: !!(profile.bio && profile.avatar_url)
+            profile: !!(profileResponse.bio && profileResponse.avatar_url)
           }));
         }
         
         // Check if user has selected interests
-        const interestsResponse = await api.get(`/users/${user.id}/interests`);
-        if (interestsResponse.data.success) {
+        const interestsResponse = await api.feed.getUserInterests(user.id);
+        if (interestsResponse && Array.isArray(interestsResponse.interests)) {
           setCompletedSteps(prev => ({
             ...prev,
-            interests: interestsResponse.data.interests.length > 0
+            interests: interestsResponse.interests.length > 0
           }));
         }
         
         // Check if user has created content
-        const contentResponse = await api.get(`/users/${user.id}/content`, {
-          params: { limit: 1 }
+        const contentResponse = await api.content.listContent({
+          limit: 1
         });
-        if (contentResponse.data.success) {
+        if (contentResponse && Array.isArray(contentResponse)) {
           setCompletedSteps(prev => ({
             ...prev,
-            firstContent: contentResponse.data.content.length > 0
+            firstContent: contentResponse.length > 0
           }));
         }
       } catch (error) {

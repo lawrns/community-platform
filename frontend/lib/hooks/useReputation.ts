@@ -35,22 +35,22 @@ export function useReputation(userId?: string): UseReputationResult {
       
       // Fetch basic reputation stats
       const statsResponse = await api.reputation.getReputation(targetUserId);
-      setReputationStats(statsResponse.data);
+      setReputationStats(statsResponse);
       
       // Initial load of reputation history
       const historyResponse = await api.reputation.getHistory(targetUserId, {
         page: 1,
         limit: 10
       });
-      setReputationHistory(historyResponse.data || []);
+      setReputationHistory(historyResponse.history || []);
       
       // Fetch user badges
       const badgesResponse = await api.reputation.getBadges(targetUserId);
-      setUserBadges(badgesResponse.data || []);
+      setUserBadges(badgesResponse.badges || []);
       
       // Fetch privileges
       const privilegesResponse = await api.reputation.getPrivileges();
-      setPrivileges(privilegesResponse.data || []);
+      setPrivileges(privilegesResponse.privileges || []);
     } catch (error) {
       console.error('Error fetching reputation data:', error);
       setError('Failed to load reputation data');

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { isBrowser } from '@/lib/environment';
 import Link from 'next/link';
 import { ArrowLeft, Star, ExternalLink, ThumbsUp, Flag, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -9,6 +10,7 @@ import { Tool, ToolReview } from '@/lib/types';
 import { api } from '@/lib/api';
 import { useAuth } from '@/components/auth/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
+import ClientSideOnly from '@/components/ClientSideOnly';
 
 interface ToolDetailProps {
   tool: Tool;
@@ -52,7 +54,7 @@ export default function ToolDetail({ tool, reviews: initialReviews, onReviewSubm
       // Add new review to list with current user info
       const newReview: ToolReview = {
         ...response,
-        user_name: user?.displayName || user?.username || 'Anonymous',
+        user_name: user?.username || 'Anonymous',
         user_id: user?.id
       };
       
@@ -120,6 +122,9 @@ export default function ToolDetail({ tool, reviews: initialReviews, onReviewSubm
   };
 
   const handleShare = () => {
+    // Only run in browser environment
+    if (!isBrowser()) return;
+    
     if (navigator.share) {
       navigator.share({
         title: tool.name,

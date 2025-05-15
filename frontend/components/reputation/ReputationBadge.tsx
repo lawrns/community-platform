@@ -51,14 +51,14 @@ export default function ReputationBadge({
         // Fetch reputation
         const response = await api.reputation.getReputation(userId);
         
-        if (response && response.data) {
-          setReputation(response.data.total_reputation || 0);
+        if (response) {
+          setReputation(response.points || 0);
         }
         
         // Fetch badges if needed
         if (showBadges) {
           const badgesResponse = await api.reputation.getBadges(userId);
-          setBadgeCount(badgesResponse.data?.length || 0);
+          setBadgeCount(badgesResponse.badges?.length || 0);
         }
       } catch (error) {
         console.error('Error fetching reputation:', error);

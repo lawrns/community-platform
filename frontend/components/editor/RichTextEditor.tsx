@@ -9,6 +9,8 @@ import CodeBlock from '@tiptap/extension-code-block';
 import Placeholder from '@tiptap/extension-placeholder';
 import Highlight from '@tiptap/extension-highlight';
 import { Button } from '@/components/ui/button';
+import { isBrowser } from '@/lib/environment';
+import ClientSideOnly from '@/components/ClientSideOnly';
 import {
   Bold,
   Italic,
@@ -23,7 +25,7 @@ import {
   Redo,
   Link as LinkIcon,
   Image as ImageIcon,
-  CodeSquare,
+  Code2,
   AlignLeft,
   AlignCenter,
   AlignRight,
@@ -128,7 +130,10 @@ const RichTextEditor = ({
       try {
         // We would use an image upload API here in a real implementation
         // For now, we'll just prompt for a URL as fallback
-        const url = window.prompt('Enter the URL of the image (in a full implementation, the file would be uploaded):');
+        // Use a safe way to access window
+        const url = isBrowser() 
+          ? window.prompt('Enter the URL of the image (in a full implementation, the file would be uploaded):')
+          : null;
         if (url && editor) {
           editor.chain().focus().setImage({ src: url }).run();
         }
@@ -143,7 +148,8 @@ const RichTextEditor = ({
   }, [editor]);
   
   const addLink = useCallback(() => {
-    const url = window.prompt('Enter the URL:');
+    // Safely access window only in browser environment
+    const url = isBrowser() ? window.prompt('Enter the URL:') : null;
     if (url && editor) {
       // Check if there's selected text, otherwise use the URL as the link text
       if (editor.view.state.selection.empty) {
@@ -255,7 +261,7 @@ const RichTextEditor = ({
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
             className={editor.isActive('codeBlock') ? 'bg-gray-200 dark:bg-gray-700' : ''}
           >
-            <CodeSquare className="h-4 w-4" />
+            <Code2 className="h-4 w-4" />
           </Button>
           
           <Button 

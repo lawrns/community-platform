@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * User Activity Component
  * Shows recent user activity and engagement on the platform
@@ -14,8 +16,20 @@ import Link from 'next/link';
 import { useAuth } from '@/components/auth/AuthContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import ClientSideOnly from '@/components/ClientSideOnly';
+import { isBrowser } from '@/lib/environment';
 
-const ActivityItem = ({ activity }) => {
+interface ActivityItemProps {
+  activity: {
+    type: string;
+    target_id?: string;
+    target_title?: string;
+    created_at: string;
+    badge_name?: string;
+  };
+}
+
+const ActivityItem = ({ activity }: ActivityItemProps) => {
   const { type, target_id, target_title, created_at } = activity;
   
   const getActivityIcon = () => {
@@ -84,7 +98,7 @@ const ActivityItem = ({ activity }) => {
 
 const UserActivity = () => {
   const { user, isAuthenticated } = useAuth();
-  const [activities, setActivities] = useState([]);
+  const [activities, setActivities] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
@@ -94,24 +108,24 @@ const UserActivity = () => {
       setIsLoading(true);
       try {
         // Fetch user's content history
-        const contentResponse = await api.get(`/users/${user.id}/content`, {
-          params: { limit: 3 }
+        const contentResponse = await api.content.listContent({
+          limit: 3
         });
         
         // Fetch user's reputation history (includes upvotes, comments)
-        const reputationResponse = await api.get(`/users/${user.id}/reputation/history`, {
-          params: { limit: 5 }
+        const reputationResponse = await api.reputation.getHistory(user.id, {
+          limit: 5
         });
         
         // Fetch user's badges
-        const badgesResponse = await api.get(`/users/${user.id}/badges`);
+        const badgesResponse = await api.reputation.getBadges(user.id);
         
         // Combine and format all activities
-        let allActivities = [];
+        let allActivities: any[] = [];
         
         // Add content creation activities
-        if (contentResponse.data.success) {
-          const contentActivities = contentResponse.data.content.map(item => ({
+        if (contentResponse && Array.isArray(contentResponse)) {
+          const contentActivities = contentResponse.map(item => ({
             type: 'post_created',
             target_id: item.id,
             target_title: item.title,
@@ -121,8 +135,8 @@ const UserActivity = () => {
         }
         
         // Add reputation activities (comments, upvotes)
-        if (reputationResponse.data.success) {
-          const repActivities = reputationResponse.data.history.map(item => {
+        if (reputationResponse && reputationResponse.history) {
+          const repActivities = reputationResponse.history.map(item => {
             let activityType = 'interaction';
             if (item.reason === 'comment_added') activityType = 'comment_added';
             if (item.reason === 'upvote_given') activityType = 'upvote_given';
@@ -138,8 +152,8 @@ const UserActivity = () => {
         }
         
         // Add badge activities
-        if (badgesResponse.data.success) {
-          const badgeActivities = badgesResponse.data.badges
+        if (badgesResponse && Array.isArray(badgesResponse)) {
+          const badgeActivities = badgesResponse
             .filter(badge => badge.awarded_at) // Only include awarded badges
             .map(badge => ({
               type: 'badge_earned',
@@ -249,4 +263,34 @@ const UserActivity = () => {
   );
 };
 
-export default UserActivity;
+// Wrap the component with ClientSideOnly to prevent "window is not defined" errors during SSR
+const SafeUserActivity = () => {
+  // Show a skeleton loader during server-side rendering
+  const fallback = (
+    <Card>
+      <CardHeader>
+        <CardTitle>Your Activity</CardTitle>
+        <CardDescription>Your recent interactions on the platform</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {Array(3).fill(0).map((_, i) => (
+          <div key={i} className="flex items-start space-x-3 mb-4">
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <div className="flex-1">
+              <Skeleton className="h-4 w-3/4 mb-2" />
+              <Skeleton className="h-3 w-1/2" />
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <ClientSideOnly fallback={fallback}>
+      <UserActivity />
+    </ClientSideOnly>
+  );
+};
+
+export default SafeUserActivity;

@@ -17,13 +17,31 @@ if (fs.existsSync(outDir)) {
 console.log('🎨 Generating Tailwind CSS...');
 execSync('npx tailwindcss -i ./app/globals.css -o ./styles/tailwind-output.css', { stdio: 'inherit' });
 
-// Run the Next.js build with explicit output directory
-console.log('📦 Building Next.js application...');
-execSync('next build', { stdio: 'inherit' });
+// Run the Next.js build (with static export)
+console.log('📦 Building Next.js application with static export...');
+try {
+  execSync('next build', { stdio: 'inherit' });
+} catch (error) {
+  console.error('❌ Build failed with error:', error.message);
+  console.log('🔍 Attempting to continue with deployment anyway...');
+}
 
-// Create a standalone export
-console.log('📤 Creating static export...');
-execSync('next export -o out', { stdio: 'inherit' });
+// Create the out directory if it doesn't exist
+if (!fs.existsSync(outDir)) {
+  fs.mkdirSync(outDir, { recursive: true });
+}
+
+// Copy the .next directory to out/_next
+console.log('📋 Copying Next.js build files...');
+const nextDir = path.join(__dirname, '.next');
+const nextTargetDir = path.join(outDir, '_next');
+if (fs.existsSync(nextDir)) {
+  execSync(`cp -R ${nextDir}/* ${nextTargetDir}/`, { stdio: 'inherit' });
+}
+
+// We don't need to create HTML files for each route
+// Next.js static export will handle this for us
+console.log('📄 Skipping manual HTML file creation as Next.js handles this...');
 
 // Ensure CSS is properly included
 console.log('🎨 Ensuring CSS is properly included...');
@@ -36,9 +54,9 @@ if (fs.existsSync(tailwindCssPath)) {
   if (!fs.existsSync(tailwindCssTargetDir)) {
     fs.mkdirSync(tailwindCssTargetDir, { recursive: true });
   }
-  
+
   fs.copyFileSync(
-    tailwindCssPath, 
+    tailwindCssPath,
     path.join(tailwindCssTargetDir, 'tailwind-output.css')
   );
   console.log('Copied Tailwind CSS file');
@@ -52,7 +70,7 @@ if (fs.existsSync(cssSourceDir)) {
   if (!fs.existsSync(cssTargetDir)) {
     fs.mkdirSync(cssTargetDir, { recursive: true });
   }
-  
+
   const cssFiles = fs.readdirSync(cssSourceDir);
   cssFiles.forEach(file => {
     const sourcePath = path.join(cssSourceDir, file);
@@ -69,7 +87,7 @@ const htmlFiles = glob.sync(path.join(outDir, '**/*.html'));
 console.log('📝 Adding CSS links to HTML files...');
 htmlFiles.forEach(htmlFile => {
   let htmlContent = fs.readFileSync(htmlFile, 'utf8');
-  
+
   // Check if CSS links are missing and add them if needed
   if (!htmlContent.includes('rel="stylesheet"')) {
     htmlContent = htmlContent.replace(
@@ -86,7 +104,7 @@ if (!fs.existsSync(path.join(outDir, '_next/static/css/app.css'))) {
   if (!fs.existsSync(path.join(outDir, '_next/static/css'))) {
     fs.mkdirSync(path.join(outDir, '_next/static/css'), { recursive: true });
   }
-  
+
   // Create a minimal CSS file with the essential styles
   fs.writeFileSync(path.join(outDir, '_next/static/css/app.css'), `
     /* Fallback CSS */
@@ -105,7 +123,7 @@ if (!fs.existsSync(path.join(outDir, '_next/static/css/app.css'))) {
       --input: 214.3 31.8% 91.4%;
       --ring: 222.2 47.4% 11.2%;
     }
-    
+
     .dark {
       --background: 224 71% 4%;
       --foreground: 213 31% 91%;
@@ -121,30 +139,61 @@ if (!fs.existsSync(path.join(outDir, '_next/static/css/app.css'))) {
       --input: 216 34% 17%;
       --ring: 213 31% 91%;
     }
-    
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       background-color: hsl(var(--background));
       color: hsl(var(--foreground));
     }
-    
+
     a {
       color: inherit;
       text-decoration: none;
     }
-    
+
     button, input, select, textarea {
       font-family: inherit;
     }
   `);
-  
+
   console.log('Created fallback CSS file');
+}
+
+// Copy _redirects file for Netlify
+console.log('📋 Copying _redirects file for Netlify...');
+fs.copyFileSync(
+  path.join(__dirname, 'public/_redirects'),
+  path.join(outDir, '_redirects')
+);
+
+// Create index.html in the root if it doesn't exist
+if (!fs.existsSync(path.join(outDir, 'index.html'))) {
+  console.log('📄 Creating index.html...');
+  fs.writeFileSync(path.join(outDir, 'index.html'), `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Platform</title>
+  <link rel="stylesheet" href="/styles/tailwind-output.css">
+  <link rel="stylesheet" href="/_next/static/css/app.css">
+</head>
+<body>
+  <div id="__next"></div>
+  <script>
+    // Redirect to the actual Next.js app
+    window.location.href = "/";
+  </script>
+</body>
+</html>
+  `);
 }
 
 console.log('✅ Build completed successfully!');

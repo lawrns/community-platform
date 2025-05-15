@@ -90,20 +90,29 @@ export default function Editor({
         
         // Fetch content
         const contentData = await api.content.getContent(contentId);
-        setContent(contentData.content);
+        // Check if contentData has content property before setting it
+        if (contentData && typeof contentData.content === 'string') {
+          setContent(contentData.content);
+        }
         
         // Fetch version history
         const historyData = await api.content.getVersionHistory(contentId);
         
         if (historyData.versions && historyData.versions.length > 0) {
           // Map backend versions to local version history format
-          const formattedHistory = historyData.versions.map(version => ({
-            id: version.id,
-            timestamp: new Date(version.created_at),
-            content: version.content || contentData.content, // Use current content if version content is not available
-            user_id: version.user_id,
-            user_name: version.user_name
-          }));
+          const formattedHistory = historyData.versions.map((version: any) => {
+            // Safely access content with fallbacks
+            const versionContent = (version && typeof version.content === 'string' ? version.content : '') || 
+              (contentData && typeof contentData.content === 'string' ? contentData.content : '');
+              
+            return {
+              id: version.id,
+              timestamp: new Date(version.created_at),
+              content: versionContent,
+              user_id: version.user_id,
+              user_name: version.user_name
+            };
+          });
           
           setVersionHistory(formattedHistory);
         }

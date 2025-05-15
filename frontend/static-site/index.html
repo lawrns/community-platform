@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Platform</title>
+  <style>
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 222.2 84% 4.9%;
+      --primary: 222.2 47.4% 11.2%;
+      --primary-foreground: 210 40% 98%;
+      --secondary: 210 40% 96.1%;
+      --secondary-foreground: 222.2 47.4% 11.2%;
+      --muted: 210 40% 96.1%;
+      --muted-foreground: 215.4 16.3% 46.9%;
+      --accent: 210 40% 96.1%;
+      --accent-foreground: 222.2 47.4% 11.2%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 222.2 84% 4.9%;
+      --radius: 0.5rem;
+    }
+
+    .dark {
+      --background: 222.2 84% 4.9%;
+      --foreground: 210 40% 98%;
+      --card: 222.2 84% 4.9%;
+      --card-foreground: 210 40% 98%;
+      --popover: 222.2 84% 4.9%;
+      --popover-foreground: 210 40% 98%;
+      --primary: 210 40% 98%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+      --secondary: 217.2 32.6% 17.5%;
+      --secondary-foreground: 210 40% 98%;
+      --muted: 217.2 32.6% 17.5%;
+      --muted-foreground: 215 20.2% 65.1%;
+      --accent: 217.2 32.6% 17.5%;
+      --accent-foreground: 210 40% 98%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 217.2 32.6% 17.5%;
+      --input: 217.2 32.6% 17.5%;
+      --ring: 212.7 26.8% 83.9%;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      border-color: hsl(var(--border));
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      text-align: center;
+    }
+
+    header {
+      width: 100%;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid hsl(var(--border));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 1.25rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: hsl(var(--foreground));
+      font-weight: 500;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 2rem;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+      border-radius: var(--radius);
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .button:hover {
+      opacity: 0.9;
+    }
+
+    .button-secondary {
+      background-color: hsl(var(--secondary));
+      color: hsl(var(--secondary-foreground));
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background-color: hsl(var(--card));
+      color: hsl(var(--card-foreground));
+      border-radius: var(--radius);
+      border: 1px solid hsl(var(--border));
+      padding: 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .card p {
+      color: hsl(var(--muted-foreground));
+      margin-bottom: 1.5rem;
+    }
+
+    footer {
+      width: 100%;
+      padding: 2rem;
+      border-top: 1px solid hsl(var(--border));
+      text-align: center;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .notice {
+      background-color: hsl(var(--accent));
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 2rem;
+      max-width: 800px;
+    }
+
+    .notice h2 {
+      margin-bottom: 0.5rem;
+      color: hsl(var(--accent-foreground));
+    }
+
+    .notice p {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Community Platform</div>
+    <nav>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#profile">Profile</a>
+      <a href="#tools">Tools</a>
+      <a href="#search">Search</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="notice">
+      <h2>Community Platform</h2>
+      <p>This is a preview of the Community Platform. The full application is currently being deployed with all functionality.</p>
+    </div>
+
+    <h1>Welcome to the Community Platform</h1>
+    <p>A space for community members to connect, share resources, and collaborate.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <h2>Dashboard</h2>
+        <p>View your personalized dashboard with recent activity and updates.</p>
+        <a href="#dashboard" class="button">Go to Dashboard</a>
+      </div>
+
+      <div class="card">
+        <h2>Profile</h2>
+        <p>Manage your profile information and settings.</p>
+        <a href="#profile" class="button button-secondary">View Profile</a>
+      </div>
+
+      <div class="card">
+        <h2>Tools</h2>
+        <p>Access community tools and resources.</p>
+        <a href="#tools" class="button">Browse Tools</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2023 Community Platform. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Add event listeners to all links
+    document.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('This is a preview of the Community Platform. The full application is currently being deployed with all functionality.');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -161,7 +161,7 @@ export interface Notification {
 export interface ReputationActivity {
   id: string;
   user_id: string;
-  action: 'question' | 'answer' | 'comment' | 'upvote_received' | 'accepted_answer' | 'bounty';
+  action: 'question' | 'answer' | 'comment' | 'upvote_received' | 'downvote_received' | 'accepted_answer' | 'bounty';
   points: number;
   content_id?: string;
   content_type?: string;

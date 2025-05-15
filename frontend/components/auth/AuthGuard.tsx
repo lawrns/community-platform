@@ -19,7 +19,9 @@ export function AuthGuard({ children, allowUnauthenticated = false }: AuthGuardP
     if (!isLoading) {
       if (!user && !allowUnauthenticated) {
         // Remember the page they tried to access
-        sessionStorage.setItem("redirectAfterLogin", pathname)
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem("redirectAfterLogin", pathname || '')
+        }
         router.push("/signin")
       } else if (user && (pathname === "/signin" || pathname === "/signup")) {
         // Redirect to dashboard if already logged in and trying to access auth pages

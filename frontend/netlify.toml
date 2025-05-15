@@ -7,11 +7,59 @@
   NODE_VERSION = "18.17.0"
   NEXT_PUBLIC_IS_NETLIFY = "true"
 
-# Use our custom CSS handling plugin
-[[plugins]]
-  package = "./netlify/plugins/netlify-plugin-nextjs-css"
+# Handle client-side routing for all routes
+# Dynamic routes with specific IDs
+[[redirects]]
+  from = "/profile/:id"
+  to = "/profile/placeholder/index.html?id=:id"
+  status = 200
+  query = {id = ":id"}
 
-# Handle client-side routing
+[[redirects]]
+  from = "/view/:id"
+  to = "/view/placeholder/index.html?id=:id"
+  status = 200
+  query = {id = ":id"}
+
+[[redirects]]
+  from = "/edit/:id"
+  to = "/edit/placeholder/index.html?id=:id"
+  status = 200
+  query = {id = ":id"}
+
+[[redirects]]
+  from = "/tools/:id"
+  to = "/tools/placeholder/index.html?id=:id"
+  status = 200
+  query = {id = ":id"}
+
+# Static routes
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/search"
+  to = "/search/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/settings"
+  to = "/settings/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/signin"
+  to = "/signin/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/signup"
+  to = "/signup/index.html"
+  status = 200
+
+# Default redirect for all other routes
 [[redirects]]
   from = "/*"
   to = "/index.html"

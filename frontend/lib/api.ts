@@ -13,9 +13,9 @@ async function fetchAPI<T>(
   
   // Add auth token to headers if available
   const token = AuthTokenStorage.getToken();
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...(options.headers as Record<string, string> || {}),
   };
   
   if (token) {
@@ -55,6 +55,30 @@ async function fetchAPI<T>(
  * API client for interacting with the backend
  */
 export const api = {
+  // Generic methods
+  get: async <T>(endpoint: string): Promise<T> => {
+    return fetchAPI<T>(endpoint);
+  },
+  
+  post: async <T>(endpoint: string, data?: any): Promise<T> => {
+    return fetchAPI<T>(endpoint, {
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined
+    });
+  },
+  
+  put: async <T>(endpoint: string, data?: any): Promise<T> => {
+    return fetchAPI<T>(endpoint, {
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined
+    });
+  },
+  
+  delete: async <T>(endpoint: string): Promise<T> => {
+    return fetchAPI<T>(endpoint, {
+      method: 'DELETE'
+    });
+  },
   // Auth endpoints
   auth: {
     login: async (credentials: { email: string; password: string }) => {
@@ -215,6 +239,8 @@ export const api = {
       search?: string;
       sort?: string;
       recommended?: boolean;
+      pricing?: string;
+      min_rating?: number;
     } = {}) => {
       const queryParams = new URLSearchParams();
       
@@ -224,6 +250,8 @@ export const api = {
       if (params.search) queryParams.append('search', params.search);
       if (params.sort) queryParams.append('sort', params.sort);
       if (params.recommended) queryParams.append('recommended', 'true');
+      if (params.pricing) queryParams.append('pricing', params.pricing);
+      if (params.min_rating) queryParams.append('min_rating', params.min_rating.toString());
       
       const query = queryParams.toString();
       return fetchAPI<{ tools: any[]; total: number; page: number; pageCount: number }>(`/tools?${query}`);
@@ -236,14 +264,15 @@ export const api = {
       });
     },
     
-    getReviews: async (toolId: string, params: { page?: number; limit?: number; } = {}) => {
+    getReviews: async (toolId: string, params: { page?: number; limit?: number; sort?: string; } = {}) => {
       const queryParams = new URLSearchParams();
       
       if (params.page) queryParams.append('page', params.page.toString());
       if (params.limit) queryParams.append('limit', params.limit.toString());
+      if (params.sort) queryParams.append('sort', params.sort);
       
       const query = queryParams.toString();
-      return fetchAPI<{ reviews: any[]; total: number; }>(`/tools/${toolId}/reviews?${query}`);
+      return fetchAPI<{ reviews: any[]; total: number; page: number; pageCount: number }>(`/tools/${toolId}/reviews?${query}`);
     },
     
     upvoteTool: async (toolId: string) => {

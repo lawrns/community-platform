@@ -4,24 +4,26 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import Link from 'next/link';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
+import { isBrowser } from '@/lib/environment';
+import ClientSideOnly from '@/components/ClientSideOnly';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Search, 
-  Filter, 
-  ChevronDown, 
-  ArrowUp, 
-  Calendar, 
-  Tag, 
+import {
+  Search,
+  Filter,
+  ChevronDown,
+  ArrowUp,
+  Calendar,
+  Tag,
   Clock,
   MessageSquare,
   ThumbsUp,
@@ -65,12 +67,12 @@ interface SearchResultsProps {
 export default function SearchResults({ initialQuery = '' }: SearchResultsProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const query = searchParams.get('q') || initialQuery;
-  const type = searchParams.get('type') || '';
-  const tag = searchParams.get('tag') || '';
-  const dateRange = searchParams.get('date_range') || '';
-  const sort = searchParams.get('sort') || 'relevance';
-  
+  const query = searchParams?.get('q') || initialQuery;
+  const type = searchParams?.get('type') || '';
+  const tag = searchParams?.get('tag') || '';
+  const dateRange = searchParams?.get('date_range') || '';
+  const sort = searchParams?.get('sort') || 'relevance';
+
   const [results, setResults] = useState<SearchResultProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +86,7 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState(query || '');
   const LIMIT = 10;
-  
+
   // Fetch search results when query or filters change
   useEffect(() => {
     if (!query) {
@@ -92,12 +94,12 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
       setTotalResults(0);
       return;
     }
-    
+
     const fetchResults = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         // Construct search parameters
         const searchParams = {
           query,
@@ -108,17 +110,17 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
           sort: sort as 'relevance' | 'date' | 'popularity',
           date_range: dateRange || undefined
         };
-        
+
         // Execute search
         const response = await api.search.search(searchParams);
-        
+
         if (response.results) {
           setResults(response.results);
           setTotalResults(response.total);
           setPage(1);
           setHasMore(response.results.length < response.total);
           setSearchType(response.search_type);
-          
+
           // Extract unique tags from results for filtering
           const allTags = response.results
             .flatMap(result => result.tags || [])
@@ -132,17 +134,17 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
         setIsLoading(false);
       }
     };
-    
+
     fetchResults();
   }, [query, type, selectedTags, sort, dateRange]);
-  
+
   // Load more results
   const loadMore = async () => {
     if (isLoading || !hasMore) return;
-    
+
     try {
       setIsLoading(true);
-      
+
       // Construct search parameters for next page
       const searchParams = {
         query,
@@ -153,10 +155,10 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
         sort: sort as 'relevance' | 'date' | 'popularity',
         date_range: dateRange || undefined
       };
-      
+
       // Execute search
       const response = await api.search.search(searchParams);
-      
+
       if (response.results) {
         setResults(prev => [...prev, ...response.results]);
         setPage(prev => prev + 1);
@@ -169,14 +171,14 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
       setIsLoading(false);
     }
   };
-  
+
   // Get search suggestions as user types
   useEffect(() => {
     if (!inputValue || inputValue.length < 2) {
       setSuggestions([]);
       return;
     }
-    
+
     const timer = setTimeout(async () => {
       try {
         // Only get suggestions if we're not already showing results for this query
@@ -190,47 +192,47 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
         console.error('Error fetching suggestions:', err);
       }
     }, 300); // Debounce
-    
+
     return () => clearTimeout(timer);
   }, [inputValue, query]);
-  
+
   // Update URL when filters change
   const updateFilters = (
-    newType?: string, 
-    newTags?: string[], 
+    newType?: string,
+    newTags?: string[],
     newSort?: string,
     newDateRange?: string
   ) => {
     const params = new URLSearchParams();
-    
+
     if (query) params.set('q', query);
     if (newType) params.set('type', newType);
     if (newTags && newTags.length > 0) params.set('tag', newTags[0]); // For simplicity, just use first tag
     if (newSort) params.set('sort', newSort);
     if (newDateRange) params.set('date_range', newDateRange);
-    
+
     router.push(`/search?${params.toString()}`);
   };
-  
+
   // Submit search form
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    
+
     if (!inputValue.trim()) return;
-    
+
     const params = new URLSearchParams();
     params.set('q', inputValue);
-    
+
     // Keep existing filters
     if (type) params.set('type', type);
     if (selectedTags.length > 0) params.set('tag', selectedTags[0]);
     if (sort) params.set('sort', sort);
     if (dateRange) params.set('date_range', dateRange);
-    
+
     router.push(`/search?${params.toString()}`);
     setSuggestions([]);
   };
-  
+
   // Get content type icon
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -246,20 +248,20 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
         return <FileText className="h-4 w-4" />;
     }
   };
-  
+
   // Empty state message
   const getEmptyMessage = () => {
     if (!query) {
       return 'Enter a search term to find content';
     }
-    
+
     if (selectedTags.length > 0 || type) {
       return 'No results found with the current filters. Try removing some filters.';
     }
-    
+
     return 'No results found for your search. Try different keywords.';
   };
-  
+
   return (
     <div className="w-full">
       {/* Search Form */}
@@ -275,7 +277,7 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
           <button type="submit" className="absolute right-3 top-3">
             <Search className="h-5 w-5 text-gray-400" />
           </button>
-          
+
           {/* Search suggestions */}
           {suggestions.length > 0 && !isLoading && (
             <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border rounded-md shadow-lg max-h-60 overflow-y-auto">
@@ -286,7 +288,7 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
                   onClick={() => {
                     setInputValue(suggestion);
                     setSuggestions([]);
-                    
+
                     const params = new URLSearchParams();
                     params.set('q', suggestion);
                     router.push(`/search?${params.toString()}`);
@@ -299,7 +301,7 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
           )}
         </form>
       </div>
-      
+
       {query && !isLoading && !error && (
         <div className="mb-6 flex items-center justify-between">
           <div>
@@ -322,14 +324,14 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
           </Button>
         </div>
       )}
-      
+
       {/* Filters */}
       {showFilters && (
         <div className="mb-6 p-4 border rounded-lg grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1">Content Type</label>
-            <Select 
-              value={type || "all"} 
+            <Select
+              value={type || "all"}
               onValueChange={(value) => updateFilters(value === "all" ? "" : value, selectedTags, sort, dateRange)}
             >
               <SelectTrigger>
@@ -344,11 +346,11 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
               </SelectContent>
             </Select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-1">Sort By</label>
-            <Select 
-              value={sort} 
+            <Select
+              value={sort}
               onValueChange={(value) => updateFilters(type, selectedTags, value, dateRange)}
             >
               <SelectTrigger>
@@ -361,11 +363,11 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
               </SelectContent>
             </Select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-1">Date Range</label>
-            <Select 
-              value={dateRange} 
+            <Select
+              value={dateRange}
               onValueChange={(value) => updateFilters(type, selectedTags, sort, value)}
             >
               <SelectTrigger>
@@ -380,7 +382,7 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
               </SelectContent>
             </Select>
           </div>
-          
+
           {/* Tag filtering would go here, but using a simple approach for now */}
           {tags.length > 0 && (
             <div className="md:col-span-3">
@@ -407,7 +409,7 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
           )}
         </div>
       )}
-      
+
       {/* Loading State */}
       {isLoading && page === 1 && (
         <div className="space-y-4">
@@ -429,17 +431,17 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
           ))}
         </div>
       )}
-      
+
       {/* Error State */}
       {error && (
         <div className="p-6 text-center border rounded-lg bg-red-50 dark:bg-red-900/20">
           <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-          <Button variant="outline" onClick={() => window.location.reload()}>
+          <Button variant="outline" onClick={() => isBrowser() && window.location.reload()}>
             Try Again
           </Button>
         </div>
       )}
-      
+
       {/* Empty State */}
       {!isLoading && !error && results.length === 0 && (
         <div className="p-12 text-center border rounded-lg">
@@ -449,8 +451,8 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
             {getEmptyMessage()}
           </p>
           {(selectedTags.length > 0 || type) && (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setSelectedTags([]);
                 updateFilters('', [], sort, dateRange);
@@ -461,7 +463,7 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
           )}
         </div>
       )}
-      
+
       {/* Results */}
       {!isLoading && !error && results.length > 0 && (
         <div className="space-y-4">
@@ -471,7 +473,7 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
                 <div className="flex justify-between">
                   <div className="flex items-center gap-2">
                     <Badge variant={
-                      result.type === 'question' ? 'destructive' : 
+                      result.type === 'question' ? 'destructive' :
                       result.type === 'tutorial' ? 'outline' : 'default'
                     }>
                       <span className="flex items-center gap-1">
@@ -533,12 +535,12 @@ export default function SearchResults({ initialQuery = '' }: SearchResultsProps)
               </CardFooter>
             </Card>
           ))}
-          
+
           {/* Load More Button */}
           {hasMore && (
             <div className="text-center pt-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={loadMore}
                 disabled={isLoading}
               >

@@ -1,4 +1,5 @@
 import { AuthTokenStorage } from './auth';
+import { isBrowser } from './environment';
 
 export type NotificationEvent = {
   id: string;
@@ -33,7 +34,9 @@ export class WebSocketService {
   private url: string;
   
   constructor() {
-    const baseUrl = process.env.NEXT_PUBLIC_WS_URL || window.location.origin.replace(/^http/, 'ws');
+    // Safely handle window reference during server-side rendering
+    const baseUrl = process.env.NEXT_PUBLIC_WS_URL || 
+      (isBrowser() ? window.location.origin.replace(/^http/, 'ws') : 'ws://localhost');
     this.url = `${baseUrl}/api/notifications/ws`;
   }
   

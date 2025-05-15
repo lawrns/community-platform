@@ -1,0 +1,64 @@
+/* 
+ * Screen reader only utility styles
+ * These provide more robust screen reader only functionality
+ * beyond Tailwind's sr-only
+ */
+
+/* 
+ * Standard sr-only class
+ * Makes content invisible visually but available to screen readers
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* 
+ * Focusable version of sr-only
+ * Content is hidden visually until focused
+ */
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* 
+ * Accessible hiding with improved VoiceOver support
+ * For use with dynamic content that shouldn't be announced repeatedly
+ */
+.sr-only-except-voiceover {
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+/* 
+ * Accessible hiding with aria-hidden
+ * Combine with aria-hidden="true" for elements that should be
+ * completely removed from the accessibility tree
+ */
+.visually-hidden {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
