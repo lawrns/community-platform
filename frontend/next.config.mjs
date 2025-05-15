@@ -25,10 +25,7 @@ const nextConfig = {
   // Environment variables
   env: {
     NEXT_PUBLIC_IS_SERVER_BUILD: 'true'
-  },
-  
-  // Configure the output directory for build
-  distDir: '.next'
+  }
 }
 
 export default nextConfig;
