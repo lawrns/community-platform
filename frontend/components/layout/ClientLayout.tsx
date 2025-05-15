@@ -6,7 +6,8 @@ import Footer from '@/components/layout/Footer';
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import { AuthProvider } from '@/components/auth/AuthContext';
 import { LoadingProvider } from '@/lib/loading-context';
-import { PageTransition } from '@/components/motion';
+import { EnhancedPageTransition } from '@/components/motion';
+import { CursorEffects } from '@/components/ui/cursor-effects';
 import { SkipLink } from '@/components/a11y/SkipLink';
 import { MobileActionButton } from '@/components/ui/mobile-action-button';
 
@@ -23,9 +24,11 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
             <SkipLink href="#main-content">Skip to main content</SkipLink>
             <Header />
             <main id="main-content" className="flex-1" tabIndex={-1}>
-              <PageTransition>
-                {children}
-              </PageTransition>
+              <EnhancedPageTransition effect="creative" showOverlay={true}>
+                <CursorEffects effect="none">
+                  {children}
+                </CursorEffects>
+              </EnhancedPageTransition>
             </main>
             <Footer />
             <MobileActionButton />
