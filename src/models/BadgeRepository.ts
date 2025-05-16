@@ -1,12 +1,24 @@
-import { Database } from '../config/database';
+import db from '../config/database';
 import { supabase } from '../config/supabase';
 import { Badge, BadgeLevel, UserBadge } from './index';
-import { Repository } from './Repository';
+import Repository from './Repository';
+import env, { config } from '../config/environment';
 
 /**
  * Repository for managing badges and user badges
  */
-export class BadgeRepository extends Repository {
+export class BadgeRepository extends Repository<Badge> {
+  protected tableName = 'badges';
+  // Determine if we should use Supabase
+  private useSupabase = !!config.SUPABASE_URL && !!config.SUPABASE_ANON_KEY;
+  
+  /**
+   * Handle common errors in repository methods
+   */
+  private handleError(message: string, error: unknown): never {
+    console.error(`${message}:`, error);
+    throw new Error(`${message}: ${error instanceof Error ? error.message : String(error)}`);
+  }
   /**
    * Create a new badge
    */
@@ -22,16 +34,17 @@ export class BadgeRepository extends Repository {
         if (error) throw error;
         return data as Badge;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           `INSERT INTO badges (name, description, icon_url, level)
            VALUES ($1, $2, $3, $4)
            RETURNING *`,
           [badge.name, badge.description, badge.icon_url, badge.level]
         );
-        return result.rows[0];
+        return result.rows[0] as Badge;
       }
     } catch (error) {
       this.handleError('Error creating badge', error);
+      throw error; // To satisfy TypeScript return type
     }
   }
 
@@ -49,7 +62,7 @@ export class BadgeRepository extends Repository {
         if (error) throw error;
         return data as Badge[];
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           `SELECT * FROM badges ORDER BY 
           CASE 
             WHEN level = 'GOLD' THEN 1
@@ -58,10 +71,11 @@ export class BadgeRepository extends Repository {
             ELSE 4
           END`
         );
-        return result.rows;
+        return result.rows as Badge[];
       }
     } catch (error) {
       this.handleError('Error getting badges', error);
+      throw error;
     }
   }
 
@@ -80,14 +94,15 @@ export class BadgeRepository extends Repository {
         if (error) throw error;
         return data as Badge;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           'SELECT * FROM badges WHERE id = $1',
           [badgeId]
         );
-        return result.rows.length ? result.rows[0] : null;
+        return result.rows.length ? result.rows[0] as Badge : null;
       }
     } catch (error) {
       this.handleError('Error getting badge by ID', error);
+      throw error;
     }
   }
 
@@ -115,16 +130,17 @@ export class BadgeRepository extends Repository {
         if (error) throw error;
         return data as UserBadge;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           `INSERT INTO user_badges (user_id, badge_id)
            VALUES ($1, $2)
            RETURNING *`,
           [userId, badgeId]
         );
-        return result.rows[0];
+        return result.rows[0] as UserBadge;
       }
     } catch (error) {
       this.handleError('Error awarding badge', error);
+      throw error;
     }
   }
 
@@ -144,14 +160,15 @@ export class BadgeRepository extends Repository {
         if (error && error.code !== 'PGRST116') throw error; // Ignore not found error
         return data as UserBadge || null;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           'SELECT * FROM user_badges WHERE user_id = $1 AND badge_id = $2',
           [userId, badgeId]
         );
-        return result.rows.length ? result.rows[0] : null;
+        return result.rows.length ? result.rows[0] as UserBadge : null;
       }
     } catch (error) {
       this.handleError('Error getting user badge', error);
+      throw error;
     }
   }
 
@@ -172,12 +189,12 @@ export class BadgeRepository extends Repository {
 
         if (error) throw error;
         
-        return data.map(item => ({
+        return data.map((item: any) => ({
           ...item.badges,
           awarded_at: item.awarded_at
-        }));
+        })) as (Badge & { awarded_at: string })[];
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           `SELECT b.*, ub.awarded_at 
            FROM badges b
            JOIN user_badges ub ON b.id = ub.badge_id
@@ -185,10 +202,11 @@ export class BadgeRepository extends Repository {
            ORDER BY ub.awarded_at DESC`,
           [userId]
         );
-        return result.rows;
+        return result.rows as (Badge & { awarded_at: string })[];
       }
     } catch (error) {
       this.handleError('Error getting user badges', error);
+      throw error;
     }
   }
 
@@ -199,7 +217,10 @@ export class BadgeRepository extends Repository {
   async checkAndAwardBadge(userId: number, badgeKey: string): Promise<boolean> {
     try {
       // Map badge keys to their IDs and requirements
-      const badgeMap = {
+      const badgeMap: Record<string, {
+        id: number;
+        check: () => Promise<boolean>;
+      }> = {
         'welcome': {
           id: 1,
           check: async () => {
@@ -208,7 +229,7 @@ export class BadgeRepository extends Repository {
               SELECT * FROM users 
               WHERE id = $1 AND avatar_url IS NOT NULL AND bio IS NOT NULL AND name IS NOT NULL
             `;
-            const result = await this.db.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return result.rows.length > 0;
           }
         },
@@ -220,7 +241,7 @@ export class BadgeRepository extends Repository {
               SELECT COUNT(*) FROM content 
               WHERE author_id = $1 AND type = 'post'
             `;
-            const result = await this.db.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return parseInt(result.rows[0].count) > 0;
           }
         },
@@ -232,7 +253,7 @@ export class BadgeRepository extends Repository {
               SELECT COUNT(*) FROM content 
               WHERE author_id = $1 AND type = 'answer'
             `;
-            const result = await this.db.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return parseInt(result.rows[0].count) > 0;
           }
         },
@@ -244,7 +265,7 @@ export class BadgeRepository extends Repository {
               SELECT COUNT(*) FROM content 
               WHERE author_id = $1 AND type = 'question'
             `;
-            const result = await this.db.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return parseInt(result.rows[0].count) > 0;
           }
         },
@@ -256,7 +277,7 @@ export class BadgeRepository extends Repository {
               SELECT COUNT(*) FROM content 
               WHERE author_id = $1 AND type = 'answer' AND is_accepted = true
             `;
-            const result = await this.db.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return parseInt(result.rows[0].count) > 0;
           }
         },
@@ -268,7 +289,7 @@ export class BadgeRepository extends Repository {
               SELECT COUNT(*) FROM content 
               WHERE author_id = $1 AND (type = 'post' OR type = 'question') AND upvotes >= 10
             `;
-            const result = await this.db.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return parseInt(result.rows[0].count) > 0;
           }
         },
@@ -280,7 +301,7 @@ export class BadgeRepository extends Repository {
               SELECT COUNT(*) FROM content 
               WHERE author_id = $1 AND type = 'answer' AND upvotes >= 10
             `;
-            const result = await this.db.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return parseInt(result.rows[0].count) > 0;
           }
         },
@@ -292,7 +313,7 @@ export class BadgeRepository extends Repository {
               SELECT COUNT(*) FROM content 
               WHERE author_id = $1 AND type = 'answer' AND upvotes >= 25
             `;
-            const result = await this.db.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return parseInt(result.rows[0].count) > 0;
           }
         },
@@ -304,7 +325,7 @@ export class BadgeRepository extends Repository {
               SELECT COUNT(*) FROM content 
               WHERE author_id = $1 AND type = 'question' AND upvotes >= 25
             `;
-            const result = await this.db.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return parseInt(result.rows[0].count) > 0;
           }
         },
@@ -316,7 +337,7 @@ export class BadgeRepository extends Repository {
               SELECT COUNT(*) FROM tool_reviews
               WHERE user_id = $1
             `;
-            const result = await this.db.query(query, [userId]);
+            const result = await db.query(query, [userId]);
             return parseInt(result.rows[0].count) >= 5;
           }
         }
@@ -344,6 +365,7 @@ export class BadgeRepository extends Repository {
       return false;
     } catch (error) {
       this.handleError('Error checking and awarding badge', error);
+      throw error;
     }
   }
 
@@ -370,7 +392,7 @@ export class BadgeRepository extends Repository {
       for (const key of badgeKeys) {
         const awarded = await this.checkAndAwardBadge(userId, key);
         if (awarded) {
-          const badgeConfig = {
+          const badgeConfig: Record<string, number> = {
             'welcome': 1,
             'first_post': 2,
             'first_answer': 3,
@@ -389,9 +411,10 @@ export class BadgeRepository extends Repository {
       return awardedBadges;
     } catch (error) {
       this.handleError('Error checking all badges', error);
+      throw error;
     }
   }
 }
 
 // Create and export an instance of the BadgeRepository
-export const badgeRepository = new BadgeRepository(Database.getInstance());
+export const badgeRepository = new BadgeRepository();

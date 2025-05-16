@@ -48,7 +48,7 @@ async function startServer() {
 /**
  * Set up graceful shutdown handlers
  */
-function setupGracefulShutdown(server) {
+function setupGracefulShutdown(server: import('http').Server) {
   // Handle various termination signals
   const shutdownSignals = ['SIGINT', 'SIGTERM', 'SIGUSR2'];
   

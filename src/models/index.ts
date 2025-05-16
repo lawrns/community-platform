@@ -121,6 +121,9 @@ export interface User {
   password_hash?: string;
   created_at: Date;
   updated_at: Date;
+  // Virtual properties for admin status
+  isAdmin?: boolean;
+  isModerator?: boolean;
 }
 
 // Topic model (hierarchical categories)

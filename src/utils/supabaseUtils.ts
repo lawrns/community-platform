@@ -54,13 +54,14 @@ export async function executeQuery<T>(
  * @returns Query result with the record or error
  */
 export async function getById<T>(table: string, id: string): Promise<QueryResult<T>> {
-  return executeQuery<T>(() => 
-    supabase
+  return executeQuery<T>(async () => {
+    const result = await supabase
       .from(table)
       .select('*')
       .eq('id', id)
-      .single()
-  );
+      .single();
+    return result;
+  });
 }
 
 /**
@@ -102,7 +103,10 @@ export async function getMany<T>(
     }
   });
 
-  return executeQuery<T[]>(() => query);
+  return executeQuery<T[]>(async () => {
+    const result = await query;
+    return result;
+  });
 }
 
 /**
@@ -112,13 +116,14 @@ export async function getMany<T>(
  * @returns Query result with the inserted record or error
  */
 export async function create<T>(table: string, data: Partial<T>): Promise<QueryResult<T>> {
-  return executeQuery<T>(() => 
-    supabase
+  return executeQuery<T>(async () => {
+    const result = await supabase
       .from(table)
       .insert(data)
       .select()
-      .single()
-  );
+      .single();
+    return result;
+  });
 }
 
 /**
@@ -133,14 +138,15 @@ export async function update<T>(
   id: string, 
   data: Partial<T>
 ): Promise<QueryResult<T>> {
-  return executeQuery<T>(() => 
-    supabase
+  return executeQuery<T>(async () => {
+    const result = await supabase
       .from(table)
       .update(data)
       .eq('id', id)
       .select()
-      .single()
-  );
+      .single();
+    return result;
+  });
 }
 
 /**
@@ -150,14 +156,15 @@ export async function update<T>(
  * @returns Query result with success status or error
  */
 export async function remove<T>(table: string, id: string): Promise<QueryResult<T>> {
-  return executeQuery<T>(() => 
-    supabase
+  return executeQuery<T>(async () => {
+    const result = await supabase
       .from(table)
       .delete()
       .eq('id', id)
       .select()
-      .single()
-  );
+      .single();
+    return result;
+  });
 }
 
 /**
@@ -171,9 +178,10 @@ export async function rawQuery<T>(
   query: string, 
   params: any[] = []
 ): Promise<QueryResult<T>> {
-  return executeQuery<T>(() => 
-    supabaseAdmin.rpc('exec_sql', { query, params })
-  );
+  return executeQuery<T>(async () => {
+    const result = await supabaseAdmin.rpc('exec_sql', { query, params });
+    return result;
+  });
 }
 
 /**
@@ -193,11 +201,12 @@ export async function textSearch<T>(
 ): Promise<QueryResult<T[]>> {
   const { limit = 10, offset = 0 } = options;
   
-  return executeQuery<T[]>(() => 
-    supabase
+  return executeQuery<T[]>(async () => {
+    const result = await supabase
       .from(table)
       .select('*')
       .textSearch(column, query)
-      .range(offset, offset + limit - 1)
-  );
+      .range(offset, offset + limit - 1);
+    return result;
+  });
 }

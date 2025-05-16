@@ -62,7 +62,7 @@ const ContentCard = ({ content, recordView = true }: ContentCardProps) => {
   
   return (
     <div ref={ref}>
-      <Card className="mb-4 hover:shadow-md transition-shadow duration-200">
+      <div className="mb-6 card-elevated card-hoverable rounded-lg overflow-hidden">
         <CardHeader className="pb-2">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2">
@@ -246,7 +246,7 @@ const PersonalizedFeed = () => {
         defaultValue={activeTab} 
         className="w-full"
       >
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3 p-1 mb-6 bg-surface-secondary rounded-md">
           {isAuthenticated && (
             <TabsTrigger value="recommended" className="flex items-center gap-1">
               <ThumbsUp className="h-4 w-4" />

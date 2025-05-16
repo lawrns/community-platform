@@ -35,8 +35,11 @@ export class NotFoundError extends AppError {
  * Bad Request Error (400)
  */
 export class BadRequestError extends AppError {
-  constructor(message = 'Bad request') {
+  errors?: Record<string, string>;
+  
+  constructor(message = 'Bad request', errors?: Record<string, string>) {
     super(message, 400, true);
+    this.errors = errors;
   }
 }
 
@@ -93,6 +96,8 @@ export function errorHandler(
     
     // Add validation errors if available
     if (err instanceof ValidationError) {
+      errorDetails = { errors: err.errors };
+    } else if (err instanceof BadRequestError && err.errors) {
       errorDetails = { errors: err.errors };
     }
   }

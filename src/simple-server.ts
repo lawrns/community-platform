@@ -85,7 +85,7 @@ app.use((req, res) => {
 });
 
 // Error handler
-app.use((err, req, res, next) => {
+app.use((err: Error & { status?: number, errors?: any }, req: express.Request, res: express.Response, next: express.NextFunction) => {
   const statusCode = err.status || 500;
   logger.error(`Error: ${err.message}`);
   

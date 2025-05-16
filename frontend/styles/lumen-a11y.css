@@ -1,0 +1,276 @@
+/* LUMEN Design System - Accessibility
+ * WCAG AA compliance styles and utilities
+ * Ensures a minimum contrast ratio of 4.5:1 for text
+ * Accessible focus indicators, reduced motion preferences
+ */
+
+/* === Focus Styles === */
+
+/* Universal focus style for interactive elements */
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Custom focus styles for dark elements where the default focus might not be visible */
+.focus-invert:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+/* Error focus - for invalid form elements */
+.focus-error:focus-visible {
+  outline: 2px solid var(--c-danger);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus-error);
+}
+
+/* === Skip Links === */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--c-accent);
+  color: #000000;
+  padding: var(--space-2);
+  z-index: 1000;
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* === Accessible Hidden Content === */
+.a11y-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* === Keyboard Navigation Indicators === */
+/* Class added to body when user is navigating with keyboard */
+.keyboard-user :focus {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+}
+
+/* === ARIA States === */
+
+/* ARIA-current styles */
+[aria-current="page"] {
+  font-weight: var(--weight-bold);
+  /* Custom indicator for current page */
+  border-bottom: 2px solid var(--c-accent);
+}
+
+/* ARIA-selected styles */
+[aria-selected="true"] {
+  background-color: var(--c-surface-2);
+  color: var(--c-text-primary);
+}
+
+/* ARIA-expanded styles */
+[aria-expanded="true"] .icon-expand {
+  transform: rotate(180deg);
+}
+
+/* ARIA-disabled styles */
+[aria-disabled="true"],
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* === Reduced Motion Preferences === */
+/* Respects user's reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-glow,
+  .animate-pulse,
+  .animate-bounce,
+  .animate-spin {
+    animation: none !important;
+  }
+  
+  .transition-transform,
+  .transition-opacity,
+  .transition-all {
+    transition: none !important;
+  }
+}
+
+/* === High Contrast Mode Support === */
+@media (forced-colors: active) {
+  /* Ensure borders are visible in high contrast mode */
+  .border-subtle {
+    border-color: ButtonText;
+  }
+  
+  /* Override background colors to ensure visibility */
+  button, 
+  a[role="button"],
+  input,
+  select,
+  textarea {
+    border: 1px solid ButtonText;
+  }
+  
+  /* Ensure focus states remain visible */
+  :focus-visible {
+    outline: 2px solid ButtonText;
+    outline-offset: 2px;
+  }
+}
+
+/* === Screen Reader Specific === */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.not-sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* === Content Accessibility === */
+
+/* Link Accessibility */
+a {
+  text-decoration-thickness: 1px; /* Ensure underlines are visible */
+  text-underline-offset: 0.2em; /* Improve underline position */
+}
+
+a:hover {
+  text-decoration-thickness: 2px; /* Thicker underline on hover for better visibility */
+}
+
+/* Adjacent links spacing for touch targets */
+a + a {
+  margin-left: var(--space-2); /* Ensure touch targets don't overlap */
+}
+
+/* List semantics */
+ul, ol {
+  margin-left: var(--space-4);
+}
+
+ul {
+  list-style-type: disc; /* Clear list semantics */
+}
+
+ol {
+  list-style-type: decimal; /* Clear list semantics */
+}
+
+/* Form element labeling */
+label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-weight: var(--weight-medium);
+}
+
+/* Required form field indicator */
+.required::after {
+  content: "*";
+  color: var(--c-danger);
+  margin-left: var(--space-0-5);
+}
+
+/* === Keyboard-Accessibile Interactive Elements === */
+
+/* Ensure clickable divs have keyboard support */
+.interactive {
+  cursor: pointer;
+  outline: none;
+}
+
+.interactive:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+}
+
+/* Make sure interactive elements have adequate spacing */
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+.btn {
+  cursor: pointer;
+  min-height: 44px; /* Mininum touch target size for mobile */
+  min-width: 44px; /* Mininum touch target size for mobile */
+  padding: var(--space-1) var(--space-2);
+}
+
+/* === Live Region Support === */
+.aria-live-region {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+[aria-live="polite"],
+[aria-live="assertive"] {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+/* === Contrast Utilities === */
+.text-high-contrast {
+  color: var(--c-text-primary);
+}
+
+.text-medium-contrast {
+  color: var(--c-text-secondary);
+}
+
+/* Classes to ensure link contrast on different backgrounds */
+.bg-dark a:not(.btn) {
+  color: var(--c-accent-light);
+  text-decoration: underline;
+}
+
+.bg-light a:not(.btn) {
+  color: var(--c-accent-dark);
+  text-decoration: underline;
+}

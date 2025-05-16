@@ -99,13 +99,18 @@ export default class AppealRepository extends Repository<Appeal> {
   ): Promise<Appeal | null> {
     const result = await db.transaction(async (client) => {
       // Update appeal status
-      const updated = await client.query(
-        `UPDATE ${this.tableName} 
-         SET status = $1, moderator_id = $2, moderator_notes = $3, resolved_at = NOW(), updated_at = NOW()
-         WHERE id = $4
-         RETURNING *`,
-        [AppealStatus.APPROVED, moderatorId, notes, id]
-      );
+      let updated;
+      if ('query' in client) {
+        updated = await client.query(
+          `UPDATE ${this.tableName} 
+           SET status = $1, moderator_id = $2, moderator_notes = $3, resolved_at = NOW(), updated_at = NOW()
+           WHERE id = $4
+           RETURNING *`,
+          [AppealStatus.APPROVED, moderatorId, notes, id]
+        );
+      } else {
+        throw new Error('Transaction client missing query method');
+      }
       
       if (!updated.rows.length) {
         return null;
@@ -113,10 +118,15 @@ export default class AppealRepository extends Repository<Appeal> {
       
       // Get the moderation action
       const appeal = updated.rows[0];
-      const actionQuery = await client.query(
-        `SELECT * FROM moderation_actions WHERE id = $1`,
-        [appeal.moderation_action_id]
-      );
+      let actionQuery;
+      if ('query' in client) {
+        actionQuery = await client.query(
+          `SELECT * FROM moderation_actions WHERE id = $1`,
+          [appeal.moderation_action_id]
+        );
+      } else {
+        throw new Error('Transaction client missing query method');
+      }
       
       if (!actionQuery.rows.length) {
         throw new Error('Moderation action not found');
@@ -125,19 +135,27 @@ export default class AppealRepository extends Repository<Appeal> {
       const action = actionQuery.rows[0];
       
       // Revert the moderation action
-      await client.query(
-        `UPDATE moderation_actions 
-         SET status = 'reverted', reverted_at = NOW(), reverted_by_id = $1, updated_at = NOW()
-         WHERE id = $2`,
-        [moderatorId, action.id]
-      );
+      if ('query' in client) {
+        await client.query(
+          `UPDATE moderation_actions 
+           SET status = 'reverted', reverted_at = NOW(), reverted_by_id = $1, updated_at = NOW()
+           WHERE id = $2`,
+          [moderatorId, action.id]
+        );
+      } else {
+        throw new Error('Transaction client missing query method');
+      }
       
       // Add to audit log
-      await client.query(
-        `INSERT INTO moderation_audit_log (action_id, actor_id, action, details, created_at)
-         VALUES ($1, $2, 'appeal_approved', $3, NOW())`,
-        [action.id, moderatorId, { appeal_id: id, notes }]
-      );
+      if ('query' in client) {
+        await client.query(
+          `INSERT INTO moderation_audit_log (action_id, actor_id, action, details, created_at)
+           VALUES ($1, $2, 'appeal_approved', $3, NOW())`,
+          [action.id, moderatorId, { appeal_id: id, notes }]
+        );
+      } else {
+        throw new Error('Transaction client missing query method');
+      }
       
       return appeal;
     });
@@ -155,13 +173,18 @@ export default class AppealRepository extends Repository<Appeal> {
   ): Promise<Appeal | null> {
     const result = await db.transaction(async (client) => {
       // Update appeal status
-      const updated = await client.query(
-        `UPDATE ${this.tableName} 
-         SET status = $1, moderator_id = $2, moderator_notes = $3, resolved_at = NOW(), updated_at = NOW()
-         WHERE id = $4
-         RETURNING *`,
-        [AppealStatus.REJECTED, moderatorId, notes, id]
-      );
+      let updated;
+      if ('query' in client) {
+        updated = await client.query(
+          `UPDATE ${this.tableName} 
+           SET status = $1, moderator_id = $2, moderator_notes = $3, resolved_at = NOW(), updated_at = NOW()
+           WHERE id = $4
+           RETURNING *`,
+          [AppealStatus.REJECTED, moderatorId, notes, id]
+        );
+      } else {
+        throw new Error('Transaction client missing query method');
+      }
       
       if (!updated.rows.length) {
         return null;
@@ -170,11 +193,15 @@ export default class AppealRepository extends Repository<Appeal> {
       const appeal = updated.rows[0];
       
       // Add to audit log
-      await client.query(
-        `INSERT INTO moderation_audit_log (action_id, actor_id, action, details, created_at)
-         VALUES ($1, $2, 'appeal_rejected', $3, NOW())`,
-        [appeal.moderation_action_id, moderatorId, { appeal_id: id, notes }]
-      );
+      if ('query' in client) {
+        await client.query(
+          `INSERT INTO moderation_audit_log (action_id, actor_id, action, details, created_at)
+           VALUES ($1, $2, 'appeal_rejected', $3, NOW())`,
+          [appeal.moderation_action_id, moderatorId, { appeal_id: id, notes }]
+        );
+      } else {
+        throw new Error('Transaction client missing query method');
+      }
       
       return appeal;
     });

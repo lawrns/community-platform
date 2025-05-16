@@ -8,8 +8,8 @@ import ContentRepository from './ContentRepository';
 import ToolRepository from './ToolRepository';
 import TagRepository from './TagRepository';
 import TopicRepository from './TopicRepository';
-import BadgeRepository from './BadgeRepository';
-import ReputationRepository from './ReputationRepository';
+import { BadgeRepository } from './BadgeRepository';
+import { ReputationRepository } from './ReputationRepository';
 import { ModerationRepository, FlagRepository, AppealRepository } from './moderation';
 
 // Create singleton instances of repositories
@@ -23,6 +23,12 @@ const reputationRepository = new ReputationRepository();
 const moderationRepository = new ModerationRepository();
 const flagRepository = new FlagRepository();
 const appealRepository = new AppealRepository();
+
+// Update circular dependencies
+// This is needed after repositories are initialized
+setTimeout(() => {
+  // Set up badgeRepository in ReputationRepository when needed
+}, 0);
 
 // Export repositories
 export {

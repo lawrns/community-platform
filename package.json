@@ -22,7 +22,8 @@
     "seed": "ts-node scripts/seed.ts",
     "schema:diagram": "node scripts/generate-schema-diagram.js",
     "db:setup": "bash scripts/setup-db.sh",
-    "db:reset": "node-pg-migrate down 999999 && node-pg-migrate up && ts-node scripts/seed.ts"
+    "db:reset": "node-pg-migrate down 999999 && node-pg-migrate up && ts-node scripts/seed.ts",
+    "deploy": "npm run build && cd frontend && npm run build && netlify deploy --prod --site 3a857d78-1494-4fd2-9ac8-60659033b16f"
   },
   "keywords": [
     "ai",

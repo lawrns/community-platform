@@ -8,11 +8,10 @@ import ToolRepository from '../../models/ToolRepository';
 import { embeddingService } from './embeddingService';
 import logger from '../../config/logger';
 import env from '../../config/environment';
-import { Database } from '../../config/database';
+import db from '../../config/database';
 
-const db = Database.getInstance();
-const contentRepository = new ContentRepository(db);
-const toolRepository = new ToolRepository(db);
+const contentRepository = new ContentRepository();
+const toolRepository = new ToolRepository();
 
 // Result types interface
 export enum SearchResultType {

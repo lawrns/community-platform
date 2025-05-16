@@ -65,12 +65,12 @@ export const configurePassport = () => {
     passport.use(
       new Auth0Strategy(
         {
-          domain: env.AUTH0_DOMAIN,
-          clientID: env.AUTH0_CLIENT_ID,
-          clientSecret: env.AUTH0_CLIENT_SECRET,
+          domain: env.AUTH0_DOMAIN || '',
+          clientID: env.AUTH0_CLIENT_ID || '',
+          clientSecret: env.AUTH0_CLIENT_SECRET || '',
           callbackURL: `${env.API_URL}/auth/callback`,
         },
-        async (accessToken, refreshToken, extraParams, profile, done) => {
+        async (accessToken: string, refreshToken: string, extraParams: any, profile: any, done: any) => {
           try {
             // Extract email from Auth0 profile
             const email = profile.emails?.[0]?.value;
@@ -117,7 +117,7 @@ export const configurePassport = () => {
 export const authenticateJwt = expressjwt({
   secret: env.AUTH_SECRET,
   algorithms: ['HS256'],
-  getToken: (req) => {
+  getToken: (req: Request): string | undefined => {
     // Extract token from Authorization header or query parameter
     if (req.headers.authorization?.split(' ')[0] === 'Bearer') {
       return req.headers.authorization.split(' ')[1];
@@ -125,9 +125,12 @@ export const authenticateJwt = expressjwt({
     if (req.query && req.query.token) {
       return req.query.token as string;
     }
-    return null;
+    return undefined;
   },
 });
+
+// For backward compatibility with existing code
+export const authenticateJWT = authenticateJwt;
 
 /**
  * Verify Supabase JWT
@@ -148,8 +151,8 @@ const verifySupabaseToken = async (token: string) => {
     if (!user) {
       // User exists in Supabase but not in our database - create entry
       const newUser = await userRepository.create({
-        email: data.user.email,
-        username: data.user.user_metadata?.username || data.user.email.split('@')[0],
+        email: data.user.email || '',
+        username: data.user.user_metadata?.username || (data.user.email && data.user.email.split('@')[0]) || 'user',
         name: data.user.user_metadata?.name || 'User',
         auth_provider: 'supabase',
         auth_provider_id: data.user.id,
@@ -386,5 +389,38 @@ export const isModerator = async (
   } catch (error) {
     logger.error('Moderator check error:', error);
     return next(new ForbiddenError('Failed to check moderator privileges'));
+  }
+};
+
+/**
+ * Middleware to check if user is an admin
+ * Admins are users with the 'admin' privilege
+ */
+export const requireAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.user) {
+    return next(new UnauthorizedError('Authentication required'));
+  }
+
+  try {
+    // Check if user has the admin privilege
+    const hasPrivilege = await userRepository.hasPrivilege(
+      (req.user as any).id,
+      'admin'
+    );
+
+    if (!hasPrivilege) {
+      return next(
+        new ForbiddenError('Admin privileges required')
+      );
+    }
+
+    return next();
+  } catch (error) {
+    logger.error('Admin check error:', error);
+    return next(new ForbiddenError('Failed to check admin privileges'));
   }
 };

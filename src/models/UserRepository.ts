@@ -18,6 +18,30 @@ const useSupabase = !!config.SUPABASE_URL && !!config.SUPABASE_ANON_KEY;
  */
 export default class UserRepository extends Repository<User> {
   protected tableName = 'users';
+  
+  /**
+   * Find content by user
+   */
+  async findContentByUser(userId: number, limit: number = 20, offset: number = 0, type?: string): Promise<any[]> {
+    try {
+      let query = `SELECT * FROM content WHERE author_id = $1`;
+      const params = [userId];
+      
+      if (type) {
+        query += ` AND type = $2`;
+        params.push(type as any);
+      }
+      
+      query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+      params.push(limit, offset);
+      
+      const result = await db.query(query, params);
+      return result.rows;
+    } catch (error) {
+      console.error('Error finding content by user:', error);
+      return [];
+    }
+  }
 
   /**
    * Find a user by email
@@ -73,6 +97,7 @@ export default class UserRepository extends Repository<User> {
 
   /**
    * Find a user by authentication provider ID
+   * @deprecated Use findByProviderAndProviderId instead
    */
   async findByAuthProviderId(provider: string, providerUserId: string): Promise<User | null> {
     if (useSupabase) {
@@ -121,6 +146,13 @@ export default class UserRepository extends Repository<User> {
       
       return result.rows.length ? result.rows[0] as User : null;
     }
+  }
+  
+  /**
+   * Find a user by provider and provider ID
+   */
+  async findByProviderAndProviderId(provider: string, providerId: string): Promise<User | null> {
+    return this.findByAuthProviderId(provider, providerId);
   }
 
   /**

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { param, body } from 'express-validator';
 import { authenticate, requireVerified } from '../../../middlewares/auth/authMiddleware';
 import { asyncHandler } from '../../../utils/asyncHandler';
-import { userRepository } from '../../../models/UserRepository';
+import { userRepository } from '../../../models/repositories';
 import reputationRoutes from './reputation';
 import notificationRoutes from './notifications';
 import onboardingRoutes from './onboarding';
@@ -24,9 +24,9 @@ router.get(
   asyncHandler(async (req, res) => {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
     const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
-    const users = await userRepository.getUsers(limit, offset);
+    const users = await userRepository.findAll(limit, offset);
 
-    res.json({
+    return res.json({
       success: true,
       data: users
     });
@@ -45,13 +45,13 @@ router.get(
   ],
   asyncHandler(async (req, res) => {
     const userId = parseInt(req.params.userId);
-    const user = await userRepository.getUserById(userId);
+    const user = await userRepository.findById(userId);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: user
     });
@@ -94,9 +94,9 @@ router.put(
       }
     });
 
-    const updatedUser = await userRepository.updateUser(userId, updateData);
+    const updatedUser = await userRepository.update(userId, updateData);
 
-    res.json({
+    return res.json({
       success: true,
       data: updatedUser
     });
@@ -119,9 +119,10 @@ router.get(
     const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
     const type = req.query.type as string | undefined;
 
-    const content = await userRepository.getUserContent(userId, limit, offset, type);
+    // Use contentRepository to get user content
+    const content = await userRepository.findContentByUser(userId, limit, offset, type);
 
-    res.json({
+    return res.json({
       success: true,
       data: content
     });

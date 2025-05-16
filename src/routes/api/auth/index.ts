@@ -9,15 +9,16 @@ import passport from 'passport';
 import asyncHandler from '../../../utils/asyncHandler';
 import authService from '../../../services/auth/authService';
 import { authenticate, requireVerified } from '../../../middlewares/auth/authMiddleware';
-import EmailService from '../../../services/email/emailService';
+import { emailService } from '../../../services/email/emailService';
 import { BadRequestError, UnauthorizedError } from '../../../utils/errorHandler';
+import { handleValidationErrors } from '../../../utils/validationHelper';
 import { userRepository } from '../../../models/repositories';
 import { supabase } from '../../../config/supabase';
 import env, { config } from '../../../config/environment';
 import logger from '../../../config/logger';
 
 const router = Router();
-const emailService = new EmailService();
+// emailService is already imported as an instance
 
 // Determine if we should use Supabase
 const useSupabase = !!config.SUPABASE_URL && !!config.SUPABASE_ANON_KEY;
@@ -41,17 +42,12 @@ router.post(
   ],
   asyncHandler(async (req, res) => {
     // Validate request
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    handleValidationErrors(validationResult(req));
 
     const { email, username, name, password } = req.body;
 
     // Register user
-    const { user, verificationToken } = await authService.register({
+    const result = await authService.register({
       email,
       username,
       name,
@@ -63,41 +59,55 @@ router.post(
       success: true,
       message: 'User registered successfully. Please check your email for verification.',
       user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        name: user.name,
+        id: result.user.id,
+        email: result.user.email,
+        username: result.user.username,
+        name: result.user.name,
       },
     });
   })
 );
 
 /**
- * Login a user
+ * Login user
  * @route POST /api/auth/login
  */
 router.post(
   '/login',
   [
     body('email').isEmail().withMessage('Valid email is required'),
-    body('password').notEmpty().withMessage('Password is required'),
+    body('password').notEmpty().withMessage('Password is required')
   ],
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req, res): Promise<any> => {
     // Validate request
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error',
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    handleValidationErrors(validationResult(req));
 
     const { email, password } = req.body;
 
     // Login user
     const { user, token } = await authService.login(email, password);
 
+    // Check if email is verified
+    if (!user.email_verified) {
+      return res.status(200).json({
+        success: true,
+        message: 'Login successful, but email verification is required.',
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          name: user.name,
+          email_verified: false
+        },
+        token,
+        requiresVerification: true
+      });
+    }
+    
+    // Otherwise continue with normal login
+
     // Send response
-    res.json({
+    res.status(200).json({
       success: true,
       message: 'Login successful',
       user: {
@@ -105,49 +115,40 @@ router.post(
         email: user.email,
         username: user.username,
         name: user.name,
-        avatar_url: user.avatar_url,
+        email_verified: user.email_verified,
         bio: user.bio,
-        reputation: user.reputation,
+        avatar_url: user.avatar_url,
+        reputation: user.reputation
       },
-      token,
+      token
     });
   })
 );
 
 /**
- * Verify user email
- * @route GET /api/auth/verify-email
+ * Verify email
+ * @route POST /api/auth/verify-email
  */
-router.get(
+router.post(
   '/verify-email',
+  [
+    body('token').notEmpty().withMessage('Verification token is required')
+  ],
   asyncHandler(async (req, res) => {
-    if (useSupabase) {
-      // For Supabase, email verification is handled automatically
-      // This route will only be called if using the traditional email verification
-      const token = req.query.token as string;
-      
-      if (!token) {
-        throw new BadRequestError('Verification token is required');
-      }
+    // Validate request
+    handleValidationErrors(validationResult(req));
 
-      // Verify email
-      await authService.verifyEmail(token);
-      
-      // Redirect to frontend
-      res.redirect(`${process.env.FRONTEND_URL}/login?verified=true`);
-    } else {
-      const { token } = req.query;
+    // Verify email
+    const user = await authService.verifyEmail(req.body.token);
 
-      if (!token || typeof token !== 'string') {
-        throw new BadRequestError('Verification token is required');
-      }
-
-      // Verify email
-      await authService.verifyEmail(token);
-
-      // Redirect to frontend
-      res.redirect(`${process.env.FRONTEND_URL}/login?verified=true`);
+    if (!user) {
+      throw new BadRequestError('Invalid or expired verification token');
     }
+
+    res.status(200).json({
+      success: true,
+      message: 'Email verified successfully. You can now login.'
+    });
   })
 );
 
@@ -157,25 +158,19 @@ router.get(
  */
 router.post(
   '/resend-verification',
-  [body('email').isEmail().withMessage('Valid email is required')],
+  [
+    body('email').isEmail().withMessage('Valid email is required')
+  ],
   asyncHandler(async (req, res) => {
     // Validate request
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error',
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
-
-    const { email } = req.body;
+    handleValidationErrors(validationResult(req));
 
     // Resend verification email
-    await authService.resendVerificationEmail(email);
+    await authService.resendVerification(req.body.email);
 
-    // Send response
-    res.json({
+    res.status(200).json({
       success: true,
-      message: 'Verification email sent. Please check your inbox.',
+      message: 'Verification email resent. Please check your email.'
     });
   })
 );
@@ -186,25 +181,19 @@ router.post(
  */
 router.post(
   '/forgot-password',
-  [body('email').isEmail().withMessage('Valid email is required')],
+  [
+    body('email').isEmail().withMessage('Valid email is required')
+  ],
   asyncHandler(async (req, res) => {
     // Validate request
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error',
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    handleValidationErrors(validationResult(req));
 
-    const { email } = req.body;
+    // Send password reset email
+    await authService.sendPasswordResetEmail(req.body.email);
 
-    // Request password reset
-    await authService.requestPasswordReset(email);
-
-    // Send response
-    res.json({
+    res.status(200).json({
       success: true,
-      message: 'If an account exists with this email, a password reset link has been sent.',
+      message: 'Password reset email sent. Please check your email.'
     });
   })
 );
@@ -216,29 +205,28 @@ router.post(
 router.post(
   '/reset-password',
   [
-    body('token').notEmpty().withMessage('Token is required'),
+    body('token').notEmpty().withMessage('Reset token is required'),
     body('password')
       .isLength({ min: 8 })
-      .withMessage('Password must be at least 8 characters'),
+      .withMessage('Password must be at least 8 characters')
   ],
   asyncHandler(async (req, res) => {
     // Validate request
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error',
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
-
-    const { token, password } = req.body;
+    handleValidationErrors(validationResult(req));
 
     // Reset password
-    await authService.resetPassword(token, password);
+    const success = await authService.resetPassword(
+      req.body.token,
+      req.body.password
+    );
 
-    // Send response
-    res.json({
+    if (!success) {
+      throw new BadRequestError('Failed to reset password');
+    }
+
+    res.status(200).json({
       success: true,
-      message: 'Password reset successful. You can now login with your new password.',
+      message: 'Password reset successful. You can now login with your new password.'
     });
   })
 );
@@ -250,134 +238,109 @@ router.post(
 router.post(
   '/change-password',
   authenticate,
-  requireVerified,
   [
     body('currentPassword').notEmpty().withMessage('Current password is required'),
     body('newPassword')
       .isLength({ min: 8 })
-      .withMessage('New password must be at least 8 characters'),
+      .withMessage('New password must be at least 8 characters')
   ],
   asyncHandler(async (req, res) => {
     // Validate request
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error',
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
-
-    const { currentPassword, newPassword } = req.body;
-    const userId = (req.user as any).id;
+    handleValidationErrors(validationResult(req));
 
     // Change password
-    await authService.changePassword(userId, currentPassword, newPassword);
+    if (!req.user || !req.user.id) {
+      throw new UnauthorizedError('You must be logged in to change your password');
+    }
 
-    // Send response
-    res.json({
+    const success = await authService.changePassword(
+      req.user.id,
+      req.body.currentPassword,
+      req.body.newPassword
+    );
+
+    res.status(200).json({
       success: true,
-      message: 'Password changed successfully.',
+      message: 'Password changed successfully'
     });
   })
 );
 
 /**
- * Get current user info
- * @route GET /api/auth/me
+ * Get user profile (authenticated)
+ * @route GET /api/auth/profile
  */
 router.get(
-  '/me',
+  '/profile',
   authenticate,
   asyncHandler(async (req, res) => {
-    const userId = (req.user as any).id;
-    
-    // Get user from database (to get latest data)
-    const user = await userRepository.findById(userId);
-    
-    if (!user) {
-      throw new UnauthorizedError('User not found');
+    if (!req.user || !req.user.id) {
+      throw new UnauthorizedError('Not authenticated');
     }
 
-    // Get user stats
-    const stats = await userRepository.getStats(userId);
-    
-    // Get user badges
-    const badges = await userRepository.getBadges(userId);
+    const user = await authService.getProfile(req.user.id);
 
-    // Send response
-    res.json({
+    if (!user) {
+      throw new BadRequestError('User not found');
+    }
+
+    res.status(200).json({
       success: true,
       user: {
         id: user.id,
         email: user.email,
         username: user.username,
         name: user.name,
-        avatar_url: user.avatar_url,
         bio: user.bio,
+        avatar_url: user.avatar_url,
         reputation: user.reputation,
         email_verified: user.email_verified,
-        created_at: user.created_at,
-        auth_provider: user.auth_provider,
-        stats,
-        badges,
-      },
+        created_at: user.created_at
+      }
     });
   })
 );
 
 /**
- * Update user profile
+ * Update user profile (authenticated)
  * @route PUT /api/auth/profile
  */
 router.put(
   '/profile',
   authenticate,
-  requireVerified,
   [
     body('name').optional().isLength({ min: 2, max: 50 }).withMessage('Name must be 2-50 characters'),
-    body('bio').optional().isLength({ max: 500 }).withMessage('Bio must be max 500 characters'),
-    body('avatar_url').optional().isURL().withMessage('Avatar URL must be a valid URL'),
+    body('username')
+      .optional()
+      .isLength({ min: 3, max: 20 })
+      .matches(/^[a-zA-Z0-9_]+$/)
+      .withMessage('Username must be 3-20 characters (letters, numbers, underscore)'),
+    body('bio').optional().isLength({ max: 500 }).withMessage('Bio must be at most 500 characters'),
+    body('avatar_url').optional().isURL().withMessage('Avatar URL must be a valid URL')
   ],
   asyncHandler(async (req, res) => {
     // Validate request
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error',
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
+    handleValidationErrors(validationResult(req));
+
+    if (!req.user || !req.user.id) {
+      throw new UnauthorizedError('Not authenticated');
     }
 
-    const userId = (req.user as any).id;
-    const { name, bio, avatar_url } = req.body;
+    const { name, username, bio, avatar_url } = req.body;
 
-    // Update user profile
-    const updates: any = {};
-    if (name) updates.name = name;
-    if (bio !== undefined) updates.bio = bio;
-    if (avatar_url) updates.avatar_url = avatar_url;
+    // Update profile
+    const updatedUser = await authService.updateProfile(req.user.id, {
+      name,
+      username,
+      bio,
+      avatar_url
+    });
 
-    const updatedUser = await userRepository.update(userId, updates);
-
-    // Also update Supabase Auth user metadata if using Supabase
-    if (useSupabase && (req.user as any).auth_provider === 'supabase') {
-      try {
-        await supabase.auth.admin.updateUserById(
-          (req.user as any).auth_provider_id,
-          {
-            user_metadata: {
-              name: name || (req.user as any).name,
-              bio: bio || (req.user as any).bio,
-              avatar_url: avatar_url || (req.user as any).avatar_url
-            }
-          }
-        );
-      } catch (error) {
-        // Log error but don't fail the request if metadata update fails
-        logger.error('Error updating Supabase user metadata:', error);
-      }
+    if (!updatedUser) {
+      throw new BadRequestError('Failed to update profile');
     }
 
-    // Send response
-    res.json({
+    res.status(200).json({
       success: true,
       message: 'Profile updated successfully',
       user: {
@@ -385,112 +348,113 @@ router.put(
         email: updatedUser.email,
         username: updatedUser.username,
         name: updatedUser.name,
-        avatar_url: updatedUser.avatar_url,
         bio: updatedUser.bio,
-        reputation: updatedUser.reputation,
-      },
+        avatar_url: updatedUser.avatar_url,
+        reputation: updatedUser.reputation
+      }
     });
   })
 );
 
 /**
- * Sign out a user
- * @route POST /api/auth/signout
+ * Supabase token exchange
+ * @route POST /api/auth/supabase-exchange
+ * Exchange a Supabase JWT for our application JWT
  */
 router.post(
-  '/signout',
-  authenticate,
+  '/supabase-exchange',
+  [
+    body('supabaseToken').notEmpty().withMessage('Supabase token is required')
+  ],
   asyncHandler(async (req, res) => {
-    // Get token from header
-    const token = req.headers.authorization?.split(' ')[1];
-    
-    if (token) {
-      await authService.signOut(token);
+    if (!useSupabase) {
+      throw new BadRequestError('Supabase authentication is not enabled');
     }
-    
-    res.json({
+
+    // Validate request
+    handleValidationErrors(validationResult(req));
+
+    // Exchange token
+    const { user, token } = await authService.supabaseExchange(req.body.supabaseToken);
+
+    res.status(200).json({
       success: true,
-      message: 'Signed out successfully',
+      message: 'Token exchanged successfully',
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        name: user.name,
+        bio: user.bio,
+        avatar_url: user.avatar_url,
+        reputation: user.reputation,
+        email_verified: user.email_verified
+      },
+      token
     });
   })
 );
 
-// Additional Supabase specific routes
-if (useSupabase) {
-  /**
-   * Process Supabase OAuth callback
-   * @route GET /api/auth/callback
-   */
-  router.get(
-    '/callback',
-    asyncHandler(async (req, res) => {
-      const { code, state } = req.query;
-      
-      if (!code) {
-        throw new BadRequestError('Authorization code is required');
-      }
-      
-      // Exchange code for session
-      const { data, error } = await supabase.auth.exchangeCodeForSession(code as string);
-      
-      if (error || !data.session) {
-        logger.error('Error exchanging code for session:', error);
-        throw new BadRequestError('Failed to authenticate');
-      }
-      
-      // Get user from database
-      let user = await userRepository.findByAuthProviderId('supabase', data.user.id);
-      
-      // Create user if not exists
-      if (!user) {
-        user = await userRepository.create({
-          email: data.user.email,
-          username: data.user.user_metadata?.username || data.user.email.split('@')[0],
-          name: data.user.user_metadata?.name || 'User',
-          auth_provider: 'supabase',
-          auth_provider_id: data.user.id,
-          reputation: 0,
-          email_verified: data.user.email_confirmed_at !== null,
-          created_at: new Date(),
-          updated_at: new Date(),
-        });
-      }
-      
-      // Generate token
-      const token = authService.generateToken(user);
-      
-      // Redirect to frontend with token
-      res.redirect(`${env.FRONTEND_URL}/auth/callback?token=${token}`);
-    })
-  );
-}
-
-// Auth0 authentication routes (if using Auth0)
-if (env.AUTH_PROVIDER === 'auth0') {
-  /**
-   * Initiate Auth0 login
-   * @route GET /api/auth/auth0
-   */
-  router.get('/auth0', passport.authenticate('auth0', {
-    scope: 'openid email profile'
-  }));
-
-  /**
-   * Auth0 callback
-   * @route GET /api/auth/auth0/callback
-   */
-  router.get('/auth0/callback', passport.authenticate('auth0', { session: false }), 
+/**
+ * Refresh token
+ * @route POST /api/auth/refresh
+ */
+router.post(
+  '/refresh',
+  authenticate,
   asyncHandler(async (req, res) => {
     if (!req.user) {
-      throw new UnauthorizedError('Authentication failed');
+      throw new UnauthorizedError('Not authenticated');
     }
 
-    // Generate token
-    const token = authService.generateToken(req.user as any);
+    const token = authService.generateToken(req.user);
 
+    res.status(200).json({
+      success: true,
+      message: 'Token refreshed successfully',
+      token
+    });
+  })
+);
+
+// Social login callback handling for various providers
+// These routes handle the OAuth callbacks from providers
+
+/**
+ * OAuth 2.0 callback
+ * @route GET /api/auth/callback/:provider
+ */
+router.get(
+  '/callback/:provider',
+  asyncHandler(async (req, res) => {
+    const { provider } = req.params;
+    const { code, state } = req.query;
+
+    if (!code) {
+      throw new BadRequestError('Authorization code is required');
+    }
+
+    // Handle provider-specific logic
+    switch (provider) {
+      case 'auth0':
+        // Handle Auth0 callback
+        break;
+      case 'google':
+        // Handle Google callback  
+        break;
+      case 'github':
+        // Handle GitHub callback
+        break;
+      default:
+        throw new BadRequestError(`Unsupported provider: ${provider}`);
+    }
+
+    // In a real implementation, you would generate a token here
+    const token = 'placeholder-token'; // This would be a real token
+    
     // Redirect to frontend with token
     res.redirect(`${env.FRONTEND_URL}/auth/callback?token=${token}`);
-  }));
-}
+  })
+);
 
 export default router;

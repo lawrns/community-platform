@@ -116,7 +116,7 @@ export async function bulkGenerateContentEmbeddings(limit: number = 100): Promis
     }
     
     // Generate embeddings in batches
-    const texts = contentItems.map(item => item.body);
+    const texts = contentItems.map((item: { body: string }) => item.body);
     const embeddings = await embeddingService.generateEmbeddings(texts);
     
     // Update database with embeddings
@@ -181,7 +181,7 @@ export async function bulkGenerateToolEmbeddings(limit: number = 100): Promise<{
     }
     
     // Generate embeddings in batches
-    const texts = toolItems.map(item => item.description);
+    const texts = toolItems.map((item: { description: string }) => item.description);
     const embeddings = await embeddingService.generateEmbeddings(texts);
     
     // Update database with embeddings

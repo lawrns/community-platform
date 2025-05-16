@@ -81,7 +81,7 @@ class TopicHierarchyService {
       name,
       slug,
       description,
-      parent_id: parentId || null,
+      parent_id: parentId,
       created_at: new Date(),
       updated_at: new Date(),
     });

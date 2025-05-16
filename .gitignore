@@ -49,3 +49,7 @@ uploads/*
 
 # Supabase
 supabase/.temp/
+.vercel
+
+# Local Netlify folder
+.netlify

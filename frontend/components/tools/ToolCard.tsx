@@ -27,7 +27,7 @@ export default function ToolCard({ tool, index = 0 }: ToolCardProps) {
   return (
     <motion.div 
       variants={itemVariants}
-      className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow card-hover"
+      className="card-subtle rounded-lg overflow-hidden card-hoverable"
     >
       <Link href={`/tools/${tool.id}`}>
         <div className="aspect-video bg-gray-100 dark:bg-gray-800">

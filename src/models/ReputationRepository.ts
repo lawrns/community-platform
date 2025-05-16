@@ -1,7 +1,8 @@
-import { Database } from '../config/database';
+import db from '../config/database';
 import { supabase } from '../config/supabase';
-import { Repository } from './Repository';
-import { badgeRepository } from './BadgeRepository';
+import Repository from './Repository';
+import env, { config } from '../config/environment';
+// Don't import badgeRepository - will be imported from repositories.ts
 
 /**
  * Reputation change reasons
@@ -80,7 +81,18 @@ export interface ReputationHistory {
 /**
  * Repository for managing user reputation
  */
-export class ReputationRepository extends Repository {
+export class ReputationRepository extends Repository<any> {
+  protected tableName = 'reputation_history';
+  // Determine if we should use Supabase
+  private useSupabase = !!config.SUPABASE_URL && !!config.SUPABASE_ANON_KEY;
+  
+  /**
+   * Handle common errors in repository methods
+   */
+  private handleError(message: string, error: unknown): never {
+    console.error(`${message}:`, error);
+    throw new Error(`${message}: ${error instanceof Error ? error.message : String(error)}`);
+  }
   /**
    * Update a user's reputation
    */
@@ -101,16 +113,17 @@ export class ReputationRepository extends Repository {
         
         if (error) throw error;
       } else {
-        await this.db.query(
+        await db.query(
           `SELECT update_user_reputation($1, $2, $3, $4)`,
           [userId, change, reason, contentId || null]
         );
       }
 
       // After reputation update, check for badge eligibility
-      await badgeRepository.checkAllBadges(userId);
+      // Instead of direct import, we'll use the repository in the calling code
     } catch (error) {
       this.handleError('Error updating reputation', error);
+      throw error;
     }
   }
 
@@ -134,7 +147,7 @@ export class ReputationRepository extends Repository {
         if (error) throw error;
         return data as ReputationHistory[];
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           `SELECT * FROM reputation_history 
            WHERE user_id = $1 
            ORDER BY created_at DESC 
@@ -145,6 +158,7 @@ export class ReputationRepository extends Repository {
       }
     } catch (error) {
       this.handleError('Error getting reputation history', error);
+      throw error;
     }
   }
 
@@ -162,7 +176,7 @@ export class ReputationRepository extends Repository {
         if (error) throw error;
         return data as boolean;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           `SELECT user_has_privilege($1, $2) as has_privilege`,
           [userId, privilege]
         );
@@ -170,7 +184,7 @@ export class ReputationRepository extends Repository {
       }
     } catch (error) {
       this.handleError('Error checking privilege', error);
-      return false;
+      throw error;
     }
   }
 
@@ -192,7 +206,7 @@ export class ReputationRepository extends Repository {
         if (error) throw error;
         userRep = data.reputation;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           'SELECT reputation FROM users WHERE id = $1',
           [userId]
         );
@@ -219,7 +233,7 @@ export class ReputationRepository extends Repository {
       return privileges;
     } catch (error) {
       this.handleError('Error getting user privileges', error);
-      return [];
+      throw error;
     }
   }
 
@@ -242,7 +256,7 @@ export class ReputationRepository extends Repository {
         if (error) throw error;
         contentType = data.type;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           'SELECT type FROM content WHERE id = $1',
           [contentId]
         );
@@ -270,6 +284,7 @@ export class ReputationRepository extends Repository {
       await this.updateReputation(authorId, points, ReputationReason.UPVOTE, contentId);
     } catch (error) {
       this.handleError('Error awarding upvote points', error);
+      throw error;
     }
   }
 
@@ -292,7 +307,7 @@ export class ReputationRepository extends Repository {
         if (error) throw error;
         contentType = data.type;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           'SELECT type FROM content WHERE id = $1',
           [contentId]
         );
@@ -320,6 +335,7 @@ export class ReputationRepository extends Repository {
       await this.updateReputation(authorId, points, ReputationReason.DOWNVOTE, contentId);
     } catch (error) {
       this.handleError('Error awarding downvote points', error);
+      throw error;
     }
   }
 
@@ -336,6 +352,7 @@ export class ReputationRepository extends Repository {
       );
     } catch (error) {
       this.handleError('Error awarding accepted answer points', error);
+      throw error;
     }
   }
 
@@ -352,6 +369,7 @@ export class ReputationRepository extends Repository {
       );
     } catch (error) {
       this.handleError('Error awarding accept answer points', error);
+      throw error;
     }
   }
 
@@ -368,6 +386,7 @@ export class ReputationRepository extends Repository {
       );
     } catch (error) {
       this.handleError('Error awarding tool review points', error);
+      throw error;
     }
   }
 
@@ -394,7 +413,7 @@ export class ReputationRepository extends Repository {
         if (error) throw error;
         totalReputation = data.reputation;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           'SELECT reputation FROM users WHERE id = $1',
           [userId]
         );
@@ -424,7 +443,7 @@ export class ReputationRepository extends Repository {
           breakdownByReason[entry.reason] += entry.change;
         }
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           `SELECT reason, SUM(change) as total
            FROM reputation_history
            WHERE user_id = $1
@@ -448,7 +467,7 @@ export class ReputationRepository extends Repository {
         if (error) throw error;
         rank = data;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           `SELECT COUNT(*) + 1 as rank
            FROM users
            WHERE reputation > (SELECT reputation FROM users WHERE id = $1)`,
@@ -469,7 +488,7 @@ export class ReputationRepository extends Repository {
         if (error) throw error;
         percentile = data;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           `SELECT 
              (COUNT(*) FILTER (WHERE reputation <= (SELECT reputation FROM users WHERE id = $1)) * 100.0 / COUNT(*))::numeric(5,2) as percentile
            FROM users
@@ -488,9 +507,8 @@ export class ReputationRepository extends Repository {
       };
     } catch (error) {
       this.handleError('Error getting reputation stats', error);
+      throw error;
     }
   }
 }
 
-// Create and export an instance of the ReputationRepository
-export const reputationRepository = new ReputationRepository(Database.getInstance());

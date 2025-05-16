@@ -12,7 +12,7 @@ import env, { config } from '../../config/environment';
 import logger from '../../config/logger';
 import cache from '../../config/cache';
 import { User } from '../../models';
-import EmailService from '../email/emailService';
+import { emailService } from '../email/emailService';
 import { supabase } from '../../config/supabase';
 
 /**
@@ -23,87 +23,89 @@ const SALT_ROUNDS = 12;
 /**
  * Token expiration time in seconds
  */
-const TOKEN_EXPIRATION = '7d'; // 7 days
+const TOKEN_EXPIRATION = parseInt(env.AUTH_EXPIRES_IN || '7d', 10) * 24 * 60 * 60; // Convert days to seconds
 
 /**
- * Verification token expiration time in seconds
+ * Verification token expiration in seconds
  */
 const VERIFICATION_TOKEN_EXPIRATION = 24 * 60 * 60; // 24 hours
 
-// Determine if we should use Supabase
+/**
+ * Determine if we should use Supabase
+ */
 const useSupabase = !!config.SUPABASE_URL && !!config.SUPABASE_ANON_KEY;
 
 /**
- * AuthService class for managing user authentication
+ * Register a new user
  */
-class AuthService {
-  /**
-   * Register a new user
-   */
-  async register(userData: {
-    email: string;
-    username: string;
-    name: string;
-    password: string;
-  }): Promise<{ user: User; verificationToken: string }> {
-    // Check if user already exists
-    const existingUser = await userRepository.findByEmail(userData.email);
-    if (existingUser) {
+async function register(userData: {
+  email: string;
+  username: string;
+  name: string;
+  password: string;
+}): Promise<{ user: User; token: string }> {
+  try {
+    // Check if email or username already exists
+    const existingEmail = await userRepository.findByEmail(userData.email);
+    if (existingEmail) {
       throw new Error('Email already registered');
     }
 
-    // Check if username is taken
     const existingUsername = await userRepository.findByUsername(userData.username);
     if (existingUsername) {
       throw new Error('Username already taken');
     }
 
-    let user: User;
-    let verificationToken: string;
-
     if (useSupabase) {
-      // Register user with Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      // Use Supabase Auth for registration
+      const { data, error } = await supabase.auth.signUp({
         email: userData.email,
         password: userData.password,
         options: {
           data: {
             username: userData.username,
             name: userData.name,
-          }
-        }
+          },
+        },
       });
 
-      if (authError) {
-        logger.error('Error registering user with Supabase Auth:', authError);
-        throw new Error(`Registration failed: ${authError.message}`);
+      if (error) {
+        logger.error('Supabase registration error:', error);
+        throw new Error(error.message);
       }
 
-      if (!authData.user) {
-        throw new Error('Failed to create user account');
+      // Get the Supabase user ID
+      const supabaseId = data?.user?.id;
+      if (!supabaseId) {
+        throw new Error('Failed to create user in Supabase');
       }
 
-      // Create user profile in users table
-      user = await userRepository.create({
+      // Create the user in our database
+      const newUser = await userRepository.create({
         email: userData.email,
         username: userData.username,
         name: userData.name,
         auth_provider: 'supabase',
-        auth_provider_id: authData.user.id,
+        auth_provider_id: supabaseId,
         reputation: 0,
         email_verified: false,
         created_at: new Date(),
         updated_at: new Date(),
       });
 
-      // Use Supabase's built-in email verification
-      verificationToken = 'supabase-verification';
+      // Generate JWT token
+      const token = generateToken(newUser);
+
+      // Send email verification
+      await sendVerificationEmail(newUser.id);
+
+      return { user: newUser, token };
     } else {
-      // Traditional registration with local auth
+      // Use our own authentication
       const passwordHash = await bcrypt.hash(userData.password, SALT_ROUNDS);
 
       // Create user
-      user = await userRepository.create({
+      const newUser = await userRepository.create({
         email: userData.email,
         username: userData.username,
         name: userData.name,
@@ -114,478 +116,618 @@ class AuthService {
         updated_at: new Date(),
       });
 
-      // Generate verification token
-      verificationToken = crypto.randomBytes(32).toString('hex');
-      
-      // Store verification token in cache
-      await cache.set(
-        `verification:${verificationToken}`,
-        { userId: user.id },
-        VERIFICATION_TOKEN_EXPIRATION
-      );
-
-      // Send verification email
-      const emailService = new EmailService();
-      await emailService.sendVerificationEmail(
-        user.email,
-        user.name,
-        verificationToken
-      );
-    }
-
-    return { user, verificationToken };
-  }
-
-  /**
-   * Login a user
-   */
-  async login(email: string, password: string): Promise<{ user: User; token: string }> {
-    if (useSupabase) {
-      // Login with Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (authError) {
-        logger.error('Supabase Auth login error:', authError);
-        throw new Error('Invalid email or password');
-      }
-
-      if (!authData.user) {
-        throw new Error('Authentication failed');
-      }
-
-      // Find user in our users table
-      let user = await userRepository.findByEmail(email);
-      
-      if (!user) {
-        // User exists in Supabase Auth but not in our users table - create profile
-        user = await userRepository.create({
-          email: authData.user.email,
-          username: authData.user.user_metadata.username || email.split('@')[0],
-          name: authData.user.user_metadata.name || 'User',
-          auth_provider: 'supabase',
-          auth_provider_id: authData.user.id,
-          reputation: 0,
-          email_verified: authData.user.email_confirmed_at !== null,
-          created_at: new Date(),
-          updated_at: new Date(),
-        });
-      }
-
-      // Check if email is verified
-      if (!user.email_verified && authData.user.email_confirmed_at) {
-        // Update email_verified in our users table
-        await userRepository.update(user.id, { email_verified: true });
-        user.email_verified = true;
-      }
-
-      // Generate a JWT token (we'll use our own JWT for consistency)
-      const token = this.generateToken(user);
-
-      return { user, token };
-    } else {
-      // Traditional login
-      // Find user by email
-      const user = await userRepository.findByEmail(email);
-      if (!user) {
-        throw new Error('Invalid email or password');
-      }
-
-      // Check if user has password (might be OAuth user)
-      if (!user.password_hash) {
-        throw new Error('Please log in with your OAuth provider');
-      }
-
-      // Check if email is verified
-      if (!user.email_verified) {
-        throw new Error('Please verify your email before logging in');
-      }
-
-      // Verify password
-      const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-      if (!isPasswordValid) {
-        throw new Error('Invalid email or password');
-      }
-
       // Generate JWT token
-      const token = this.generateToken(user);
+      const token = generateToken(newUser);
 
-      return { user, token };
+      // Send email verification
+      await sendVerificationEmail(newUser.id);
+
+      return { user: newUser, token };
     }
-  }
-
-  /**
-   * Verify a user's email
-   */
-  async verifyEmail(token: string): Promise<boolean> {
-    if (useSupabase && token === 'supabase-verification') {
-      // Supabase handles email verification automatically
-      return true;
-    } else {
-      // Traditional email verification
-      // Get verification data from cache
-      const verificationData = await cache.get<{ userId: number }>(`verification:${token}`);
+  } catch (error: unknown) {
+    logger.error('Registration error:', error);
+    
+    // Type guard for error objects with a message property
+    if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+      const errorMessage = error.message;
       
-      if (!verificationData) {
-        throw new Error('Invalid or expired verification token');
-      }
-
-      // Find user
-      const user = await userRepository.findById(verificationData.userId);
-      if (!user) {
-        throw new Error('User not found');
-      }
-
-      // Update user verification status
-      await userRepository.update(user.id, { email_verified: true });
-
-      // Remove token from cache
-      await cache.del(`verification:${token}`);
-
-      return true;
-    }
-  }
-
-  /**
-   * Resend verification email
-   */
-  async resendVerificationEmail(email: string): Promise<boolean> {
-    // Find user by email
-    const user = await userRepository.findByEmail(email);
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    // Check if already verified
-    if (user.email_verified) {
-      throw new Error('Email is already verified');
-    }
-
-    if (useSupabase) {
-      // Resend verification email with Supabase Auth
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: user.email,
-      });
-
-      if (error) {
-        logger.error('Error resending verification email:', error);
-        throw new Error(`Failed to resend verification email: ${error.message}`);
-      }
-    } else {
-      // Traditional email verification
-      // Generate verification token
-      const verificationToken = crypto.randomBytes(32).toString('hex');
-      
-      // Store verification token in cache
-      await cache.set(
-        `verification:${verificationToken}`,
-        { userId: user.id },
-        VERIFICATION_TOKEN_EXPIRATION
-      );
-
-      // Send verification email
-      const emailService = new EmailService();
-      await emailService.sendVerificationEmail(
-        user.email,
-        user.name,
-        verificationToken
-      );
-    }
-
-    return true;
-  }
-
-  /**
-   * Initiate password reset
-   */
-  async requestPasswordReset(email: string): Promise<boolean> {
-    // Find user by email
-    const user = await userRepository.findByEmail(email);
-    if (!user) {
-      // Return true even if user doesn't exist to prevent email enumeration
-      return true;
-    }
-
-    if (useSupabase) {
-      // Use Supabase Auth for password reset
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${env.FRONTEND_URL}/reset-password`,
-      });
-
-      if (error) {
-        logger.error('Error requesting password reset:', error);
-        // Still return true to prevent email enumeration
-      }
-    } else {
-      // Traditional password reset
-      // Generate reset token
-      const resetToken = crypto.randomBytes(32).toString('hex');
-      
-      // Store reset token in cache
-      await cache.set(
-        `reset:${resetToken}`,
-        { userId: user.id },
-        VERIFICATION_TOKEN_EXPIRATION
-      );
-
-      // Send password reset email
-      const emailService = new EmailService();
-      await emailService.sendPasswordResetEmail(
-        user.email,
-        user.name,
-        resetToken
-      );
-    }
-
-    return true;
-  }
-
-  /**
-   * Reset password with token
-   */
-  async resetPassword(token: string, newPassword: string): Promise<boolean> {
-    if (useSupabase) {
-      // For Supabase Auth, the token is handled via the URL in the frontend
-      // Here we just update the password
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-
-      if (error) {
-        logger.error('Error updating password:', error);
-        throw new Error(`Failed to reset password: ${error.message}`);
-      }
-
-      return true;
-    } else {
-      // Traditional password reset
-      // Get reset data from cache
-      const resetData = await cache.get<{ userId: number }>(`reset:${token}`);
-      
-      if (!resetData) {
-        throw new Error('Invalid or expired reset token');
-      }
-
-      // Find user
-      const user = await userRepository.findById(resetData.userId);
-      if (!user) {
-        throw new Error('User not found');
-      }
-
-      // Hash new password
-      const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
-
-      // Update user password
-      await userRepository.update(user.id, { password_hash: passwordHash });
-
-      // Remove token from cache
-      await cache.del(`reset:${token}`);
-
-      return true;
-    }
-  }
-
-  /**
-   * Process OAuth login/registration
-   */
-  async processOAuthUser(
-    provider: string,
-    providerUserId: string,
-    email: string,
-    name: string,
-    profileData: any
-  ): Promise<{ user: User; token: string; isNewUser: boolean }> {
-    let user = await userRepository.findByAuthProviderId(provider, providerUserId);
-    let isNewUser = false;
-
-    if (!user) {
-      // Check if user exists with the same email
-      user = await userRepository.findByEmail(email);
-
-      if (user) {
-        // Link accounts if email already exists
-        await userRepository.update(user.id, {
-          auth_provider: provider,
-          auth_provider_id: providerUserId,
-        });
-      } else {
-        // Create new user
-        isNewUser = true;
-        
-        // Generate unique username from email
-        const baseUsername = email.split('@')[0];
-        let username = baseUsername;
-        let counter = 1;
-        
-        // Check username availability and add counter if needed
-        while (await userRepository.findByUsername(username)) {
-          username = `${baseUsername}${counter}`;
-          counter++;
-        }
-
-        if (useSupabase && provider === 'auth0') {
-          // Create user in Supabase Auth
-          const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-            email,
-            email_confirm: true,
-            user_metadata: {
-              provider,
-              provider_id: providerUserId,
-              name,
-            },
-          });
-
-          if (authError) {
-            logger.error('Error creating Supabase Auth user from OAuth:', authError);
-            throw new Error(`OAuth login failed: ${authError.message}`);
-          }
-
-          // Create user in our database
-          user = await userRepository.create({
-            email,
-            username,
-            name,
-            auth_provider: provider,
-            auth_provider_id: providerUserId,
-            reputation: 0,
-            email_verified: true, // OAuth emails are pre-verified
-            created_at: new Date(),
-            updated_at: new Date(),
-          });
-        } else {
-          // Create user directly in our database
-          user = await userRepository.create({
-            email,
-            username,
-            name,
-            auth_provider: provider,
-            auth_provider_id: providerUserId,
-            reputation: 0,
-            email_verified: true, // OAuth emails are pre-verified
-            created_at: new Date(),
-            updated_at: new Date(),
-          });
+      if (
+        errorMessage.includes('duplicate key') ||
+        errorMessage.includes('already registered') ||
+        errorMessage.includes('already taken')
+      ) {
+        if (errorMessage.includes('email')) {
+          throw new Error('Email already registered');
+        } else if (errorMessage.includes('username')) {
+          throw new Error('Username already taken');
         }
       }
     }
-
-    // Generate JWT token
-    const token = this.generateToken(user);
-
-    return { user, token, isNewUser };
-  }
-
-  /**
-   * Sign out a user
-   */
-  async signOut(token: string): Promise<boolean> {
-    if (useSupabase) {
-      // Sign out of Supabase Auth
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        logger.error('Error signing out:', error);
-        throw new Error(`Sign out failed: ${error.message}`);
-      }
-    }
     
-    // Additional sign out logic if needed
-    // e.g., invalidate token in a blocklist
-    
-    return true;
+    // Re-throw as a generic error with a user-friendly message
+    throw new Error('Registration failed. Please try again later.');
   }
+}
 
-  /**
-   * Generate JWT token for a user
-   */
-  generateToken(user: User): string {
-    const payload = {
-      userId: user.id,
-      email: user.email,
-      username: user.username,
-    };
-
-    return jwt.sign(payload, env.AUTH_SECRET, {
-      expiresIn: env.AUTH_EXPIRES_IN,
-    });
-  }
-
-  /**
-   * Validate JWT token
-   */
-  async validateToken(token: string): Promise<{ userId: number; email: string; username: string } | null> {
-    try {
-      const decoded = jwt.verify(token, env.AUTH_SECRET) as {
-        userId: number;
-        email: string;
-        username: string;
-      };
-      
-      return decoded;
-    } catch (error) {
-      logger.error('Token validation error:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Change user password
-   */
-  async changePassword(userId: number | string, currentPassword: string, newPassword: string): Promise<boolean> {
-    // Find user
+/**
+ * Send verification email
+ */
+async function sendVerificationEmail(userId: number): Promise<void> {
+  try {
+    // Get user
     const user = await userRepository.findById(userId);
     if (!user) {
       throw new Error('User not found');
     }
 
-    if (useSupabase) {
-      // First verify current password
-      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: user.email,
-        password: currentPassword
-      });
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    
+    // Store verification token in cache
+    await cache.set(
+      `verification:${verificationToken}`,
+      { userId: user.id },
+      VERIFICATION_TOKEN_EXPIRATION
+    );
 
-      if (signInError || !authData.user) {
-        throw new Error('Current password is incorrect');
-      }
-
-      // Update password with Supabase Auth
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-
-      if (updateError) {
-        logger.error('Error changing password:', updateError);
-        throw new Error(`Failed to change password: ${updateError.message}`);
-      }
-    } else {
-      // Traditional password change
-      // Check if user has password (might be OAuth user)
-      if (!user.password_hash) {
-        throw new Error('OAuth users cannot change password');
-      }
-
-      // Verify current password
-      const isPasswordValid = await bcrypt.compare(currentPassword, user.password_hash);
-      if (!isPasswordValid) {
-        throw new Error('Current password is incorrect');
-      }
-
-      // Hash new password
-      const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
-
-      // Update user password
-      await userRepository.update(user.id, { 
-        password_hash: passwordHash,
-        updated_at: new Date()
-      });
-    }
-
-    return true;
+    // Send verification email
+    // emailService is already imported
+    await emailService.sendVerificationEmail(
+      user.email,
+      user.name,
+      verificationToken
+    );
+  } catch (error) {
+    logger.error('Error sending verification email:', error);
+    throw error;
   }
 }
 
-export default new AuthService();
+/**
+ * Verify email with token
+ */
+async function verifyEmail(token: string): Promise<User | null> {
+  try {
+    // Check token from cache
+    const data = await cache.get<{ userId: number }>(`verification:${token}`);
+    if (!data || !data.userId) {
+      throw new Error('Invalid or expired verification token');
+    }
+
+    // Get user
+    const user = await userRepository.findById(data.userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Update user verification status
+    const updatedUser = await userRepository.update(user.id, {
+      email_verified: true,
+      updated_at: new Date(),
+    });
+
+    // Remove token from cache
+    await cache.del(`verification:${token}`);
+
+    // Send welcome email
+    if (updatedUser) {
+      await emailService.sendWelcomeEmail(updatedUser.email, updatedUser.name);
+    }
+
+    return updatedUser;
+  } catch (error) {
+    logger.error('Email verification error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Resend verification email
+ */
+async function resendVerification(email: string): Promise<void> {
+  try {
+    // Get user by email
+    const user = await userRepository.findByEmail(email);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (user.email_verified) {
+      throw new Error('Email already verified');
+    }
+
+    // Generate new verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    
+    // Store verification token in cache
+    await cache.set(
+      `verification:${verificationToken}`,
+      { userId: user.id },
+      VERIFICATION_TOKEN_EXPIRATION
+    );
+
+    // Send verification email
+    // emailService is already imported
+    await emailService.sendVerificationEmail(
+      user.email,
+      user.name,
+      verificationToken
+    );
+  } catch (error) {
+    logger.error('Resend verification error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Send password reset email
+ */
+async function sendPasswordResetEmail(email: string): Promise<void> {
+  try {
+    // Get user by email
+    const user = await userRepository.findByEmail(email);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    
+    // Store reset token in cache
+    await cache.set(
+      `reset:${resetToken}`,
+      { userId: user.id },
+      VERIFICATION_TOKEN_EXPIRATION
+    );
+
+    // Send password reset email
+    // emailService is already imported
+    await emailService.sendPasswordResetEmail(
+      user.email,
+      user.name,
+      resetToken
+    );
+  } catch (error) {
+    logger.error('Send password reset error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Reset password with token
+ */
+async function resetPassword(token: string, newPassword: string): Promise<boolean> {
+  try {
+    // Check token from cache
+    const data = await cache.get<{ userId: number }>(`reset:${token}`);
+    if (!data || !data.userId) {
+      throw new Error('Invalid or expired reset token');
+    }
+
+    // Get user
+    const user = await userRepository.findById(data.userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (useSupabase && user.auth_provider === 'supabase') {
+      // Reset password in Supabase
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        logger.error('Supabase password reset error:', error);
+        throw new Error(error.message);
+      }
+    } else {
+      // Update password in our database
+      const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+      await userRepository.update(user.id, {
+        password_hash: passwordHash,
+        updated_at: new Date(),
+      });
+    }
+
+    // Remove token from cache
+    await cache.del(`reset:${token}`);
+
+    return true;
+  } catch (error) {
+    logger.error('Password reset error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Login user
+ */
+async function login(email: string, password: string): Promise<{ user: User; token: string }> {
+  try {
+    // Get user by email
+    const user = await userRepository.findByEmail(email);
+    if (!user) {
+      throw new Error('Invalid email or password');
+    }
+
+    if (useSupabase && user.auth_provider === 'supabase') {
+      // Use Supabase Auth for login
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        logger.error('Supabase login error:', error);
+        throw new Error('Invalid email or password');
+      }
+
+      // Generate JWT token
+      const token = generateToken(user);
+
+      return { user, token };
+    } else {
+      // Use our own authentication
+      if (!user.password_hash) {
+        throw new Error('Invalid email or password');
+      }
+
+      // Check password
+      const isMatch = await bcrypt.compare(password, user.password_hash);
+      if (!isMatch) {
+        throw new Error('Invalid email or password');
+      }
+
+      // Generate JWT token
+      const token = generateToken(user);
+
+      return { user, token };
+    }
+  } catch (error) {
+    logger.error('Login error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generate JWT token
+ */
+function generateToken(user: User): string {
+  return jwt.sign(
+    { id: user.id, email: user.email, username: user.username },
+    env.AUTH_SECRET as string,
+    { expiresIn: TOKEN_EXPIRATION }
+  );
+}
+
+/**
+ * Verify JWT token
+ */
+function verifyToken(token: string): any {
+  return jwt.verify(token, env.AUTH_SECRET as string);
+}
+
+/**
+ * Get user profile
+ */
+async function getProfile(userId: number): Promise<User | null> {
+  return userRepository.findById(userId);
+}
+
+/**
+ * Update user profile
+ */
+async function updateProfile(
+  userId: number,
+  userData: {
+    name?: string;
+    username?: string;
+    bio?: string;
+    avatar_url?: string;
+  }
+): Promise<User | null> {
+  // Check if username already exists
+  if (userData.username) {
+    const existingUser = await userRepository.findByUsername(userData.username);
+    if (existingUser && existingUser.id !== userId) {
+      throw new Error('Username already taken');
+    }
+  }
+
+  // Update user
+  return userRepository.update(userId, {
+    ...userData,
+    updated_at: new Date(),
+  });
+}
+
+/**
+ * Change password
+ */
+async function changePassword(
+  userId: number,
+  currentPassword: string,
+  newPassword: string
+): Promise<boolean> {
+  // Get user
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  if (useSupabase && user.auth_provider === 'supabase') {
+    // Change password in Supabase
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    if (error) {
+      logger.error('Supabase password change error:', error);
+      throw new Error(error.message);
+    }
+  } else {
+    // Verify current password
+    if (!user.password_hash) {
+      throw new Error('Cannot change password for external auth provider');
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isMatch) {
+      throw new Error('Current password is incorrect');
+    }
+
+    // Update password
+    const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+    await userRepository.update(userId, {
+      password_hash: passwordHash,
+      updated_at: new Date(),
+    });
+  }
+
+  return true;
+}
+
+/**
+ * Process OAuth user from providers like Auth0, Google, GitHub, etc.
+ */
+async function processOAuthUser(
+  provider: string,
+  providerId: string,
+  email: string,
+  name: string,
+  profile?: any,
+  username?: string
+): Promise<{ user: User; isNewUser: boolean }> {
+  try {
+    // Check if user already exists with this provider
+    let user = await userRepository.findByProviderAndProviderId(provider, providerId);
+    let isNewUser = false;
+
+    if (!user) {
+      // Check if email already exists
+      user = await userRepository.findByEmail(email);
+
+      if (user) {
+        // Update existing user with provider info
+        user = await userRepository.update(user.id, {
+          auth_provider: provider,
+          auth_provider_id: providerId,
+          updated_at: new Date(),
+        });
+      } else {
+        // Generate unique username if not provided
+        if (!username) {
+          // Use name, then email prefix as fallback
+          username = (name || email.split('@')[0])
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '')
+            .substring(0, 15);
+
+          // Ensure uniqueness by adding random suffix if needed
+          let isUnique = false;
+          let attemptCount = 0;
+          let candidateUsername = username;
+
+          while (!isUnique && attemptCount < 5) {
+            const existing = await userRepository.findByUsername(candidateUsername);
+            if (!existing) {
+              isUnique = true;
+            } else {
+              // Add random suffix and try again
+              candidateUsername = `${username}${Math.floor(Math.random() * 1000)}`;
+              attemptCount++;
+            }
+          }
+
+          username = candidateUsername;
+        }
+
+        // Create new user
+        user = await userRepository.create({
+          email,
+          username,
+          name,
+          auth_provider: provider,
+          auth_provider_id: providerId,
+          reputation: 0,
+          email_verified: true, // Social logins are pre-verified
+          created_at: new Date(),
+          updated_at: new Date(),
+        });
+
+        isNewUser = true;
+      }
+    }
+
+    return { user: user!, isNewUser };
+  } catch (error) {
+    logger.error('OAuth user processing error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Social login (Auth0, Google, GitHub, etc.)
+ */
+async function socialLogin(
+  provider: string,
+  providerId: string,
+  email: string,
+  name: string,
+  username?: string
+): Promise<{ user: User; token: string; isNewUser: boolean }> {
+  try {
+    // Check if user already exists with this provider
+    let user = await userRepository.findByProviderAndProviderId(provider, providerId);
+    let isNewUser = false;
+
+    if (!user) {
+      // Check if email already exists
+      user = await userRepository.findByEmail(email);
+
+      if (user) {
+        // Update existing user with provider info
+        user = await userRepository.update(user.id, {
+          auth_provider: provider,
+          auth_provider_id: providerId,
+          updated_at: new Date(),
+        });
+      } else {
+        // Generate unique username if not provided
+        if (!username) {
+          // Use name, then email prefix as fallback
+          username = (name || email.split('@')[0])
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '')
+            .substring(0, 15);
+
+          // Ensure uniqueness by adding random suffix if needed
+          let isUnique = false;
+          let attemptCount = 0;
+          let candidateUsername = username;
+
+          while (!isUnique && attemptCount < 5) {
+            const existing = await userRepository.findByUsername(candidateUsername);
+            if (!existing) {
+              isUnique = true;
+            } else {
+              // Add random suffix and try again
+              candidateUsername = `${username}${Math.floor(Math.random() * 1000)}`;
+              attemptCount++;
+            }
+          }
+
+          username = candidateUsername;
+        }
+
+        // Create new user
+        user = await userRepository.create({
+          email,
+          username,
+          name,
+          auth_provider: provider,
+          auth_provider_id: providerId,
+          reputation: 0,
+          email_verified: true, // Social logins are pre-verified
+          created_at: new Date(),
+          updated_at: new Date(),
+        });
+
+        isNewUser = true;
+      }
+    }
+
+    // Generate JWT token
+    const token = generateToken(user!);
+
+    return { user: user!, token, isNewUser };
+  } catch (error) {
+    logger.error('Social login error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Supabase Exchange
+ * Exchange Supabase JWT for our application JWT
+ */
+async function supabaseExchange(supabaseToken: string): Promise<{ user: User; token: string }> {
+  try {
+    // Validate the Supabase token
+    const { data: authData, error: authError } = await supabase.auth.getUser(supabaseToken);
+
+    if (authError || !authData.user) {
+      logger.error('Supabase token validation error:', authError);
+      throw new Error('Invalid Supabase token');
+    }
+
+    // Get user by Supabase ID
+    let user = await userRepository.findByProviderAndProviderId('supabase', authData.user.id);
+
+    if (!user) {
+      // User exists in Supabase but not in our database
+      // This can happen if user registered directly with Supabase
+      const userData = authData.user.user_metadata || {};
+      let username = userData.username;
+      
+      // If no username exists, try to create one from email
+      if (!username && authData.user.email) {
+        username = authData.user.email.split('@')[0];
+      } else {
+        // Fallback username if no email or metadata username
+        username = `user_${Date.now()}`;
+      }
+      
+      // Create user in our database
+      user = await userRepository.create({
+        email: authData.user.email || '',
+        username,
+        name: userData.name || username,
+        auth_provider: 'supabase',
+        auth_provider_id: authData.user.id,
+        reputation: 0,
+        email_verified: authData.user.email_confirmed_at ? true : false,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+    }
+
+    // Generate JWT token
+    const token = generateToken(user);
+
+    return { user, token };
+  } catch (error) {
+    logger.error('Supabase exchange error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Validate JWT token
+ */
+function validateToken(token: string): any {
+  try {
+    return jwt.verify(token, env.AUTH_SECRET as string);
+  } catch (error) {
+    logger.error('Token validation error:', error);
+    return null;
+  }
+}
+
+export default {
+  register,
+  login,
+  verifyEmail,
+  resendVerification,
+  sendPasswordResetEmail,
+  resetPassword,
+  getProfile,
+  updateProfile,
+  changePassword,
+  socialLogin,
+  processOAuthUser,
+  supabaseExchange,
+  generateToken,
+  verifyToken,
+  validateToken,
+};

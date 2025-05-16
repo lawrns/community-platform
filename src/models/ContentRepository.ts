@@ -4,7 +4,7 @@
  */
 
 import Repository from './Repository';
-import { Content, ContentType, ContentStatus, ContentVersion, ModerationActionType } from './index';
+import { Content, ContentType, ContentStatus, ContentVersion, ModerationActionType, FlagType } from './index';
 import db from '../config/database';
 import { moderationRepository } from './repositories';
 import { generateContentEmbedding } from '../services/search/embeddingHooks';
@@ -110,12 +110,14 @@ export default class ContentRepository extends Repository<Content> {
     // Use a transaction to ensure all tags are added successfully
     await db.transaction(async (client) => {
       for (const tagId of tagIds) {
-        await client.query(
-          `INSERT INTO content_tags (content_id, tag_id, created_at)
-           VALUES ($1, $2, NOW())
-           ON CONFLICT (content_id, tag_id) DO NOTHING`,
-          [contentId, tagId]
-        );
+        if ('query' in client) {
+          await client.query(
+            `INSERT INTO content_tags (content_id, tag_id, created_at)
+             VALUES ($1, $2, NOW())
+             ON CONFLICT (content_id, tag_id) DO NOTHING`,
+            [contentId, tagId]
+          );
+        }
       }
     });
   }
@@ -125,19 +127,23 @@ export default class ContentRepository extends Repository<Content> {
    */
   async updateTags(contentId: number, tagIds: number[]): Promise<void> {
     await db.transaction(async (client) => {
-      // Remove existing tags
-      await client.query(
-        `DELETE FROM content_tags WHERE content_id = $1`,
-        [contentId]
-      );
-      
-      // Add new tags
-      for (const tagId of tagIds) {
+      if ('query' in client) {
+        // Remove existing tags
         await client.query(
-          `INSERT INTO content_tags (content_id, tag_id, created_at)
-           VALUES ($1, $2, NOW())`,
-          [contentId, tagId]
+          `DELETE FROM content_tags WHERE content_id = $1`,
+          [contentId]
         );
+        
+        // Add new tags
+        for (const tagId of tagIds) {
+          if ('query' in client) {
+            await client.query(
+              `INSERT INTO content_tags (content_id, tag_id, created_at)
+               VALUES ($1, $2, NOW())`,
+              [contentId, tagId]
+            );
+          }
+        }
       }
     });
   }
@@ -164,12 +170,14 @@ export default class ContentRepository extends Repository<Content> {
     // Use a transaction to ensure all topics are added successfully
     await db.transaction(async (client) => {
       for (const topicId of topicIds) {
-        await client.query(
-          `INSERT INTO content_topics (content_id, topic_id, created_at)
-           VALUES ($1, $2, NOW())
-           ON CONFLICT (content_id, topic_id) DO NOTHING`,
-          [contentId, topicId]
-        );
+        if ('query' in client) {
+          await client.query(
+            `INSERT INTO content_topics (content_id, topic_id, created_at)
+             VALUES ($1, $2, NOW())
+             ON CONFLICT (content_id, topic_id) DO NOTHING`,
+            [contentId, topicId]
+          );
+        }
       }
     });
   }
@@ -180,18 +188,22 @@ export default class ContentRepository extends Repository<Content> {
   async updateTopics(contentId: number, topicIds: number[]): Promise<void> {
     await db.transaction(async (client) => {
       // Remove existing topics
-      await client.query(
-        `DELETE FROM content_topics WHERE content_id = $1`,
-        [contentId]
-      );
+      if ('query' in client) {
+        await client.query(
+          `DELETE FROM content_topics WHERE content_id = $1`,
+          [contentId]
+        );
+      }
       
       // Add new topics
       for (const topicId of topicIds) {
-        await client.query(
-          `INSERT INTO content_topics (content_id, topic_id, created_at)
-           VALUES ($1, $2, NOW())`,
-          [contentId, topicId]
-        );
+        if ('query' in client) {
+          await client.query(
+            `INSERT INTO content_topics (content_id, topic_id, created_at)
+             VALUES ($1, $2, NOW())`,
+            [contentId, topicId]
+          );
+        }
       }
     });
   }
@@ -444,7 +456,7 @@ export default class ContentRepository extends Repository<Content> {
    */
   async findByAuthor(authorId: number, status?: ContentStatus, limit: number = 20, offset: number = 0): Promise<Content[]> {
     let query = `SELECT * FROM ${this.tableName} WHERE author_id = $1`;
-    const params = [authorId];
+    const params: any[] = [authorId];
     
     if (status) {
       query += ` AND status = $2`;
@@ -494,7 +506,7 @@ export default class ContentRepository extends Repository<Content> {
   /**
    * Hide content (for moderation)
    */
-  async hideContent(id: number): Promise<boolean> {
+  async hideContentSimple(id: number): Promise<boolean> {
     try {
       await this.update(id, { status: ContentStatus.HIDDEN });
       return true;
@@ -641,7 +653,7 @@ export default class ContentRepository extends Repository<Content> {
    */
   async checkForSpam(content: Content): Promise<{ isSpam: boolean; score: number; reason?: string }> {
     // Use the moderation repository's spam detection
-    return moderationRepository.checkForSpam(content.body, 'content');
+    return moderationRepository.checkForSpam(content.body, FlagType.CONTENT);
   }
 
   /**
@@ -657,12 +669,17 @@ export default class ContentRepository extends Repository<Content> {
     // Use transaction to update content and record moderation action
     return db.transaction(async (client) => {
       // Update content status
-      const updated = await client.query(
-        `UPDATE ${this.tableName} SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
-        [ContentStatus.HIDDEN, id]
-      );
+      let updated;
+      if ('query' in client) {
+        updated = await client.query(
+          `UPDATE ${this.tableName} SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
+          [ContentStatus.HIDDEN, id]
+        );
+      } else {
+        throw new Error('Client does not support query');
+      }
 
-      if (!updated.rows.length) {
+      if (!updated || !updated.rows.length) {
         throw new Error('Failed to hide content');
       }
 
@@ -696,10 +713,15 @@ export default class ContentRepository extends Repository<Content> {
     // Use transaction to update content and record moderation action
     return db.transaction(async (client) => {
       // Update content status back to published
-      const updated = await client.query(
-        `UPDATE ${this.tableName} SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
-        [ContentStatus.PUBLISHED, id]
-      );
+      let updated;
+      if ('query' in client) {
+        updated = await client.query(
+          `UPDATE ${this.tableName} SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
+          [ContentStatus.PUBLISHED, id]
+        );
+      } else {
+        throw new Error('Client does not support query');
+      }
 
       if (!updated.rows.length) {
         throw new Error('Failed to unhide content');
@@ -749,10 +771,15 @@ export default class ContentRepository extends Repository<Content> {
     // Use transaction to update content and record moderation action
     return db.transaction(async (client) => {
       // Update content status
-      const updated = await client.query(
-        `UPDATE ${this.tableName} SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
-        [ContentStatus.DELETED, id]
-      );
+      let updated;
+      if ('query' in client) {
+        updated = await client.query(
+          `UPDATE ${this.tableName} SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
+          [ContentStatus.DELETED, id]
+        );
+      } else {
+        throw new Error('Client does not support query');
+      }
 
       if (!updated.rows.length) {
         throw new Error('Failed to delete content');
@@ -788,10 +815,15 @@ export default class ContentRepository extends Repository<Content> {
     // Use transaction to update content and record moderation action
     return db.transaction(async (client) => {
       // Update content status back to published
-      const updated = await client.query(
-        `UPDATE ${this.tableName} SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
-        [ContentStatus.PUBLISHED, id]
-      );
+      let updated;
+      if ('query' in client) {
+        updated = await client.query(
+          `UPDATE ${this.tableName} SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
+          [ContentStatus.PUBLISHED, id]
+        );
+      } else {
+        throw new Error('Client does not support query');
+      }
 
       if (!updated.rows.length) {
         throw new Error('Failed to undelete content');

@@ -4,21 +4,21 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-caption font-semibold transition-colors duration-normal ease-in-out focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-full border badge px-2.5 py-0.5 text-caption font-semibold transition-colors duration-normal ease-in-out focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-1",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-brand-primary text-content-onPrimary hover:bg-brand-primary/80",
+          "badge-primary",
         secondary:
-          "border-transparent bg-brand-secondary text-content-primary hover:bg-brand-secondary/80",
+          "badge-secondary",
         destructive:
-          "border-transparent bg-semantic-error text-content-onDestructive hover:bg-semantic-error/80",
-        outline: "text-content-primary",
-        success: "border-transparent bg-semantic-success text-content-inverse hover:bg-semantic-success/80",
-        warning: "border-transparent bg-semantic-warning text-content-inverse hover:bg-semantic-warning/80",
-        info: "border-transparent bg-semantic-info text-content-inverse hover:bg-semantic-info/80",
-        accent: "border-transparent bg-surface-accent text-content-primary hover:bg-surface-accent/80",
+          "badge-error",
+        outline: "badge-outline",
+        success: "badge-success",
+        warning: "badge-warning",
+        info: "badge-info",
+        accent: "badge-accent",
       },
       size: {
         default: "px-2.5 py-0.5 text-caption",

@@ -3,7 +3,7 @@
  * Provides personalized content recommendations based on user behavior and preferences
  */
 
-import { Database } from '../../config/database';
+import db from '../../config/database';
 import logger from '../../config/logger';
 import env from '../../config/environment';
 import { embeddingService } from '../search/embeddingService';
@@ -34,10 +34,9 @@ interface RecommendationOptions {
 }
 
 class RecommendationService {
-  private db: Database;
-  
+  // Use the imported db module
   constructor() {
-    this.db = Database.getInstance();
+    // No initialization needed as we'll use the db import directly
   }
   
   /**
@@ -46,24 +45,24 @@ class RecommendationService {
   async getUserExplicitInterests(userId: number): Promise<UserInterest[]> {
     try {
       // Get user's followed topics
-      const followedTopics = await this.db.query(
+      const followedTopics = await db.query(
         `SELECT topic_id as id FROM user_topic_follows WHERE user_id = $1`,
         [userId]
       );
       
       // Get user's followed tags
-      const followedTags = await this.db.query(
+      const followedTags = await db.query(
         `SELECT tag_id as id FROM user_tag_follows WHERE user_id = $1`,
         [userId]
       );
       
       const interests: UserInterest[] = [
-        ...followedTopics.rows.map(row => ({
+        ...followedTopics.rows.map((row: {id: number}) => ({
           id: row.id,
           type: 'topic' as const,
           strength: WEIGHTS.EXPLICIT_INTEREST
         })),
-        ...followedTags.rows.map(row => ({
+        ...followedTags.rows.map((row: {id: number}) => ({
           id: row.id,
           type: 'tag' as const,
           strength: WEIGHTS.EXPLICIT_INTEREST
@@ -82,7 +81,7 @@ class RecommendationService {
    */
   async getUserViewHistory(userId: number, days: number = 30, limit: number = 50): Promise<number[]> {
     try {
-      const result = await this.db.query(
+      const result = await db.query(
         `SELECT content_id FROM user_content_views
          WHERE user_id = $1 AND viewed_at > NOW() - INTERVAL '${days} days'
          ORDER BY viewed_at DESC
@@ -90,7 +89,7 @@ class RecommendationService {
         [userId, limit]
       );
       
-      return result.rows.map(row => row.content_id);
+      return result.rows.map((row: {content_id: number}) => row.content_id);
     } catch (error) {
       logger.error('Error getting user view history:', error);
       return [];
@@ -103,7 +102,7 @@ class RecommendationService {
   async getUserInteractions(userId: number, days: number = 60, limit: number = 100): Promise<{id: number, interactionStrength: number}[]> {
     try {
       // Get content the user has interacted with (upvotes, comments, etc.)
-      const result = await this.db.query(
+      const result = await db.query(
         `SELECT 
            CASE 
              WHEN v.content_id IS NOT NULL THEN v.content_id
@@ -129,8 +128,8 @@ class RecommendationService {
       );
       
       return result.rows
-        .filter(row => row.content_id !== null)
-        .map(row => ({ 
+        .filter((row: {content_id: number | null, interaction_strength: number}) => row.content_id !== null)
+        .map((row: {content_id: number, interaction_strength: number}) => ({ 
           id: row.content_id, 
           interactionStrength: row.interaction_strength 
         }));
@@ -280,7 +279,7 @@ class RecommendationService {
         LIMIT $1 OFFSET $2
       `;
       
-      const result = await this.db.query(query, [personalizedCount, offset]);
+      const result = await db.query(query, [personalizedCount, offset]);
       
       // If we need fresh content, add it
       let recommendedContent = result.rows;
@@ -322,7 +321,7 @@ class RecommendationService {
         ? `AND c.id NOT IN (${excludeIds.join(',')})`
         : '';
       
-      const result = await this.db.query(
+      const result = await db.query(
         `SELECT 
           c.*,
           ARRAY(
@@ -369,7 +368,7 @@ class RecommendationService {
         ? `AND c.id NOT IN (${excludeIds.join(',')})`
         : '';
       
-      const result = await this.db.query(
+      const result = await db.query(
         `SELECT 
           c.*,
           ARRAY(
@@ -425,7 +424,7 @@ class RecommendationService {
         return null;
       }
       
-      const contentResult = await this.db.query(
+      const contentResult = await db.query(
         `SELECT id, title, body FROM content WHERE id IN (${contentIds.join(',')})`,
         []
       );
@@ -435,8 +434,8 @@ class RecommendationService {
       }
       
       // Combine titles and bodies, weighted by interaction strength
-      let combinedText = contentResult.rows.map(row => {
-        const interaction = interactions.find(i => i.id === row.id);
+      let combinedText = contentResult.rows.map((row: {id: number; title: string; body: string}) => {
+        const interaction = interactions.find((i: {id: number; interactionStrength: number}) => i.id === row.id);
         const weight = interaction ? interaction.interactionStrength : 1;
         
         // Repeat content based on weight to influence embedding
@@ -480,7 +479,7 @@ class RecommendationService {
         ? `AND c.id NOT IN (${excludeIds.join(',')})`
         : '';
       
-      const result = await this.db.query(
+      const result = await db.query(
         `SELECT 
           c.*,
           ARRAY(
@@ -516,7 +515,7 @@ class RecommendationService {
    */
   async recordContentView(userId: number, contentId: number): Promise<void> {
     try {
-      await this.db.query(
+      await db.query(
         `INSERT INTO user_content_views (user_id, content_id, viewed_at)
          VALUES ($1, $2, NOW())
          ON CONFLICT (user_id, content_id) 

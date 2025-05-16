@@ -4,6 +4,7 @@
  */
 
 import winston from 'winston';
+import express from 'express';
 import env from './environment';
 
 // Define log format
@@ -55,7 +56,7 @@ const logger = winston.createLogger({
 });
 
 // Add request logging middleware function
-export function requestLogger(req, res, next) {
+export function requestLogger(req: express.Request, res: express.Response, next: express.NextFunction) {
   const start = Date.now();
   
   // Log when the request completes

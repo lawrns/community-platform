@@ -2,8 +2,9 @@ import { Router } from 'express';
 import { param, query } from 'express-validator';
 import { authenticate, requireVerified } from '../../../middlewares/auth/authMiddleware';
 import { asyncHandler } from '../../../utils/asyncHandler';
-import { reputationRepository, PrivilegeType } from '../../../models/ReputationRepository';
-import { badgeRepository } from '../../../models/BadgeRepository';
+import { reputationRepository } from '../../../models/repositories';
+import { PrivilegeType } from '../../../models/ReputationRepository';
+import { badgeRepository } from '../../../models/repositories';
 
 const router = Router();
 
@@ -26,13 +27,13 @@ router.get(
     const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
     
     // Only allow users to view their own reputation history or admins/moderators
-    if (req.user.id !== userId && !req.user.isAdmin && !req.user.isModerator) {
+    if (req.user?.id !== userId && !req.user?.isAdmin && !req.user?.isModerator) {
       return res.status(403).json({ error: 'Unauthorized to view this user\'s reputation history' });
     }
     
     const history = await reputationRepository.getReputationHistory(userId, limit, offset);
     
-    res.json({
+    return res.json({
       success: true,
       data: history
     });
@@ -53,7 +54,7 @@ router.get(
     const userId = parseInt(req.params.userId);
     const stats = await reputationRepository.getReputationStats(userId);
     
-    res.json({
+    return res.json({
       success: true,
       data: stats
     });
@@ -74,7 +75,7 @@ router.get(
     const userId = parseInt(req.params.userId);
     const privileges = await reputationRepository.getUserPrivileges(userId);
     
-    res.json({
+    return res.json({
       success: true,
       data: {
         privileges,
@@ -107,7 +108,7 @@ router.get(
     const userId = parseInt(req.params.userId);
     const badges = await badgeRepository.getUserBadges(userId);
     
-    res.json({
+    return res.json({
       success: true,
       data: badges
     });
@@ -130,7 +131,7 @@ router.post(
     const userId = parseInt(req.params.userId);
     
     // Only allow users to check their own badges or admins
-    if (req.user.id !== userId && !req.user.isAdmin) {
+    if (req.user?.id !== userId && !req.user?.isAdmin) {
       return res.status(403).json({ error: 'Unauthorized to check badges for this user' });
     }
     
@@ -139,7 +140,7 @@ router.post(
       awardedBadges.map(id => badgeRepository.getBadgeById(id))
     ) : [];
     
-    res.json({
+    return res.json({
       success: true,
       data: {
         awardedCount: awardedBadges.length,

@@ -98,12 +98,16 @@ export default class ToolRepository extends Repository<Tool> {
     // Use a transaction to ensure all tags are added successfully
     await db.transaction(async (client) => {
       for (const tagId of tagIds) {
-        await client.query(
-          `INSERT INTO tool_tags (tool_id, tag_id, created_at)
-           VALUES ($1, $2, NOW())
-           ON CONFLICT (tool_id, tag_id) DO NOTHING`,
-          [toolId, tagId]
-        );
+        if ('query' in client) {
+          await client.query(
+            `INSERT INTO tool_tags (tool_id, tag_id, created_at)
+             VALUES ($1, $2, NOW())
+             ON CONFLICT (tool_id, tag_id) DO NOTHING`,
+            [toolId, tagId]
+          );
+        } else {
+          throw new Error('Transaction client missing query method');
+        }
       }
     });
   }
@@ -114,18 +118,22 @@ export default class ToolRepository extends Repository<Tool> {
   async updateTags(toolId: number, tagIds: number[]): Promise<void> {
     await db.transaction(async (client) => {
       // Remove existing tags
-      await client.query(
-        `DELETE FROM tool_tags WHERE tool_id = $1`,
-        [toolId]
-      );
-      
-      // Add new tags
-      for (const tagId of tagIds) {
+      if ('query' in client) {
         await client.query(
-          `INSERT INTO tool_tags (tool_id, tag_id, created_at)
-           VALUES ($1, $2, NOW())`,
-          [toolId, tagId]
+          `DELETE FROM tool_tags WHERE tool_id = $1`,
+          [toolId]
         );
+        
+        // Add new tags
+        for (const tagId of tagIds) {
+          await client.query(
+            `INSERT INTO tool_tags (tool_id, tag_id, created_at)
+             VALUES ($1, $2, NOW())`,
+            [toolId, tagId]
+          );
+        }
+      } else {
+        throw new Error('Transaction client missing query method');
       }
     });
   }
@@ -169,30 +177,34 @@ export default class ToolRepository extends Repository<Tool> {
   async upvote(toolId: number, userId: number): Promise<boolean> {
     try {
       await db.transaction(async (client) => {
-        // Check if user already voted for this tool
-        const existingVote = await client.query(
-          `SELECT * FROM user_votes 
-           WHERE user_id = $1 AND tool_id = $2`,
-          [userId, toolId]
-        );
-        
-        if (existingVote.rows.length > 0) {
-          // User already voted, do nothing
-          return;
+        if ('query' in client) {
+          // Check if user already voted for this tool
+          const existingVote = await client.query(
+            `SELECT * FROM user_votes 
+             WHERE user_id = $1 AND tool_id = $2`,
+            [userId, toolId]
+          );
+          
+          if (existingVote.rows.length > 0) {
+            // User already voted, do nothing
+            return;
+          }
+          
+          // Create a new vote
+          await client.query(
+            `INSERT INTO user_votes (user_id, tool_id, vote_type, created_at, updated_at)
+             VALUES ($1, $2, 1, NOW(), NOW())`,
+            [userId, toolId]
+          );
+          
+          // Increment tool upvotes
+          await client.query(
+            `UPDATE tools SET upvotes = upvotes + 1 WHERE id = $1`,
+            [toolId]
+          );
+        } else {
+          throw new Error('Transaction client missing query method');
         }
-        
-        // Create a new vote
-        await client.query(
-          `INSERT INTO user_votes (user_id, tool_id, vote_type, created_at, updated_at)
-           VALUES ($1, $2, 1, NOW(), NOW())`,
-          [userId, toolId]
-        );
-        
-        // Increment tool upvotes
-        await client.query(
-          `UPDATE tools SET upvotes = upvotes + 1 WHERE id = $1`,
-          [toolId]
-        );
       });
       
       return true;
@@ -405,31 +417,35 @@ export default class ToolRepository extends Repository<Tool> {
       // Check if the tool is already claimed
       const tool = await this.findById(claim.tool_id);
       
-      if (tool.vendor_id) {
+      if (tool && tool.vendor_id) {
         return { success: false, status: 'Tool is already claimed' };
       }
       
       // Use a transaction to update both the claim and the tool
       await db.transaction(async (client) => {
-        // Update the claim status
-        await client.query(
-          `UPDATE tool_claims SET status = 'approved', updated_at = NOW() WHERE id = $1`,
-          [claimId]
-        );
-        
-        // Update the tool vendor
-        await client.query(
-          `UPDATE ${this.tableName} SET vendor_id = $1, is_verified = true, updated_at = NOW() WHERE id = $2`,
-          [claim.user_id, claim.tool_id]
-        );
-        
-        // Reject any other pending claims for this tool
-        await client.query(
-          `UPDATE tool_claims 
-           SET status = 'rejected', updated_at = NOW() 
-           WHERE tool_id = $1 AND id != $2 AND status = 'pending'`,
-          [claim.tool_id, claimId]
-        );
+        if ('query' in client) {
+          // Update the claim status
+          await client.query(
+            `UPDATE tool_claims SET status = 'approved', updated_at = NOW() WHERE id = $1`,
+            [claimId]
+          );
+          
+          // Update the tool vendor
+          await client.query(
+            `UPDATE ${this.tableName} SET vendor_id = $1, is_verified = true, updated_at = NOW() WHERE id = $2`,
+            [claim.user_id, claim.tool_id]
+          );
+          
+          // Reject any other pending claims for this tool
+          await client.query(
+            `UPDATE tool_claims 
+             SET status = 'rejected', updated_at = NOW() 
+             WHERE tool_id = $1 AND id != $2 AND status = 'pending'`,
+            [claim.tool_id, claimId]
+          );
+        } else {
+          throw new Error('Transaction client missing query method');
+        }
       });
       
       return { success: true, status: 'Claim approved successfully' };

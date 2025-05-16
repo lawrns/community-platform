@@ -1,0 +1,398 @@
+/* LUMEN Design System - Animations
+ * Micro-delight animations with subtle timing (120ms)
+ * Glow effects, transitions, and gesture responses
+ * Respects reduced-motion preference
+ */
+
+:root {
+  /* === Animation Timing Variables === */
+  --animation-duration-micro: 120ms;   /* Micro-delight animations */
+  --animation-duration-quick: 200ms;   /* Quick transitions */
+  --animation-duration-standard: 300ms; /* Standard transitions */
+  --animation-duration-entrance: 400ms; /* Entrance animations */
+  
+  /* === Animation Easings === */
+  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1.0);
+  --ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1.0);
+  --ease-accelerate: cubic-bezier(0.4, 0.0, 1.0, 1.0);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-bounce: cubic-bezier(0.87, -0.41, 0.19, 1.44);
+  
+  /* === Spring Animation Parameters === */
+  --spring-stiffness-tight: 300;
+  --spring-damping-tight: 30;
+  --spring-stiffness-loose: 150;
+  --spring-damping-loose: 15;
+}
+
+/* === General Transition Utilities === */
+
+/* Transition all properties */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: var(--ease-standard);
+  transition-duration: var(--animation-duration-standard);
+}
+
+/* Transition specific properties */
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: var(--ease-standard);
+  transition-duration: var(--animation-duration-standard);
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: var(--ease-standard);
+  transition-duration: var(--animation-duration-standard);
+}
+
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: var(--ease-standard);
+  transition-duration: var(--animation-duration-standard);
+}
+
+/* Micro-delight transitions (120ms) */
+.transition-micro {
+  transition-duration: var(--animation-duration-micro);
+}
+
+/* === Easing Variants === */
+.ease-standard { transition-timing-function: var(--ease-standard); }
+.ease-decelerate { transition-timing-function: var(--ease-decelerate); }
+.ease-accelerate { transition-timing-function: var(--ease-accelerate); }
+.ease-spring { transition-timing-function: var(--ease-spring); }
+.ease-bounce { transition-timing-function: var(--ease-bounce); }
+
+/* === Hover/Active State Micro-Delights === */
+
+/* Scale effects */
+.hover-scale {
+  transition: transform var(--animation-duration-micro) var(--ease-spring);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-scale:active {
+  transform: scale(0.98);
+}
+
+/* Small scale effects for buttons */
+.hover-scale-sm {
+  transition: transform var(--animation-duration-micro) var(--ease-spring);
+}
+
+.hover-scale-sm:hover {
+  transform: scale(1.02);
+}
+
+.hover-scale-sm:active {
+  transform: scale(0.98);
+}
+
+/* Lift effect for cards */
+.hover-lift {
+  transition: transform var(--animation-duration-micro) var(--ease-decelerate),
+              box-shadow var(--animation-duration-micro) var(--ease-decelerate);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elev-2);
+}
+
+.hover-lift:active {
+  transform: translateY(0px);
+}
+
+/* Glow effects */
+.hover-glow {
+  transition: box-shadow var(--animation-duration-micro) var(--ease-decelerate);
+}
+
+.hover-glow:hover {
+  box-shadow: var(--shadow-glow-sm);
+}
+
+.hover-glow-accent:hover {
+  box-shadow: var(--shadow-glow-md);
+}
+
+/* === Animation Keyframes === */
+
+/* Pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-pulse-fast {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Gentle glow animation */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: var(--shadow-glow-sm);
+  }
+  50% {
+    box-shadow: var(--shadow-glow-md);
+  }
+}
+
+.animate-glow {
+  animation: glow 2s var(--ease-standard) infinite;
+}
+
+/* Sharp teal flash animation for notifications/confirmations */
+@keyframes flash {
+  0%, 100% {
+    box-shadow: none;
+  }
+  50% {
+    box-shadow: var(--shadow-glow-lg);
+  }
+}
+
+.animate-flash {
+  animation: flash 0.5s var(--ease-standard);
+}
+
+/* Subtle bounce */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+    animation-timing-function: var(--ease-spring);
+  }
+  50% {
+    transform: translateY(-5%);
+    animation-timing-function: var(--ease-spring);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+/* Spin animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Hover indicators */
+.hover-indicator {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.hover-indicator::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: var(--c-surface-2);
+  transition: width var(--animation-duration-micro) var(--ease-decelerate);
+}
+
+.hover-indicator:hover::before {
+  width: 100%;
+}
+
+/* === Entrance/Exit Animations === */
+
+/* Fade In */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--animation-duration-entrance) var(--ease-decelerate);
+}
+
+/* Slide Up */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp var(--animation-duration-entrance) var(--ease-decelerate);
+}
+
+/* Slide Down */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown var(--animation-duration-entrance) var(--ease-decelerate);
+}
+
+/* Scale In */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--animation-duration-entrance) var(--ease-spring);
+}
+
+/* === Attention-Getting Animations === */
+
+/* Gentle wave animation for hero sections */
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-5px);
+  }
+  75% {
+    transform: translateY(5px);
+  }
+}
+
+.animate-wave {
+  animation: wave 14s ease-in-out infinite;
+}
+
+/* Subtle shake for error states */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  50% {
+    transform: translateX(0);
+  }
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Upvote burst animation */
+@keyframes burst {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 var(--c-accent);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 10px 0 var(--c-accent);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 var(--c-accent);
+  }
+}
+
+.animate-burst {
+  animation: burst var(--animation-duration-micro) var(--ease-spring);
+}
+
+/* === Staggered Animations === */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeIn 0.3s var(--ease-decelerate) forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(9) { animation-delay: 0.45s; }
+.stagger-children > *:nth-child(10) { animation-delay: 0.5s; }
+
+/* === SVG Path Animations === */
+.svg-path-draw {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawPath 1.5s forwards;
+}
+
+@keyframes drawPath {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* === Loading Animations === */
+.loading-dots::after {
+  content: '';
+  animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+  0% { content: '.'; }
+  33% { content: '..'; }
+  66% { content: '...'; }
+}
+
+/* === Reduced Motion Preferences === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transition-delay: 0ms !important;
+  }
+}

@@ -1,0 +1,155 @@
+/* LUMEN Design System - Main Import File
+ * Comprehensive import of all Lumen design system styles
+ */
+
+/* Import all Lumen design system stylesheets */
+@import './lumen-colors.css';
+@import './lumen-typography.css';
+@import './lumen-spacing.css';
+@import './lumen-animations.css';
+@import './lumen-a11y.css';
+@import './lumen-glass.css';
+
+/* Global baseline styles */
+:root {
+  /* Enable smooth scrolling but respect reduced motion preference */
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+}
+
+/* Base body styles */
+body {
+  background-color: var(--c-bg);
+  color: var(--c-text-primary);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  /* Prevent layout shift when scrollbar appears/disappears */
+  overflow-y: scroll;
+}
+
+/* Consistent focus styles for interactive elements */
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Default link styling */
+a {
+  color: var(--c-accent);
+  text-decoration: none;
+  transition: all var(--animation-duration-micro) ease;
+}
+
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Default image handling */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Consistent default border color */
+* {
+  border-color: var(--c-border-subtle);
+}
+
+/* Remove default button styling */
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* For screens with a portrait orientation */
+@media (orientation: portrait) {
+  .portrait-only {
+    display: block;
+  }
+  
+  .landscape-only {
+    display: none;
+  }
+}
+
+/* For screens with a landscape orientation */
+@media (orientation: landscape) {
+  .portrait-only {
+    display: none;
+  }
+  
+  .landscape-only {
+    display: block;
+  }
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  body:not(.light-theme) {
+    background-color: var(--c-bg);
+    color: var(--c-text-primary);
+  }
+}
+
+/* Custom selection color */
+::selection {
+  background-color: var(--c-accent);
+  color: black;
+}
+
+/* Consistent scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--c-surface-2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--c-surface-3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-text-tertiary);
+}
+
+/* Full page layout - good default for app screens */
+.lumen-fullpage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.lumen-fullpage main {
+  flex: 1;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background-color: white;
+    color: black;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+}

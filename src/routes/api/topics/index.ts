@@ -87,12 +87,9 @@ router.get(
   '/:slug',
   [param('slug').isString().notEmpty().withMessage('Slug is required')],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const slug = req.params.slug;
     const topic = await topicRepository.findBySlug(slug);
@@ -124,12 +121,9 @@ router.get(
   '/:id/children',
   [param('id').isNumeric().withMessage('Topic ID must be a number')],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const topicId = parseInt(req.params.id);
     
@@ -167,12 +161,9 @@ router.post(
       .withMessage('Parent ID must be a number'),
   ],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const { name, description, parentId } = req.body;
     
@@ -228,12 +219,9 @@ router.put(
       .withMessage('Description cannot exceed 500 characters'),
   ],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const topicId = parseInt(req.params.id);
     const updates: Record<string, any> = {};
@@ -287,12 +275,9 @@ router.post(
       .withMessage('Parent ID must be a number or null'),
   ],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const topicId = parseInt(req.params.id);
     const parentId = req.body.parentId !== null ? parseInt(req.body.parentId) : null;
@@ -333,12 +318,9 @@ router.delete(
   requirePrivilege('admin'),
   [param('id').isNumeric().withMessage('Topic ID must be a number')],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const topicId = parseInt(req.params.id);
     
@@ -372,12 +354,9 @@ router.get(
   '/:id/stats',
   [param('id').isNumeric().withMessage('Topic ID must be a number')],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const topicId = parseInt(req.params.id);
     

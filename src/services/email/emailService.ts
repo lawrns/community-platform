@@ -4,7 +4,7 @@
  */
 
 import nodemailer from 'nodemailer';
-import { renderFile } from 'ejs';
+import { renderFile } from 'ejs'; // @ts-ignore
 import path from 'path';
 import env from '../../config/environment';
 import logger from '../../config/logger';
@@ -36,7 +36,7 @@ class EmailService {
           service: 'SendGrid',
           auth: {
             user: 'apikey',
-            pass: env.SENDGRID_API_KEY,
+            pass: (env as any).SENDGRID_API_KEY,
           },
         });
         break;
@@ -44,8 +44,8 @@ class EmailService {
         this.transporter = nodemailer.createTransport({
           service: 'SES',
           auth: {
-            user: env.SES_ACCESS_KEY,
-            pass: env.SES_SECRET_KEY,
+            user: (env as any).SES_ACCESS_KEY || env.S3_ACCESS_KEY,
+            pass: (env as any).SES_SECRET_KEY || env.S3_SECRET_KEY,
           },
         });
         break;
@@ -93,7 +93,7 @@ class EmailService {
       return true;
     } catch (error) {
       logger.error(`Error sending template email '${template}':`, error);
-      throw new Error(`Failed to send template email: ${error.message}`);
+      throw new Error(`Failed to send template email: ${(error as Error).message}`);
     }
   }
 
@@ -280,3 +280,6 @@ class EmailService {
 
 // Create and export an instance of the EmailService
 export const emailService = new EmailService();
+
+// Default export for backwards compatibility
+export default emailService;

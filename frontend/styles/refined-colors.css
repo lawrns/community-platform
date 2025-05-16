@@ -1,0 +1,225 @@
+/* Refined Color System - Modern AI Community Platform */
+
+:root {
+  /* Primary Purple - AI Intelligence & Innovation */
+  --purple-50: #f5f3ff;
+  --purple-100: #ede9fe;
+  --purple-200: #ddd6fe;
+  --purple-300: #c4b5fd;
+  --purple-400: #a78bfa;
+  --purple-500: #8b5cf6;
+  --purple-600: #7c3aed;
+  --purple-700: #6d28d9;
+  --purple-800: #5b21b6;
+  --purple-900: #4c1d95;
+  --purple-950: #2e1065;
+
+  /* Electric Blue - Technology & Interaction */
+  --blue-50: #eef2ff;
+  --blue-100: #e0e7ff;
+  --blue-200: #c7d2fe;
+  --blue-300: #a5b4fc;
+  --blue-400: #818cf8;
+  --blue-500: #6366f1;
+  --blue-600: #4f46e5;
+  --blue-700: #4338ca;
+  --blue-800: #3730a3;
+  --blue-900: #312e81;
+  --blue-950: #1e1b4b;
+
+  /* Cyan - Creativity & Innovation */
+  --cyan-50: #ecfeff;
+  --cyan-100: #cffafe;
+  --cyan-200: #a5f3fc;
+  --cyan-300: #67e8f9;
+  --cyan-400: #22d3ee;
+  --cyan-500: #06b6d4;
+  --cyan-600: #0891b2;
+  --cyan-700: #0e7490;
+  --cyan-800: #155e75;
+  --cyan-900: #164e63;
+  --cyan-950: #083344;
+
+  /* UI Grays - Subtle blue undertones */
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+  --gray-950: #020617;
+
+  /* Functional Colors - Clear but restrained */
+  --success-50: #f0fdf4;
+  --success-100: #dcfce7;
+  --success-500: #22c55e;
+  --success-700: #15803d;
+  
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-500: #f59e0b;
+  --warning-700: #b45309;
+  
+  --error-50: #fef2f2;
+  --error-100: #fee2e2;
+  --error-500: #ef4444;
+  --error-700: #b91c1c;
+  
+  --info-50: #eff6ff;
+  --info-100: #dbeafe;
+  --info-500: #3b82f6;
+  --info-700: #1d4ed8;
+
+  /* Subtle Gradients - Professional & Purposeful */
+  --gradient-primary: linear-gradient(135deg, #0ea5e9, #2563eb);
+  --gradient-subtle: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  --gradient-dark: linear-gradient(135deg, #0f172a, #1e293b);
+  
+  /* Border Colors - Extremely Subtle */
+  --border-light: rgba(203, 213, 225, 0.2);  /* gray-300 at 20% */
+  --border-dark: rgba(30, 41, 59, 0.1);      /* gray-800 at 10% */
+  
+  /* Shadow Values - For Depth Instead of Borders */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -1px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+
+  /* Dark Mode Shadow Values - Softer */
+  --shadow-dark-xs: 0 1px 2px rgba(2, 6, 23, 0.2);
+  --shadow-dark-sm: 0 1px 3px rgba(2, 6, 23, 0.3), 0 1px 2px rgba(2, 6, 23, 0.2);
+  --shadow-dark-md: 0 4px 6px -1px rgba(2, 6, 23, 0.3), 0 2px 4px -1px rgba(2, 6, 23, 0.2);
+  --shadow-dark-lg: 0 10px 15px -3px rgba(2, 6, 23, 0.3), 0 4px 6px -2px rgba(2, 6, 23, 0.2);
+  --shadow-dark-xl: 0 20px 25px -5px rgba(2, 6, 23, 0.3), 0 10px 10px -5px rgba(2, 6, 23, 0.2);
+}
+
+/* Dark Mode Colors */
+.dark {
+  --border-light: rgba(71, 85, 105, 0.2);   /* gray-600 at 20% */
+  --border-dark: rgba(148, 163, 184, 0.05); /* gray-400 at 5% */
+}
+
+/* Semantic Surface Mapping */
+:root {
+  /* Light Mode */
+  --surface-background: var(--gray-50);
+  --surface-foreground: var(--gray-900);
+  
+  --surface-card: white;
+  --surface-card-hover: var(--gray-50);
+  
+  --surface-primary: var(--brand-blue-600);
+  --surface-primary-hover: var(--brand-blue-700);
+  --surface-primary-foreground: white;
+  
+  --surface-secondary: var(--gray-100);
+  --surface-secondary-hover: var(--gray-200);
+  --surface-secondary-foreground: var(--gray-900);
+  
+  --surface-muted: var(--gray-100);
+  --surface-muted-foreground: var(--gray-500);
+  
+  --surface-accent: var(--teal-500);
+  --surface-accent-hover: var(--teal-600);
+  --surface-accent-foreground: white;
+  
+  /* Border & Divider */
+  --border-subtle: var(--border-light);
+  --border-input: var(--gray-200);
+  --ring-focus: rgba(59, 130, 246, 0.3); /* brand-blue-500 at 30% */
+  
+  /* States */
+  --state-success: var(--success-500);
+  --state-warning: var(--warning-500);
+  --state-error: var(--error-500);
+  --state-info: var(--info-500);
+}
+
+/* Dark Mode Semantic Mapping */
+.dark {
+  --surface-background: var(--gray-950);
+  --surface-foreground: var(--gray-100);
+  
+  --surface-card: var(--gray-900);
+  --surface-card-hover: var(--gray-800);
+  
+  --surface-primary: var(--brand-blue-500);
+  --surface-primary-hover: var(--brand-blue-400);
+  --surface-primary-foreground: white;
+  
+  --surface-secondary: var(--gray-800);
+  --surface-secondary-hover: var(--gray-700);
+  --surface-secondary-foreground: var(--gray-100);
+  
+  --surface-muted: var(--gray-800);
+  --surface-muted-foreground: var(--gray-400);
+  
+  --surface-accent: var(--teal-400);
+  --surface-accent-hover: var(--teal-300);
+  --surface-accent-foreground: var(--gray-900);
+  
+  /* Border & Divider */
+  --border-subtle: var(--border-dark);
+  --border-input: var(--gray-700);
+  --ring-focus: rgba(56, 189, 248, 0.3); /* deep-blue-400 at 30% */
+}
+
+/* Utility Classes */
+.text-gradient-primary {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.bg-gradient-subtle {
+  background: var(--gradient-subtle);
+}
+
+.dark .bg-gradient-subtle {
+  background: var(--gradient-dark);
+}
+
+/* Card Variants with Shadows Instead of Borders */
+.card-elevated {
+  background-color: var(--surface-card);
+  box-shadow: var(--shadow-md);
+  border-radius: 0.5rem;
+  border: none;
+}
+
+.dark .card-elevated {
+  box-shadow: var(--shadow-dark-md);
+}
+
+.card-subtle {
+  background-color: var(--surface-card);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.5rem;
+}
+
+.dark .card-subtle {
+  box-shadow: var(--shadow-dark-sm);
+}
+
+.card-flat {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.5rem;
+}
+
+/* Focus States */
+.ring-focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring-focus);
+}

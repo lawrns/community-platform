@@ -1,5 +1,12 @@
+/* Import Lumen Design System */
+@import '../styles/lumen.css';
+
+/* Legacy styles for backward compatibility */
 @import '../styles/animations.css';
 @import '../styles/responsiveUtils.css';
+@import '../styles/refined-colors.css';
+@import '../styles/refined-components.css';
+@import '../styles/typography.css';
 
 @tailwind base;
 @tailwind components;
@@ -7,59 +14,61 @@
  
 @layer base {
   :root {
+    /* Dark mode toggle transition */
+    --theme-transition: 0.3s ease-in-out;
     /* Surface colors (backgrounds) */
     --surface-1: 0 0% 100%;
-    --surface-2: 210 40% 98%;
-    --surface-3: 210 40% 96.1%;
-    --surface-accent: 210 40% 96.1%;
+    --surface-2: 260 40% 98%;
+    --surface-3: 260 40% 96.1%;
+    --surface-accent: 260 30% 96.1%;
 
     /* Text/content colors */
-    --content-primary: 222.2 84% 4.9%;
-    --content-secondary: 215.4 16.3% 46.9%;
-    --content-tertiary: 217 10% 64%;
-    --content-inverse: 210 40% 98%;
-    --content-on-primary: 210 40% 98%;
-    --content-on-accent: 222.2 47.4% 11.2%;
-    --content-on-destructive: 210 40% 98%;
+    --content-primary: 260 50% 10%;
+    --content-secondary: 260 30% 40%;
+    --content-tertiary: 260 20% 64%;
+    --content-inverse: 260 30% 98%;
+    --content-on-primary: 0 0% 100%;
+    --content-on-accent: 260 50% 10%;
+    --content-on-destructive: 0 0% 100%;
 
     /* Brand colors */
-    --brand-primary: 222.2 47.4% 11.2%;
-    --brand-secondary: 210 40% 96.1%;
-    --brand-tertiary: 217.2 32.6% 17.5%;
+    --brand-primary: 265 89% 62%;
+    --brand-secondary: 230 83% 65%;
+    --brand-tertiary: 190 90% 50%;
 
     /* Accent colors for UI emphasis */
-    --accent-blue: 221 83% 53%;
-    --accent-purple: 270 76% 53%;
-    --accent-green: 142 71% 45%;
+    --accent-blue: 230 83% 65%;
+    --accent-purple: 265 89% 62%;
+    --accent-green: 160 84% 45%;
     --accent-yellow: 48 96% 53%;
     --accent-red: 0 84.2% 60.2%;
 
     /* Semantic colors */
-    --semantic-success: 142 71% 45%;
+    --semantic-success: 160 84% 45%;
     --semantic-warning: 38 92% 50%;
     --semantic-error: 0 84.2% 60.2%;
-    --semantic-info: 221 83% 53%;
+    --semantic-info: 230 83% 65%;
 
     /* Legacy colors - maintain compatibility with existing code */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 260 50% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 260 50% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 260 50% 10%;
+    --primary: 265 89% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 230 83% 65%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 260 40% 96.1%;
+    --muted-foreground: 260 30% 40%;
+    --accent: 190 90% 50%;
+    --accent-foreground: 260 50% 10%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 260 30% 92%;
+    --input: 260 30% 92%;
+    --ring: 265 89% 62%;
 
     /* Border radius */
     --radius: 0.5rem;

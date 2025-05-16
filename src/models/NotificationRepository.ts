@@ -1,12 +1,35 @@
-import { Database } from '../config/database';
+import db from '../config/database';
 import { supabase } from '../config/supabase';
-import { Notification, NotificationType } from './index';
-import { Repository } from './Repository';
+import { Notification } from './index';
+import Repository from './Repository';
+import { config } from '../config/environment';
+
+// Define notification types
+export enum NotificationType {
+  MENTION = 'mention',
+  COMMENT = 'comment',
+  FOLLOW = 'follow',
+  LIKE = 'like',
+  ANSWER = 'answer',
+  BADGE = 'badge',
+  SYSTEM = 'system'
+}
 
 /**
  * Repository for managing notifications
  */
-export class NotificationRepository extends Repository {
+export class NotificationRepository extends Repository<Notification> {
+  protected tableName = 'notifications';
+  // Determine if we should use Supabase
+  private useSupabase = !!config.SUPABASE_URL && !!config.SUPABASE_ANON_KEY;
+  
+  /**
+   * Handle common errors in repository methods
+   */
+  private handleError(message: string, error: unknown): never {
+    console.error(`${message}:`, error);
+    throw new Error(`${message}: ${error instanceof Error ? error.message : String(error)}`);
+  }
   /**
    * Create a new notification for a user
    */
@@ -31,7 +54,7 @@ export class NotificationRepository extends Repository {
         if (error) throw error;
         return data as Notification;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           `INSERT INTO notifications (user_id, type, content, is_read, created_at)
            VALUES ($1, $2, $3, $4, NOW())
            RETURNING *`,
@@ -40,7 +63,7 @@ export class NotificationRepository extends Repository {
         return result.rows[0];
       }
     } catch (error) {
-      this.handleError('Error creating notification', error);
+      return this.handleError('Error creating notification', error);
     }
   }
 
@@ -75,7 +98,7 @@ export class NotificationRepository extends Repository {
           ? 'WHERE user_id = $1' 
           : 'WHERE user_id = $1 AND is_read = false';
           
-        const result = await this.db.query(
+        const result = await db.query(
           `SELECT * FROM notifications
            ${whereClause}
            ORDER BY created_at DESC
@@ -85,7 +108,7 @@ export class NotificationRepository extends Repository {
         return result.rows;
       }
     } catch (error) {
-      this.handleError('Error getting user notifications', error);
+      return this.handleError('Error getting user notifications', error);
     }
   }
 
@@ -113,14 +136,14 @@ export class NotificationRepository extends Repository {
           ? 'WHERE user_id = $1 AND is_read = false' 
           : 'WHERE user_id = $1';
           
-        const result = await this.db.query(
+        const result = await db.query(
           `SELECT COUNT(*) FROM notifications ${whereClause}`,
           [userId]
         );
         return parseInt(result.rows[0].count);
       }
     } catch (error) {
-      this.handleError('Error getting notification count', error);
+      return this.handleError('Error getting notification count', error);
     }
   }
 
@@ -139,7 +162,7 @@ export class NotificationRepository extends Repository {
 
         if (error) throw error;
       } else {
-        await this.db.query(
+        await db.query(
           `UPDATE notifications 
            SET is_read = true 
            WHERE id = ANY($1)`,
@@ -147,7 +170,7 @@ export class NotificationRepository extends Repository {
         );
       }
     } catch (error) {
-      this.handleError('Error marking notifications as read', error);
+      return this.handleError('Error marking notifications as read', error);
     }
   }
 
@@ -165,7 +188,7 @@ export class NotificationRepository extends Repository {
 
         if (error) throw error;
       } else {
-        await this.db.query(
+        await db.query(
           `UPDATE notifications 
            SET is_read = true 
            WHERE user_id = $1 AND is_read = false`,
@@ -173,7 +196,7 @@ export class NotificationRepository extends Repository {
         );
       }
     } catch (error) {
-      this.handleError('Error marking all notifications as read', error);
+      return this.handleError('Error marking all notifications as read', error);
     }
   }
 
@@ -190,13 +213,13 @@ export class NotificationRepository extends Repository {
 
         if (error) throw error;
       } else {
-        await this.db.query(
+        await db.query(
           'DELETE FROM notifications WHERE id = $1',
           [notificationId]
         );
       }
     } catch (error) {
-      this.handleError('Error deleting notification', error);
+      return this.handleError('Error deleting notification', error);
     }
   }
 
@@ -213,13 +236,66 @@ export class NotificationRepository extends Repository {
 
         if (error) throw error;
       } else {
-        await this.db.query(
+        await db.query(
           'DELETE FROM notifications WHERE user_id = $1',
           [userId]
         );
       }
     } catch (error) {
-      this.handleError('Error deleting all notifications', error);
+      return this.handleError('Error deleting all notifications', error);
+    }
+  }
+  
+  /**
+   * Find notifications for a user
+   */
+  async findByUser(userId: number, limit: number = 20, offset: number = 0): Promise<Notification[]> {
+    try {
+      if (this.useSupabase) {
+        const { data, error } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
+          .range(offset, offset + limit - 1);
+
+        if (error) throw error;
+        return data || [];
+      } else {
+        const result = await db.query(
+          'SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
+          [userId, limit, offset]
+        );
+        return result.rows;
+      }
+    } catch (error) {
+      return this.handleError('Error finding notifications for user', error);
+    }
+  }
+  
+  /**
+   * Count unread notifications for a user
+   */
+  async countUnread(userId: number): Promise<number> {
+    try {
+      if (this.useSupabase) {
+        const { count, error } = await supabase
+          .from('notifications')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .eq('is_read', false);
+
+        if (error) throw error;
+        return count || 0;
+      } else {
+        const result = await db.query(
+          'SELECT COUNT(*) as count FROM notifications WHERE user_id = $1 AND is_read = false',
+          [userId]
+        );
+        return parseInt(result.rows[0].count);
+      }
+    } catch (error) {
+      return this.handleError('Error counting unread notifications', error);
     }
   }
 
@@ -243,7 +319,7 @@ export class NotificationRepository extends Repository {
         if (error) throw error;
         return data as Notification[];
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           `SELECT * FROM notifications
            WHERE user_id = $1 AND created_at >= $2
            ORDER BY created_at DESC`,
@@ -252,7 +328,7 @@ export class NotificationRepository extends Repository {
         return result.rows;
       }
     } catch (error) {
-      this.handleError('Error getting digest notifications', error);
+      return this.handleError('Error getting digest notifications', error);
     }
   }
 
@@ -303,14 +379,14 @@ export class NotificationRepository extends Repository {
         
         return data?.notification_preferences || defaultPreferences;
       } else {
-        const result = await this.db.query(
+        const result = await db.query(
           'SELECT notification_preferences FROM user_settings WHERE user_id = $1',
           [userId]
         );
 
         if (result.rows.length === 0) {
           // Create default settings
-          await this.db.query(
+          await db.query(
             `INSERT INTO user_settings (user_id, notification_preferences)
              VALUES ($1, $2)`,
             [userId, JSON.stringify(defaultPreferences)]
@@ -361,7 +437,7 @@ export class NotificationRepository extends Repository {
 
         if (error) throw error;
       } else {
-        await this.db.query(
+        await db.query(
           `UPDATE user_settings
            SET notification_preferences = $1, updated_at = NOW()
            WHERE user_id = $2`,
@@ -369,7 +445,7 @@ export class NotificationRepository extends Repository {
         );
       }
     } catch (error) {
-      this.handleError('Error updating notification preferences', error);
+      return this.handleError('Error updating notification preferences', error);
     }
   }
 
@@ -410,4 +486,4 @@ export class NotificationRepository extends Repository {
 }
 
 // Create and export an instance of the NotificationRepository
-export const notificationRepository = new NotificationRepository(Database.getInstance());
+export const notificationRepository = new NotificationRepository();

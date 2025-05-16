@@ -193,16 +193,16 @@ export default class ModerationRepository extends Repository<ModerationAction> {
     type: FlagType = FlagType.CONTENT
   ): Promise<{ isSpam: boolean; score: number; reason?: string }> {
     try {
-      const env = await import('../../config/environment').then(m => m.default);
+      const env = await import('../../config/environment.js').then(m => m.default);
       
       // Use OpenAI's moderation API for high precision when available
-      if (env.AI_MODERATION_ENABLED && env.OPENAI_API_KEY) {
+      if ((env as any).AI_MODERATION_ENABLED && (env as any).OPENAI_API_KEY) {
         try {
           const response = await fetch('https://api.openai.com/v1/moderations', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${env.OPENAI_API_KEY}`
+              'Authorization': `Bearer ${(env as any).OPENAI_API_KEY}`
             },
             body: JSON.stringify({ input: content })
           });
@@ -210,10 +210,10 @@ export default class ModerationRepository extends Repository<ModerationAction> {
           if (response.ok) {
             const data = await response.json();
             
-            if (data.results && data.results.length > 0) {
-              const result = data.results[0];
+            if ((data as any).results && (data as any).results.length > 0) {
+              const result = (data as any).results[0];
               // Check if OpenAI flagged it as spam or promotional
-              const spamScore = result.category_scores?.spam || 0;
+              const spamScore = ((result.category_scores as Record<string, number>) || {})?.spam || 0;
               const isSpam = spamScore > 0.85; // High threshold for >95% precision
               
               // Record the spam check result

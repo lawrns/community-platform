@@ -64,12 +64,9 @@ router.get(
   '/suggest',
   [query('prefix').isString().notEmpty().withMessage('Prefix is required')],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const prefix = req.query.prefix as string;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -91,12 +88,9 @@ router.get(
   '/similar',
   [query('name').isString().notEmpty().withMessage('Tag name is required')],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const name = req.query.name as string;
     const limit = parseInt(req.query.limit as string) || 5;
@@ -118,12 +112,9 @@ router.get(
   '/:slug',
   [param('slug').isString().notEmpty().withMessage('Slug is required')],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const slug = req.params.slug;
     const tag = await tagRepository.findBySlug(slug);
@@ -161,12 +152,9 @@ router.post(
       .withMessage('Description cannot exceed 500 characters'),
   ],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const { name, description } = req.body;
     
@@ -215,12 +203,9 @@ router.put(
       .withMessage('Description cannot exceed 500 characters'),
   ],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const tagId = parseInt(req.params.id);
     const updates: Record<string, any> = {};
@@ -273,12 +258,9 @@ router.post(
     body('targetTagId').isNumeric().withMessage('Target tag ID must be a number'),
   ],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const sourceTagId = parseInt(req.params.id);
     const targetTagId = parseInt(req.body.targetTagId);
@@ -328,12 +310,9 @@ router.get(
   '/:id/stats',
   [param('id').isNumeric().withMessage('Tag ID must be a number')],
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new BadRequestError('Validation error', 
-        Object.fromEntries(errors.array().map(err => [err.path, err.msg]))
-      );
-    }
+    // Use the validation middleware helper instead
+    const { validateRequest } = require('../../../middlewares/validation');
+    validateRequest(req, res, () => {});
     
     const tagId = parseInt(req.params.id);
     

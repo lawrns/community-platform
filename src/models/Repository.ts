@@ -47,7 +47,7 @@ export default abstract class Repository<T> {
    */
   async findAll(limit: number = 100, offset: number = 0): Promise<T[]> {
     if (useSupabase) {
-      const result = await getMany<T[]>(this.tableName, {
+      const result = await getMany<T>(this.tableName, {
         limit,
         offset,
         orderBy: this.primaryKey,
@@ -69,7 +69,7 @@ export default abstract class Repository<T> {
    */
   async findBy(field: string, value: any): Promise<T[]> {
     if (useSupabase) {
-      const result = await getMany<T[]>(this.tableName, {
+      const result = await getMany<T>(this.tableName, {
         filters: { [field]: value }
       });
       return result.data || [];

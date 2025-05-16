@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Image as ImageIcon, Wrench, Plus, MessagesSquare, Hash, ChevronDown, Search, Paintbrush, Columns, Layout, Accessibility, LayoutDashboard, User } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthContext';
-import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Button, ButtonWithIcon, IconButton } from '@/components/ui/lumen-button';
+import { LumenThemeToggle } from '@/components/ui/lumen-theme-toggle';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
 import MobileNav from './MobileNav';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Plus, LayoutDashboard, Search, Wrench, MessagesSquare, Hash, User, Paintbrush, Image, Accessibility, Layout, Columns } from 'lucide-react';
+import { MicroMotion, StaggerContainer } from '@/components/ui/lumen-motion';
+import { Glass } from '@/components/ui/lumen-glass';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,38 +23,24 @@ export default function Header() {
   const { user, logout } = useAuth();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
-  // Animation variants for menu items
-  const itemVariants = {
-    hidden: { opacity: 0, y: -5 },
-    visible: { opacity: 1, y: 0 },
-  };
-
   return (
-    <motion.header 
-      className="w-full border-b sticky top-0 z-40 bg-background/95 backdrop-blur-sm"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+    <Glass
+      variant="dark"
+      blur="md"
+      className="w-full border-b border-[var(--c-border-subtle)] sticky top-0 z-40 shadow-sm"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link href="/" className="group flex items-center gap-2 relative">
-            <div className="absolute -inset-2 rounded-lg bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <motion.div
+            <div className="absolute -inset-2 rounded-lg bg-[var(--c-accent)]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <MicroMotion
+              variant="scale"
               className="relative z-10 flex items-center"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ 
-                type: 'spring',
-                stiffness: 500,
-                damping: 30,
-                delay: 0.1
-              }}
             >
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
+              <span className="text-2xl font-bold text-[var(--c-accent)]">
                 Community.io
               </span>
-            </motion.div>
+            </MicroMotion>
           </Link>
           
           <nav className="hidden md:flex items-center gap-1">
@@ -69,13 +57,13 @@ export default function Header() {
                   Tools
                   <motion.span
                     animate={hoveredItem === 'tools' ? { rotate: 180 } : { rotate: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.12 }}
                   >
-                    <ChevronDown className="h-4 w-4 opacity-50" />
+                    <ChevronDown className="h-4 w-4 opacity-60" />
                   </motion.span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuContent align="start" className="w-56 bg-[var(--c-surface-2)]">
                 <DropdownMenuItem asChild>
                   <Link href="/tools" className="flex items-center cursor-pointer">
                     <Wrench className="mr-2 h-4 w-4" />
@@ -103,21 +91,17 @@ export default function Header() {
             </DropdownMenu>
             
             {/* Q&A Menu Item with Animation */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+            <Button 
+              variant="ghost" 
+              className="px-3 text-sm font-medium h-9"
+              asChild
+              animated
             >
-              <Button 
-                variant="ghost" 
-                className="px-3 text-sm font-medium h-9"
-                asChild
-              >
-                <Link href="/q-and-a" className="flex items-center gap-1">
-                  <MessagesSquare className="h-4 w-4 mr-1" />
-                  Q&A
-                </Link>
-              </Button>
-            </motion.div>
+              <Link href="/q-and-a" className="flex items-center gap-1">
+                <MessagesSquare className="h-4 w-4 mr-1" />
+                Q&A
+              </Link>
+            </Button>
             
             {/* Topics Dropdown */}
             <DropdownMenu>
@@ -132,13 +116,13 @@ export default function Header() {
                   Topics
                   <motion.span
                     animate={hoveredItem === 'topics' ? { rotate: 180 } : { rotate: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.12 }}
                   >
-                    <ChevronDown className="h-4 w-4 opacity-50" />
+                    <ChevronDown className="h-4 w-4 opacity-60" />
                   </motion.span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuContent align="start" className="w-56 bg-[var(--c-surface-2)]">
                 <DropdownMenuItem asChild>
                   <Link href="/topics" className="flex items-center cursor-pointer">
                     <Hash className="mr-2 h-4 w-4" />
@@ -165,21 +149,17 @@ export default function Header() {
             </DropdownMenu>
             
             {/* Search Button with Animation */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+            <Button 
+              variant="ghost" 
+              className="px-3 text-sm font-medium h-9"
+              asChild
+              animated
             >
-              <Button 
-                variant="ghost" 
-                className="px-3 text-sm font-medium h-9"
-                asChild
-              >
-                <Link href="/search" className="flex items-center gap-1">
-                  <Search className="h-4 w-4 mr-1" />
-                  Search
-                </Link>
-              </Button>
-            </motion.div>
+              <Link href="/search" className="flex items-center gap-1">
+                <Search className="h-4 w-4 mr-1" />
+                Search
+              </Link>
+            </Button>
             
             {/* Design System Dropdown */}
             <DropdownMenu>
@@ -194,13 +174,13 @@ export default function Header() {
                   Design System
                   <motion.span
                     animate={hoveredItem === 'design' ? { rotate: 180 } : { rotate: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.12 }}
                   >
-                    <ChevronDown className="h-4 w-4 opacity-50" />
+                    <ChevronDown className="h-4 w-4 opacity-60" />
                   </motion.span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuContent align="start" className="w-56 bg-[var(--c-surface-2)]">
                 <DropdownMenuItem asChild>
                   <Link href="/design-system" className="flex items-center cursor-pointer">
                     <Paintbrush className="mr-2 h-4 w-4" />
@@ -208,6 +188,30 @@ export default function Header() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/lumen-demo" className="flex items-center cursor-pointer">
+                    <span className="mr-2 text-[var(--c-accent)]">✨</span>
+                    <span>LUMEN Design System</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/refined-demo" className="flex items-center cursor-pointer">
+                    <span className="mr-2">✨</span>
+                    <span>Refined UI Demo</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/icon-demo" className="flex items-center cursor-pointer">
+                    <span className="mr-2 text-xs">📦</span>
+                    <span>Icon System</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/visual-demo" className="flex items-center cursor-pointer">
+                    <span className="mr-2 text-xs">🎨</span>
+                    <span>Visual Demo</span>
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/responsive-demo" className="flex items-center cursor-pointer">
                     <Columns className="mr-2 h-4 w-4" />
@@ -223,14 +227,14 @@ export default function Header() {
                 <DropdownMenuItem asChild>
                   <Link href="/loading-demo" className="flex items-center cursor-pointer">
                     <span className="flex h-3 w-3 mr-2 items-center justify-center">
-                      <span className="animate-spin h-3 w-3 rounded-full border-2 border-content-secondary border-t-transparent"></span>
+                      <span className="animate-spin h-3 w-3 rounded-full border-2 border-[var(--c-text-secondary)] border-t-transparent"></span>
                     </span>
                     <span>Loading States</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/image-demo" className="flex items-center cursor-pointer">
-                    <Image className="mr-2 h-4 w-4" />
+                    <ImageIcon className="mr-2 h-4 w-4" />
                     <span>Image Optimization</span>
                   </Link>
                 </DropdownMenuItem>
@@ -245,81 +249,60 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-3">
-          <motion.div
-            whileHover={{ rotate: 30 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-          >
-            <ThemeToggle />
-          </motion.div>
+          <LumenThemeToggle />
           
           {user ? (
             <>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              <ButtonWithIcon
+                variant="primary"
+                icon={<Plus className="h-4 w-4" />}
+                size="sm"
+                glow="subtle"
+                animated
+                asChild
               >
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="flex items-center gap-1 bg-primary/5 hover:bg-primary/10"
-                  asChild
-                >
-                  <Link href="/create">
-                    <Plus className="h-4 w-4 mr-1" />
-                    Create
-                  </Link>
-                </Button>
-              </motion.div>
+                <Link href="/create">Create</Link>
+              </ButtonWithIcon>
               
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="flex items-center gap-1"
+                asChild
+                animated
               >
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="flex items-center gap-1"
-                  asChild
-                >
-                  <Link href="/dashboard">
-                    <LayoutDashboard className="h-4 w-4 mr-1" />
-                    Dashboard
-                  </Link>
-                </Button>
-              </motion.div>
+                <Link href="/dashboard">
+                  <LayoutDashboard className="h-4 w-4 mr-1" />
+                  Dashboard
+                </Link>
+              </Button>
               
               {/* Notification Dropdown with Animation */}
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-              >
+              <MicroMotion variant="scale">
                 <NotificationDropdown />
-              </motion.div>
+              </MicroMotion>
               
               {/* Profile Menu Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <motion.button
-                    className="relative ml-1 flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 ring-offset-background transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="relative ml-1 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--c-accent)]/10 ring-offset-background transition-colors hover:bg-[var(--c-accent)]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17, duration: 0.12 }}
                   >
-                    <User className="h-4 w-4 text-primary" />
+                    <User className="h-4 w-4 text-[var(--c-accent)]" />
                     <span className="sr-only">User menu</span>
                   </motion.button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-56 bg-[var(--c-surface-2)]">
                   <div className="flex items-center justify-start gap-2 p-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                      <User className="h-5 w-5 text-primary" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--c-accent)]/10">
+                      <User className="h-5 w-5 text-[var(--c-accent)]" />
                     </div>
                     <div className="flex flex-col space-y-0.5">
                       <p className="text-sm font-medium">{user.email}</p>
-                      <p className="text-xs text-muted-foreground">Community Member</p>
+                      <p className="text-xs text-[var(--c-text-secondary)]">Community Member</p>
                     </div>
                   </div>
                   <DropdownMenuSeparator />
@@ -336,7 +319,7 @@ export default function Header() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     onClick={() => logout()}
-                    className="cursor-pointer text-destructive focus:text-destructive"
+                    className="cursor-pointer text-[var(--c-danger)] focus:text-[var(--c-danger)]"
                   >
                     Sign Out
                   </DropdownMenuItem>
@@ -346,34 +329,25 @@ export default function Header() {
           ) : (
             /* Auth Buttons - Only show when not logged in */
             <div className="hidden md:flex items-center gap-2">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="text-[var(--c-text-secondary)] hover:text-[var(--c-text-primary)]"
+                asChild
+                animated
               >
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="text-muted-foreground hover:text-foreground"
-                  asChild
-                >
-                  <Link href="/signin">Sign In</Link>
-                </Button>
-              </motion.div>
+                <Link href="/signin">Sign In</Link>
+              </Button>
               
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              <Button 
+                variant="primary"
+                size="sm"
+                glow="medium"
+                animated
+                asChild
               >
-                <Button 
-                  size="sm"
-                  className="bg-primary hover:bg-primary/90 text-white"
-                  asChild
-                >
-                  <Link href="/signup">Sign Up</Link>
-                </Button>
-              </motion.div>
+                <Link href="/signup">Sign Up</Link>
+              </Button>
             </div>
           )}
           
@@ -383,6 +357,6 @@ export default function Header() {
           </div>
         </div>
       </div>
-    </motion.header>
+    </Glass>
   );
 }
