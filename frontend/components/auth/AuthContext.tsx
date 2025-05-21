@@ -10,7 +10,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<User>;
+  login: (email: string, password: string, token?: string) => Promise<User>;
   logout: () => void;
   register: (userData: {
     email: string;
@@ -69,20 +69,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Login function
-  const login = async (email: string, password: string): Promise<User> => {
-    const response = await api.auth.login({ email, password });
-    
-    AuthTokenStorage.setToken(response.token);
-    AuthTokenStorage.setUser(response.user);
-    setUser(response.user);
-    
-    // Connect to notification service
-    notificationService.connect();
-    
-    // Refresh router
-    router.refresh();
-    
-    return response.user;
+  const login = async (email: string, password: string, token?: string): Promise<User> => {
+    // If token is provided (for WebAuthn), use it directly
+    if (token) {
+      // For WebAuthn auth, user info is passed along with token
+      const userData = user || AuthTokenStorage.getUser();
+      
+      if (!userData) {
+        throw new Error('Missing user data for WebAuthn login');
+      }
+      
+      AuthTokenStorage.setToken(token);
+      AuthTokenStorage.setUser(userData);
+      setUser(userData);
+      
+      // Connect to notification service
+      notificationService.connect();
+      
+      // Refresh router
+      router.refresh();
+      
+      return userData;
+    } else {
+      // Standard email/password login
+      const response = await api.auth.login({ email, password });
+      
+      AuthTokenStorage.setToken(response.token);
+      AuthTokenStorage.setUser(response.user);
+      setUser(response.user);
+      
+      // Connect to notification service
+      notificationService.connect();
+      
+      // Refresh router
+      router.refresh();
+      
+      return response.user;
+    }
   };
 
   // Logout function

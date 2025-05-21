@@ -16,6 +16,7 @@ import { userRepository } from '../../../models/repositories';
 import { supabase } from '../../../config/supabase';
 import env, { config } from '../../../config/environment';
 import logger from '../../../config/logger';
+import webAuthnRoutes from './webauthn';
 
 const router = Router();
 // emailService is already imported as an instance
@@ -456,5 +457,8 @@ router.get(
     res.redirect(`${env.FRONTEND_URL}/auth/callback?token=${token}`);
   })
 );
+
+// Mount WebAuthn routes
+router.use('/webauthn', webAuthnRoutes);
 
 export default router;

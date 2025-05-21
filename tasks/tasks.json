@@ -1,6 +1,56 @@
 {
   "tasks": [
     {
+      "id": "AUTH-001",
+      "title": "CI build failures: TS import errors in src/app",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "P0",
+      "estimate": "1 day",
+      "type": "Blocker",
+      "description": "Fix TypeScript import errors in the src/app directory that are causing CI build failures."
+    },
+    {
+      "id": "DB-002",
+      "title": "Intermittent Postgres connection timeouts",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "P0",
+      "estimate": "0.5 day",
+      "type": "Blocker",
+      "description": "Fix intermittent Postgres connection timeouts that are affecting database reliability."
+    },
+    {
+      "id": "PIPE-003",
+      "title": "Missing env vars (SENTRY_DSN, STRIPE_KEY) in staging",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "P0",
+      "estimate": "0.5 day",
+      "type": "Blocker",
+      "description": "Configure missing environment variables (SENTRY_DSN, STRIPE_KEY) in the staging environment."
+    },
+    {
+      "id": "SEC-101",
+      "title": "Enforce CSP & tighten CORS to allowed origins",
+      "status": "pending",
+      "dependencies": ["AUTH-001", "PIPE-003"],
+      "priority": "P1",
+      "estimate": "1 day",
+      "type": "High-Impact",
+      "description": "Enhance security by enforcing Content Security Policy (CSP) headers and restricting CORS to allowed origins only."
+    },
+    {
+      "id": "PERF-102",
+      "title": "Code-split homepage bundle & lazy-load dashboard widgets",
+      "status": "pending",
+      "dependencies": ["AUTH-001"],
+      "priority": "P1",
+      "estimate": "2 days",
+      "type": "High-Impact",
+      "description": "Improve application performance by implementing code-splitting for the homepage bundle and lazy-loading dashboard widgets."
+    },
+    {
       "id": 1,
       "title": "Project Setup and Configuration",
       "status": "done",

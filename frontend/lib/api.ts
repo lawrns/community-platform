@@ -1,4 +1,8 @@
-// Frontend API client for communicating with the backend API
+/**
+ * API Client
+ * Frontend API client for communicating with the backend API
+ * Includes WebAuthn authentication and Quadratic Voting endpoints
+ */
 import { AuthTokenStorage } from './auth';
 
 /**
@@ -59,6 +63,38 @@ export const api = {
   get: async <T>(endpoint: string): Promise<T> => {
     return fetchAPI<T>(endpoint);
   },
+
+  // Reputation endpoints
+  reputation: {
+    getReputation: async (userId: string) => {
+      return fetchAPI<{
+        points: number;
+        tier: string;
+        next_tier: string | null;
+        points_to_next_tier: number | null;
+      }>(`/users/${userId}/reputation`);
+    },
+    getBadges: async (userId: string) => {
+      return fetchAPI<{ badges: any[] }>(`/users/${userId}/badges`);
+    },
+    getHistory: async (userId: string, params: { limit?: number } = {}) => {
+      const query = params.limit ? `?limit=${params.limit}` : '';
+      return fetchAPI<{ history: any[] }>(`/users/${userId}/reputation/history${query}`);
+    },
+    getPrivileges: async (userId: string) => {
+      const res = await fetchAPI<{
+        privileges: string[];
+        thresholds: Record<string, number>;
+      }>(`/users/${userId}/privileges`);
+      return {
+        privileges: res.privileges.map(priv => ({
+          id: priv,
+          name: priv.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+          required_reputation: res.thresholds[priv]
+        }))
+      };
+    },
+  },
   
   post: async <T>(endpoint: string, data?: any): Promise<T> => {
     return fetchAPI<T>(endpoint, {
@@ -108,6 +144,51 @@ export const api = {
       return fetchAPI<{ success: boolean }>('/auth/reset-password', {
         method: 'POST',
         body: JSON.stringify({ email }),
+      });
+    },
+    
+    // WebAuthn endpoints
+    getWebAuthnRegistrationOptions: async () => {
+      return fetchAPI<{ success: boolean; options: any }>('/auth/webauthn/register-options', {
+        method: 'POST'
+      });
+    },
+    
+    verifyWebAuthnRegistration: async (data: { response: any; credentialName?: string }) => {
+      return fetchAPI<{ success: boolean; verified: boolean }>('/auth/webauthn/register-verification', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    },
+    
+    getWebAuthnLoginOptions: async (data?: { username?: string }) => {
+      return fetchAPI<{ success: boolean; options: any }>('/auth/webauthn/login-options', {
+        method: 'POST',
+        body: data ? JSON.stringify(data) : undefined
+      });
+    },
+    
+    verifyWebAuthnLogin: async (data: { response: any; username?: string }) => {
+      return fetchAPI<{ success: boolean; verified: boolean; user: any; token: string }>('/auth/webauthn/login-verification', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    },
+    
+    getWebAuthnCredentials: async () => {
+      return fetchAPI<{ success: boolean; credentials: any[] }>('/auth/webauthn/credentials');
+    },
+    
+    deleteWebAuthnCredential: async (credentialId: string) => {
+      return fetchAPI<{ success: boolean; message: string }>(`/auth/webauthn/credentials/${credentialId}`, {
+        method: 'DELETE'
+      });
+    },
+    
+    renameWebAuthnCredential: async (credentialId: string, name: string) => {
+      return fetchAPI<{ success: boolean; message: string }>(`/auth/webauthn/credentials/${credentialId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ name })
       });
     },
   },
@@ -296,6 +377,51 @@ export const api = {
     
     getToolCategories: async () => {
       return fetchAPI<{categories: string[]}>('/tools/categories');
+    }
+  },
+  
+  // Quadratic Voting endpoints
+  votes: {
+    castVote: async (targetType: string, targetId: string, voteWeight: number, voteType: 1 | -1) => {
+      return fetchAPI<any>(`/votes/${targetType}/${targetId}`, {
+        method: 'POST',
+        body: JSON.stringify({ voteWeight, voteType })
+      });
+    },
+    
+    removeVote: async (targetType: string, targetId: string) => {
+      return fetchAPI<any>(`/votes/${targetType}/${targetId}`, {
+        method: 'DELETE'
+      });
+    },
+    
+    getVote: async (targetType: string, targetId: string) => {
+      return fetchAPI<any>(`/votes/${targetType}/${targetId}`);
+    },
+    
+    getCredits: async () => {
+      return fetchAPI<any>('/votes/credits');
+    },
+    
+    getCreditHistory: async (params: { page?: number; limit?: number; } = {}) => {
+      const queryParams = new URLSearchParams();
+      
+      if (params.page) queryParams.append('page', params.page.toString());
+      if (params.limit) queryParams.append('limit', params.limit.toString());
+      
+      const query = queryParams.toString();
+      return fetchAPI<any>(`/votes/credits/history${query ? `?${query}` : ''}`);
+    },
+    
+    getUserVotes: async (params: { type?: string; page?: number; limit?: number; } = {}) => {
+      const queryParams = new URLSearchParams();
+      
+      if (params.type) queryParams.append('type', params.type);
+      if (params.page) queryParams.append('page', params.page.toString());
+      if (params.limit) queryParams.append('limit', params.limit.toString());
+      
+      const query = queryParams.toString();
+      return fetchAPI<any>(`/votes${query ? `?${query}` : ''}`);
     }
   },
   
@@ -516,6 +642,95 @@ export const api = {
         method: 'PUT',
         body: JSON.stringify({ interests })
       });
+    }
+  },
+  
+  // Daily Briefs endpoints
+  briefs: {
+    getLatest: async () => {
+      return fetchAPI<{
+        success: boolean;
+        brief: any;
+        items: any[];
+      }>('/briefs/latest');
+    },
+    
+    getBrief: async (briefId: string) => {
+      return fetchAPI<{
+        success: boolean;
+        brief: any;
+        items: any[];
+      }>(`/briefs/${briefId}`);
+    },
+    
+    generateBrief: async () => {
+      return fetchAPI<{
+        success: boolean;
+        brief: any;
+        message: string;
+      }>('/briefs/generate', {
+        method: 'POST'
+      });
+    },
+    
+    markAsRead: async (briefId: string) => {
+      return fetchAPI<{
+        success: boolean;
+        message: string;
+      }>(`/briefs/${briefId}/read`, {
+        method: 'POST'
+      });
+    },
+    
+    recordItemInteraction: async (itemId: string, interaction: 'click' | 'save' | 'share' | 'dismiss') => {
+      return fetchAPI<{
+        success: boolean;
+        message: string;
+      }>(`/briefs/items/${itemId}/interact`, {
+        method: 'POST',
+        body: JSON.stringify({ interaction })
+      });
+    },
+    
+    getPreferences: async () => {
+      return fetchAPI<{
+        success: boolean;
+        preferences: any;
+      }>('/briefs/preferences');
+    },
+    
+    updatePreferences: async (preferences: any) => {
+      return fetchAPI<{
+        success: boolean;
+        preferences: any;
+        message: string;
+      }>('/briefs/preferences', {
+        method: 'PUT',
+        body: JSON.stringify(preferences)
+      });
+    },
+    
+    getHistory: async (params: { 
+      limit?: number; 
+      offset?: number; 
+      includeExpired?: boolean 
+    } = {}) => {
+      const queryParams = new URLSearchParams();
+      
+      if (params.limit) queryParams.append('limit', params.limit.toString());
+      if (params.offset) queryParams.append('offset', params.offset.toString());
+      if (params.includeExpired) queryParams.append('includeExpired', params.includeExpired.toString());
+      
+      const query = queryParams.toString();
+      return fetchAPI<{
+        success: boolean;
+        briefs: any[];
+        meta: {
+          count: number;
+          limit: number;
+          offset: number;
+        }
+      }>(`/briefs/history?${query}`);
     }
   },
 };

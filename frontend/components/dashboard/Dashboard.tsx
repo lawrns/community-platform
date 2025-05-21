@@ -11,6 +11,7 @@ import PersonalizedFeed from './PersonalizedFeed';
 import UserActivity from './UserActivity';
 import RecommendedTools from './RecommendedTools';
 import FollowedTopics from './FollowedTopics';
+import DailyBrief from './DailyBrief';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -247,6 +248,17 @@ const Dashboard = () => {
         {/* Left Content Area (2/3 width on medium+ screens) */}
         <div className="md:col-span-2 space-y-8">
           <StaggeredList>
+            <CardMotion>
+              <div className="card-elevated">
+                <div className="p-6">
+                  <SubtleMotion variant="fadeIn" delay={0.1}>
+                    <h2 className="text-heading-xl mb-6 text-gradient-primary">Daily Brief</h2>
+                    <DailyBrief />
+                  </SubtleMotion>
+                </div>
+              </div>
+            </CardMotion>
+            
             <CardMotion>
               <div className="card-elevated">
                 <div className="p-6">

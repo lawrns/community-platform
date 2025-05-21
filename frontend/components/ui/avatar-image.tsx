@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AvatarWithInitials, AvatarFallback } from "@/components/ui/avatar";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { cn } from "@/lib/utils";
 
@@ -97,7 +97,7 @@ export function AvatarImage({
   };
   
   return (
-    <Avatar 
+    <AvatarWithInitials 
       className={cn(
         "relative",
         border && "ring-2 ring-offset-2 ring-offset-surface-1",
@@ -113,6 +113,7 @@ export function AvatarImage({
         className
       )}
       onClick={onClick}
+      initials={getFallbackText()}
     >
       {src && !imageError ? (
         <OptimizedImage
@@ -126,11 +127,7 @@ export function AvatarImage({
           onError={() => setImageError(true)}
           className="object-cover"
         />
-      ) : (
-        <AvatarFallback>
-          {getFallbackText()}
-        </AvatarFallback>
-      )}
+      ) : null}
       
       {/* Status indicator */}
       {status && (
@@ -147,7 +144,7 @@ export function AvatarImage({
           )}
         />
       )}
-    </Avatar>
+    </AvatarWithInitials>
   );
 }
 

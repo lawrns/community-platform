@@ -1,3 +1,7 @@
+ 'use client';
+
+import VoteControls from '@/components/content/VoteControls';
+
 export default function Search() {
   return (
     <div className="container mx-auto py-12 px-6">
@@ -39,6 +43,9 @@ export default function Search() {
             <p className="text-muted-foreground mb-2">
               A comprehensive guide to getting started with Next.js for beginners. Learn about pages, routing, and data fetching.
             </p>
+            <div className="mt-2 mb-4">
+              <VoteControls contentId="getting-started-nextjs" initialUpvotes={0} isQuestion />
+            </div>
             <div className="flex justify-between items-center">
               <div className="flex gap-2">
                 <span className="bg-secondary text-secondary-foreground px-2 py-0.5 rounded text-xs">Next.js</span>

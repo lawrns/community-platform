@@ -1,16 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
+  darkMode: ['class'],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-    // Add JS/JSX files for completeness
-    './pages/**/*.{js,jsx}',
-    './components/**/*.{js,jsx}',
-    './app/**/*.{js,jsx}',
-    './src/**/*.{js,jsx}',
+    './pages/**/*.{ts,tsx,js,jsx}',
+    './components/**/*.{ts,tsx,js,jsx}',
+    './app/**/*.{ts,tsx,js,jsx}',
+    './src/**/*.{ts,tsx,js,jsx}',
   ],
   theme: {
     container: {
@@ -21,15 +16,49 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: { 
+        sans: ['InterVariable', 'sans-serif'] 
+      },
       colors: {
-        // Surface colors (backgrounds)
+        // New design system
+        bg: { 
+          0: 'var(--bg-0)', 
+          1: 'var(--bg-1)',
+          2: 'var(--bg-2)',
+          surface: 'var(--bg-surface)',
+        },
+        brand: {
+          50: 'var(--brand-50)',
+          100: 'var(--brand-100)',
+          200: 'var(--brand-200)',
+          300: 'var(--brand-300)',
+          400: 'var(--brand-400)',
+          500: 'var(--brand-500)',
+          600: 'var(--brand-600)',
+          700: 'var(--brand-700)',
+          800: 'var(--brand-800)',
+          900: 'var(--brand-900)',
+          fade: 'var(--brand-fade)',
+        },
+        neutral: {
+          50: 'var(--neutral-50)',
+          100: 'var(--neutral-100)',
+          200: 'var(--neutral-200)',
+          300: 'var(--neutral-300)',
+          400: 'var(--neutral-400)',
+          500: 'var(--neutral-500)',
+          600: 'var(--neutral-600)',
+          700: 'var(--neutral-700)',
+          800: 'var(--neutral-800)',
+          900: 'var(--neutral-900)',
+        },
+        // Legacy colors for compatibility
         surface: {
           1: "hsl(var(--surface-1))",
           2: "hsl(var(--surface-2))",
           3: "hsl(var(--surface-3))",
           accent: "hsl(var(--surface-accent))",
         },
-        // Text/content colors
         content: {
           primary: "hsl(var(--content-primary))",
           secondary: "hsl(var(--content-secondary))",
@@ -39,28 +68,6 @@ module.exports = {
           onAccent: "hsl(var(--content-on-accent))",
           onDestructive: "hsl(var(--content-on-destructive))",
         },
-        // Brand colors
-        brand: {
-          primary: "hsl(var(--brand-primary))",
-          secondary: "hsl(var(--brand-secondary))",
-          tertiary: "hsl(var(--brand-tertiary))",
-        },
-        // Accent colors for UI emphasis
-        accent: {
-          blue: "hsl(var(--accent-blue))",
-          purple: "hsl(var(--accent-purple))",
-          green: "hsl(var(--accent-green))",
-          yellow: "hsl(var(--accent-yellow))",
-          red: "hsl(var(--accent-red))",
-        },
-        // Semantic colors
-        semantic: {
-          success: "hsl(var(--semantic-success))",
-          warning: "hsl(var(--semantic-warning))",
-          error: "hsl(var(--semantic-error))",
-          info: "hsl(var(--semantic-info))",
-        },
-        // Legacy colors - maintain compatibility with existing code
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -82,7 +89,7 @@ module.exports = {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
-        accentLegacy: {
+        accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
@@ -95,79 +102,57 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
-      // Spacing system
+      // 8-pt spacing system
       spacing: {
-        '4xs': 'var(--spacing-4xs)', // 0.125rem (2px)
-        '3xs': 'var(--spacing-3xs)', // 0.25rem (4px)
-        '2xs': 'var(--spacing-2xs)', // 0.5rem (8px)
-        'xs': 'var(--spacing-xs)',   // 0.75rem (12px)
-        'sm': 'var(--spacing-sm)',   // 1rem (16px)
-        'md': 'var(--spacing-md)',   // 1.5rem (24px)
-        'lg': 'var(--spacing-lg)',   // 2rem (32px)
-        'xl': 'var(--spacing-xl)',   // 3rem (48px)
-        '2xl': 'var(--spacing-2xl)', // 4rem (64px)
-        '3xl': 'var(--spacing-3xl)', // 6rem (96px)
-        '4xl': 'var(--spacing-4xl)', // 8rem (128px)
-      },
-      // Typography
-      fontSize: {
-        'caption': 'var(--font-size-caption)', // 0.75rem (12px)
-        'body-sm': 'var(--font-size-body-sm)', // 0.875rem (14px)
-        'body': 'var(--font-size-body)',      // 1rem (16px)
-        'body-lg': 'var(--font-size-body-lg)', // 1.125rem (18px)
-        'display-sm': 'var(--font-size-display-sm)', // 1.25rem (20px)
-        'display': 'var(--font-size-display)',    // 1.5rem (24px)
-        'display-lg': 'var(--font-size-display-lg)', // 2rem (32px)
-        'display-xl': 'var(--font-size-display-xl)', // 2.5rem (40px)
-        'display-2xl': 'var(--font-size-display-2xl)', // 3rem (48px)
-      },
-      // Font weights
-      fontWeight: {
-        'regular': 'var(--font-weight-regular)', // 400
-        'medium': 'var(--font-weight-medium)',   // 500
-        'semibold': 'var(--font-weight-semibold)', // 600
-        'bold': 'var(--font-weight-bold)',      // 700
-      },
-      // Line heights
-      lineHeight: {
-        'tight': 'var(--line-height-tight)',  // 1.2
-        'snug': 'var(--line-height-snug)',   // 1.33
-        'normal': 'var(--line-height-normal)', // 1.5
-        'relaxed': 'var(--line-height-relaxed)', // 1.66
-        'loose': 'var(--line-height-loose)',  // 2
+        '1': 'var(--space-1)',
+        '2': 'var(--space-2)',
+        '3': 'var(--space-3)',
+        '4': 'var(--space-4)',
+        '5': 'var(--space-5)',
+        '6': 'var(--space-6)',
+        '8': 'var(--space-8)',
+        '10': 'var(--space-10)',
+        '12': 'var(--space-12)',
+        '16': 'var(--space-16)',
+        '20': 'var(--space-20)',
+        '24': 'var(--space-24)',
+        '32': 'var(--space-32)',
       },
       // Border radius
       borderRadius: {
-        'none': '0',
-        'xs': 'var(--radius-xs)',  // 0.125rem (2px)
-        'sm': 'var(--radius-sm)',  // 0.25rem (4px)
-        'md': 'var(--radius-md)',  // 0.375rem (6px)
-        'lg': 'var(--radius-lg)',  // 0.5rem (8px)
-        'xl': 'var(--radius-xl)',  // 0.75rem (12px)
-        '2xl': 'var(--radius-2xl)', // 1rem (16px)
-        'full': '9999px',
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
+        l: 'var(--radius-l)',
+        xl: 'var(--radius-xl)',
+        full: 'var(--radius-full)',
       },
-      // Shadow tokens
+      // Shadow system
       boxShadow: {
-        'sm': 'var(--shadow-sm)',
-        'md': 'var(--shadow-md)',
-        'lg': 'var(--shadow-lg)',
-        'xl': 'var(--shadow-xl)',
-        '2xl': 'var(--shadow-2xl)',
-        'inner': 'var(--shadow-inner)',
+        sm: 'var(--shadow-sm)',
+        md: 'var(--shadow-md)',
+        lg: 'var(--shadow-lg)',
+        xl: 'var(--shadow-xl)',
+        glass: 'var(--shadow-glass)',
       },
-      // Animation
-      transitionDuration: {
-        'fast': 'var(--duration-fast)',     // 150ms
-        'normal': 'var(--duration-normal)', // 250ms
-        'slow': 'var(--duration-slow)',     // 350ms
-      },
-      // Animation easing
+      // Motion system
       transitionTimingFunction: {
-        'ease-in-out': 'var(--ease-in-out)',
-        'ease-out': 'var(--ease-out)',
-        'ease-in': 'var(--ease-in)',
-        'bounce': 'var(--ease-bounce)',
+        'ease-out-expo': 'var(--motion-ease-out-expo)',
+        'ease-in-out': 'var(--motion-ease-in-out)',
+        'ease-out': 'var(--motion-ease-out)',
+        'ease-in': 'var(--motion-ease-in)',
+      },
+      transitionDuration: {
+        'ultra-fast': 'var(--motion-duration-ultra-fast)',
+        'fast': 'var(--motion-duration-fast)',
+        'normal': 'var(--motion-duration-normal)',
+        'slow': 'var(--motion-duration-slow)',
+      },
+      // Gradient backgrounds
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-purple-blue': 'linear-gradient(to right, var(--brand-600), var(--brand-500))',
+        'grain': 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'0.2\'/%3E%3C/svg%3E")',
       },
       keyframes: {
         "accordion-down": {
@@ -178,44 +163,65 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
-        "pulse": {
-          '0%, 100%': { opacity: 1 },
-          '50%': { opacity: 0.5 },
-        },
         "slide-up": {
-          '0%': { transform: 'translateY(10px)', opacity: 0 },
+          '0%': { transform: 'translateY(32px)', opacity: 0 },
           '100%': { transform: 'translateY(0)', opacity: 1 },
         },
         "slide-down": {
-          '0%': { transform: 'translateY(-10px)', opacity: 0 },
+          '0%': { transform: 'translateY(-32px)', opacity: 0 },
           '100%': { transform: 'translateY(0)', opacity: 1 },
         },
         "fade-in": {
           '0%': { opacity: 0 },
           '100%': { opacity: 1 },
         },
+        "float": {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-5px)' },
+        },
+        "grain": { 
+          '0%, 100%': { transform: 'translate(0)' }, 
+          '50%': { transform: 'translate(-3%,3%)' } 
+        },
+        "scale-lift": {
+          '0%': { transform: 'scale(1) translateY(0)', boxShadow: 'var(--shadow-md)' },
+          '100%': { transform: 'scale(1.02) translateY(-4px)', boxShadow: 'var(--shadow-xl)' },
+        },
+        "scale-press": {
+          '0%': { transform: 'scale(1)' },
+          '100%': { transform: 'scale(0.96)' },
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "pulse": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "slide-up": "slide-up 0.3s ease-out",
-        "slide-down": "slide-down 0.3s ease-out",
-        "fade-in": "fade-in 0.3s ease-out",
+        "slide-up": "slide-up 0.24s var(--motion-ease-out-expo)",
+        "slide-down": "slide-down 0.24s var(--motion-ease-out-expo)",
+        "fade-in": "fade-in 0.24s var(--motion-ease-out-expo)",
+        "float": "float 3s ease-in-out infinite",
+        "grain": "grain 8s steps(12) infinite",
+        "scale-lift": "scale-lift 0.2s var(--motion-ease-out-expo) forwards",
+        "scale-press": "scale-press 0.1s var(--motion-ease-out-expo) forwards"
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate")
+  ],
   // Ensure CSS is generated during build
   safelist: [
-    // Include common classes that might be dynamically generated
-    'bg-brand-primary',
-    'text-content-onPrimary',
-    'bg-surface-1',
-    'text-content-primary',
-    'bg-semantic-success',
-    'bg-semantic-error',
-    'bg-semantic-warning',
-    'bg-semantic-info',
+    'bg-brand-500',
+    'text-brand-50',
+    'bg-brand-fade',
+    'bg-gradient-purple-blue',
+    'backdrop-blur-md',
+    'backdrop-blur-lg',
+    'ring-1',
+    'ring-brand-fade',
+    'ring-white/10',
+    'data-[state=active]:border-brand-500',
+    'animate-slide-up',
+    'animate-grain',
+    'text-balance',
   ],
 }

@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community.io - The Most Vibrant AI Community</title>
+    <meta name="description" content="Join the most vibrant AI community for enthusiasts, researchers, and professionals. Share knowledge, collaborate on projects, and accelerate your AI journey." />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+      /* Dark mode by default */
+      html, body {
+        background-color: #0f172a;
+        color: #f8fafc;
+      }
+      
+      /* Gradient text */
+      .gradient-text {
+        background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      
+      /* Glass effect */
+      .glass {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        background-color: rgba(23, 25, 35, 0.6);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      /* Gradient button */
+      .gradient-button {
+        background: linear-gradient(90deg, #2563eb, #7c3aed);
+      }
+      
+      /* Card */
+      .feature-card {
+        background-color: #1e293b;
+        border: 1px solid #374151;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+      
+      /* Animated dot for counters */
+      .animate-ping {
+        animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+      }
+      
+      @keyframes ping {
+        75%, 100% {
+          transform: scale(2);
+          opacity: 0;
+        }
+      }
+      
+      /* Simple pulse animation */
+      .pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+      
+      /* Aurora background */
+      .aurora-bg {
+        background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81, #1e1b4b, #0f172a);
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+      }
+      
+      @keyframes gradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="min-h-screen flex flex-col">
+      <!-- Navigation -->
+      <header class="fixed w-full glass z-50">
+        <div class="container mx-auto px-6 py-3">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+              <div class="w-10 h-10 rounded-full gradient-button flex items-center justify-center">
+                <span class="text-white font-bold text-xl">C</span>
+              </div>
+              <span class="text-white font-bold text-xl">Community</span>
+            </div>
+            
+            <nav class="hidden md:flex space-x-8">
+              <a href="#features" class="text-white hover:text-blue-300 transition-colors">Features</a>
+              <a href="#posts" class="text-white hover:text-blue-300 transition-colors">Posts</a>
+              <a href="#resources" class="text-white hover:text-blue-300 transition-colors">Resources</a>
+              <a href="#events" class="text-white hover:text-blue-300 transition-colors">Events</a>
+              <button class="px-4 py-2 rounded-md gradient-button text-white font-medium">Join Now</button>
+            </nav>
+            
+            <button class="md:hidden text-white">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Hero Section -->
+      <section class="pt-24 pb-16 aurora-bg relative overflow-hidden min-h-screen flex items-center">
+        <div class="absolute inset-0 opacity-30" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 400 400%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')"></div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+          <div class="max-w-4xl mx-auto text-center">
+            <div class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-purple-900/60 text-purple-200 border border-purple-700/50 backdrop-blur-sm">
+              <span class="mr-1">✨</span>
+              Empower Your AI Journey
+            </div>
+            
+            <h1 class="mt-8 text-4xl md:text-6xl font-bold leading-tight text-white">
+              <span class="block">Unite.</span>
+              <span class="block">Learn.</span>
+              <span class="block">
+                <span class="gradient-text">Build</span>
+                with AI.
+              </span>
+            </h1>
+            
+            <p class="mt-6 text-xl text-gray-300 max-w-2xl mx-auto">
+              Join a thriving community to collaborate, discover tools, and accelerate your AI expertise.
+            </p>
+            
+            <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="#" class="px-6 py-3 rounded-md gradient-button text-white font-medium flex items-center justify-center transform hover:scale-105 transition-transform">
+                <span class="mr-2">👥</span>
+                Join the Community
+              </a>
+              
+              <a href="#" class="px-6 py-3 rounded-md border border-gray-600 bg-transparent text-gray-200 font-medium flex items-center justify-center hover:bg-gray-800 transition-colors">
+                Explore AI Tools
+                <span class="ml-2">→</span>
+              </a>
+            </div>
+            
+            <div class="mt-6">
+              <p class="text-sm text-gray-400">
+                <span class="text-blue-400 font-medium">100,000+</span> members from 182 countries
+              </p>
+            </div>
+            
+            <div class="mt-8">
+              <div class="inline-flex items-center bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm text-gray-300">
+                <span class="inline-block h-2 w-2 rounded-full bg-green-500 mr-2 relative">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                </span>
+                <span>127 questions answered in the last 24h</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Features Section -->
+      <section id="features" class="py-20 bg-gradient-to-b from-gray-900 to-gray-950 relative">
+        <div class="container mx-auto px-6">
+          <div class="text-center mb-16">
+            <div class="inline-block p-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
+              <span class="h-5 w-5 text-white">✨</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-white mt-4">
+              Powerful Features for a <span class="gradient-text">Thriving Community</span>
+            </h2>
+            <p class="text-gray-300 max-w-2xl mx-auto text-lg mt-4">
+              Our platform combines cutting-edge technology with thoughtful design to create the perfect environment for community growth.
+            </p>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Feature Cards -->
+            <div class="feature-card rounded-xl overflow-hidden p-6">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg mb-5">
+                <span class="text-white text-xl">🛠️</span>
+              </div>
+              <h3 class="text-xl font-semibold mb-3 text-white">Tool Directory</h3>
+              <p class="text-gray-300 mb-4">
+                Discover, compare, and evaluate AI tools with detailed reviews and real user insights.
+              </p>
+              <a href="#" class="inline-flex items-center text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">
+                Explore Tools <span class="ml-1">→</span>
+              </a>
+            </div>
+            
+            <div class="feature-card rounded-xl overflow-hidden p-6">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg mb-5">
+                <span class="text-white text-xl">💬</span>
+              </div>
+              <h3 class="text-xl font-semibold mb-3 text-white">Expert Q&A</h3>
+              <p class="text-gray-300 mb-4">
+                Get precise answers from AI experts, with reputation-based rewards for quality contributions.
+              </p>
+              <a href="#" class="inline-flex items-center text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">
+                Ask a Question <span class="ml-1">→</span>
+              </a>
+            </div>
+            
+            <div class="feature-card rounded-xl overflow-hidden p-6">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shadow-lg mb-5">
+                <span class="text-white text-xl">📱</span>
+              </div>
+              <h3 class="text-xl font-semibold mb-3 text-white">Personalized Feed</h3>
+              <p class="text-gray-300 mb-4">
+                Stay informed with a feed tailored to your interests—articles, posts, and updates you care about.
+              </p>
+              <a href="#" class="inline-flex items-center text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">
+                View Your Feed <span class="ml-1">→</span>
+              </a>
+            </div>
+            
+            <div class="feature-card rounded-xl overflow-hidden p-6">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center shadow-lg mb-5">
+                <span class="text-white text-xl">🧠</span>
+              </div>
+              <h3 class="text-xl font-semibold mb-3 text-white">AI Learning Path</h3>
+              <p class="text-gray-300 mb-4">
+                Structured learning resources to help you master AI concepts and develop practical skills.
+              </p>
+              <a href="#" class="inline-flex items-center text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">
+                Start Learning <span class="ml-1">→</span>
+              </a>
+            </div>
+            
+            <div class="feature-card rounded-xl overflow-hidden p-6">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg mb-5">
+                <span class="text-white text-xl">👥</span>
+              </div>
+              <h3 class="text-xl font-semibold mb-3 text-white">Community</h3>
+              <p class="text-gray-300 mb-4">
+                Connect with AI enthusiasts of all skill levels for mentoring, networking, and knowledge sharing.
+              </p>
+              <a href="#" class="inline-flex items-center text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">
+                Join Discussions <span class="ml-1">→</span>
+              </a>
+            </div>
+            
+            <div class="feature-card rounded-xl overflow-hidden p-6">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center shadow-lg mb-5">
+                <span class="text-white text-xl">🛡️</span>
+              </div>
+              <h3 class="text-xl font-semibold mb-3 text-white">Security & Privacy</h3>
+              <p class="text-gray-300 mb-4">
+                Your data is protected with state-of-the-art security and privacy-first design principles.
+              </p>
+              <a href="#" class="inline-flex items-center text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">
+                Learn More <span class="ml-1">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Footer -->
+      <footer class="bg-transparent text-gray-300 relative overflow-hidden mt-auto">
+        <div class="absolute inset-0 bg-gradient-to-t from-blue-950/40 via-gray-950/60 to-transparent -z-10"></div>
+        <div class="absolute inset-0 backdrop-blur-md bg-gray-900/20 -z-10"></div>
+        
+        <div class="container mx-auto px-6 pt-16 pb-8 relative">
+          <button
+            class="absolute right-8 top-8 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center hover:-translate-y-1 transition-transform"
+            onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+          >
+            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+          </button>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div>
+              <div class="flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center">
+                  <span class="text-white font-bold">C</span>
+                </div>
+                <span class="text-lg font-bold text-white">Community.io</span>
+              </div>
+              <p class="text-sm text-gray-300 mb-6">
+                The premier community platform for AI enthusiasts, researchers, and professionals to connect, collaborate, and grow together.
+              </p>
+              <div class="flex space-x-4">
+                <a href="#" class="text-gray-400 hover:text-white transition-colors hover:scale-110 inline-block">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                  </svg>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors hover:scale-110 inline-block">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+            
+            <div>
+              <h4 class="text-white font-semibold mb-4">Community</h4>
+              <ul class="space-y-2">
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Feed</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Explore</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Members</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Groups</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Events</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 class="text-white font-semibold mb-4">Resources</h4>
+              <ul class="space-y-2">
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Tutorials</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Research Papers</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Courses</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Tools & Libraries</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Submit a Resource</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 class="text-white font-semibold mb-4">Company</h4>
+              <ul class="space-y-2">
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">About Us</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Careers</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Contact</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a></li>
+                <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</a></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="mt-12 pt-8 border-t border-gray-800/50 flex flex-col md:flex-row items-center justify-between">
+            <p class="text-sm text-gray-400 mb-4 md:mb-0">
+              © 2025 Community.io. All rights reserved.
+            </p>
+            
+            <div class="flex items-center gap-4">
+              <a href="#" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-1">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span>newsletter@community.io</span>
+              </a>
+              <p class="text-sm text-gray-400 flex items-center">
+                Made with <span class="mx-1 text-red-500">❤</span> by the Community team
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // Simple animation for counting up numbers
+      function animateCounter(element, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          const value = Math.floor(progress * (end - start) + start);
+          element.textContent = value;
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          }
+        };
+        window.requestAnimationFrame(step);
+      }
+      
+      // Add scroll events for nav
+      window.addEventListener('scroll', () => {
+        const nav = document.querySelector('header');
+        if (window.scrollY > 50) {
+          nav.classList.add('shadow-lg');
+        } else {
+          nav.classList.remove('shadow-lg');
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -12,25 +12,25 @@ The community.io project uses the task-master CLI for efficient task management.
 
 ```bash
 # Install globally
-npm install -g claude-task-master
+npm install -g task-master-ai
 
 # Or use locally via npx
-npx claude-task-master <command>
+npx task-master-ai <command>
 ```
 
 ### Key Commands
 
 | Command | Description |
 |---------|-------------|
-| `task-master list` | View all tasks and their status |
-| `task-master show <id>` | View details for a specific task |
-| `task-master expand --id=<id>` | Break down a task into subtasks |
-| `task-master set-status --id=<id> --status=<status>` | Update task status |
-| `task-master analyze-complexity` | Analyze task complexity |
-| `task-master parse-prd --input=<file>` | Generate tasks from PRD |
-| `task-master update --from=<id> --prompt="<text>"` | Update tasks based on new context |
-| `task-master generate` | Generate individual task files from tasks.json |
-| `task-master init` | Initialize a new Scotty project |
+| `task-master-ai list` | View all tasks and their status |
+| `task-master-ai show <id>` | View details for a specific task |
+| `task-master-ai expand --id=<id>` | Break down a task into subtasks |
+| `task-master-ai set-status --id=<id> --status=<status>` | Update task status |
+| `task-master-ai analyze-complexity` | Analyze task complexity |
+| `task-master-ai parse-prd --input=<file>` | Generate tasks from PRD |
+| `task-master-ai update --from=<id> --prompt="<text>"` | Update tasks based on new context |
+| `task-master-ai generate` | Generate individual task files from tasks.json |
+| `task-master-ai init` | Initialize a new Scotty project |
 
 ## Task Management Process
 
@@ -38,19 +38,59 @@ npx claude-task-master <command>
 
 1. Begin with initializing the project structure:
    ```bash
-   task-master init
+   task-master-ai init
    ```
 
 2. Generate initial tasks from the PRD document:
    ```bash
-   task-master parse-prd --input=docs/PRD.md
+   task-master-ai parse-prd --input=docs/PRD.md
    ```
+
+3. Generate audit & sprint plan tasks:
+   ```bash
+   task-master-ai parse-prd --input=docs/Audit_Sprint_Plan.md
+   ```
+
+---
+
+## Getting your tickets into Task-Master
+
+From the repo root, just run:
+
+```bash
+# (re)initialize the Task-Master project if you haven’t already
+npx task-master-ai init
+
+# parse the main PRD into tasks
+npx task-master-ai parse-prd --input docs/PRD.md
+
+# parse the Audit & Sprint Plan into tasks
+npx task-master-ai parse-prd --input docs/Audit_Sprint_Plan.md
+
+# verify the new tickets
+npx task-master-ai list
+```
+
+After that you’ll see all of the “AUTH-001…DB-002…PIPE-003” etc. tickets in your task board. From there you can:
+
+* Assign estimates by editing each task’s front-matter or via
+  task-master-ai update --from=<TASK_ID> --prompt="Set estimate to X days".
+* Assign to teams similarly with task-master-ai update --from=<TASK_ID> --prompt="Assign to @backend-team" (or by editing the task file directly).
+* Update status with task-master-ai set-status --id=<TASK_ID> --status=pending|in-progress|done.
+
+----------------------------------------------------------------------------------------------------------------
+
+#### Next steps
+
+1. Run the commands above to pull your filled-out plan into Task-Master.
+2. Triage the generated tickets—add assignees, tweak estimates, set priorities.
+3. Kick off Sprint 1 by marking the “Blockers” tickets as in-progress.
 
 ### Daily Workflow
 
 1. Check current tasks and priorities:
    ```bash
-   task-master list
+   task-master-ai list
    ```
 
 2. Analyze task complexity to identify which tasks need breaking down:

@@ -1,4 +1,12 @@
+ 'use client';
+
+import { useAuth } from '@/components/auth/AuthContext';
+import ReputationDisplay from '@/components/profile/ReputationDisplay';
+
 export default function Profile() {
+  const { user, isLoading } = useAuth();
+  if (isLoading) return null;
+  if (!user) return <div className="container mx-auto py-12 px-6">Please log in to view your profile.</div>;
   return (
     <div className="container mx-auto py-12 px-6">
       <h1 className="text-3xl font-bold mb-6">Profile</h1>
@@ -10,8 +18,8 @@ export default function Profile() {
               <div className="w-24 h-24 rounded-full bg-secondary flex items-center justify-center text-2xl font-bold mb-4">
                 JD
               </div>
-              <h2 className="text-xl font-bold">John Doe</h2>
-              <p className="text-muted-foreground mb-4">@johndoe</p>
+              <h2 className="text-xl font-bold">{user.name || user.username}</h2>
+              <p className="text-muted-foreground mb-4">@{user.username}</p>
               
               <div className="w-full border-t border-border my-4"></div>
               
@@ -26,7 +34,7 @@ export default function Profile() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Joined</span>
-                  <span className="font-medium">Jan 2023</span>
+                  <span className="font-medium">{new Date(user.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</span>
                 </div>
               </div>
               
@@ -40,6 +48,9 @@ export default function Profile() {
         </div>
         
         <div className="md:col-span-2">
+          <div className="mb-8">
+            <ReputationDisplay userId={user.id} />
+          </div>
           <div className="bg-card rounded-lg border border-border p-6 mb-8">
             <h2 className="text-xl font-semibold mb-4">About</h2>
             <p className="text-muted-foreground">

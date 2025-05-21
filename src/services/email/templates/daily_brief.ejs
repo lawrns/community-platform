@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= briefTitle %></title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      background-color: #4F46E5;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .content {
+      padding: 20px;
+      background-color: #fff;
+    }
+    .footer {
+      background-color: #f9f9f9;
+      padding: 15px;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
+    .summary {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .item-group {
+      margin-bottom: 25px;
+    }
+    .item-group-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #4F46E5;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+    .item {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .item-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+    .item-summary {
+      margin-bottom: 10px;
+      color: #555;
+    }
+    .item-metadata {
+      font-size: 12px;
+      color: #777;
+    }
+    .tag {
+      display: inline-block;
+      background-color: #EEF2FF;
+      color: #4F46E5;
+      padding: 3px 6px;
+      border-radius: 3px;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      font-size: 11px;
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 15px;
+      background-color: #4F46E5;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    .unsubscribe {
+      margin-top: 20px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2><%= briefTitle %></h2>
+      <p><%= new Date(generatedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+    </div>
+    
+    <div class="content">
+      <p>Hello <%= name %>,</p>
+      
+      <div class="summary">
+        <p><%= briefSummary %></p>
+      </div>
+      
+      <% 
+      // Group items by content type
+      const contentTypes = {};
+      items.forEach(item => {
+        if (!contentTypes[item.contentType]) {
+          contentTypes[item.contentType] = [];
+        }
+        contentTypes[item.contentType].push(item);
+      });
+      %>
+      
+      <% if (contentTypes.tool && contentTypes.tool.length > 0) { %>
+        <div class="item-group">
+          <div class="item-group-title">Tools (<%= contentTypes.tool.length %>)</div>
+          <% contentTypes.tool.forEach(item => { %>
+            <div class="item">
+              <div class="item-title"><%= item.title %></div>
+              <div class="item-summary"><%= item.summary %></div>
+              <div class="item-metadata">
+                <% if (item.metadata && item.metadata.tags && Array.isArray(item.metadata.tags)) { %>
+                  <div>
+                    <% item.metadata.tags.slice(0, 5).forEach(tag => { %>
+                      <span class="tag"><%= tag %></span>
+                    <% }); %>
+                  </div>
+                <% } %>
+              </div>
+              <a href="<%= item.url %>" class="button">View Tool</a>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      
+      <% if (contentTypes.topic && contentTypes.topic.length > 0) { %>
+        <div class="item-group">
+          <div class="item-group-title">Topics (<%= contentTypes.topic.length %>)</div>
+          <% contentTypes.topic.forEach(item => { %>
+            <div class="item">
+              <div class="item-title"><%= item.title %></div>
+              <div class="item-summary"><%= item.summary %></div>
+              <div class="item-metadata">
+                <% if (item.metadata && item.metadata.post_count) { %>
+                  <div><%= item.metadata.post_count %> recent posts</div>
+                <% } %>
+              </div>
+              <a href="<%= item.url %>" class="button">Explore Topic</a>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      
+      <% if (contentTypes.content && contentTypes.content.length > 0) { %>
+        <div class="item-group">
+          <div class="item-group-title">Content (<%= contentTypes.content.length %>)</div>
+          <% contentTypes.content.forEach(item => { %>
+            <div class="item">
+              <div class="item-title"><%= item.title %></div>
+              <div class="item-summary"><%= item.summary %></div>
+              <div class="item-metadata">
+                <% if (item.metadata) { %>
+                  <div>
+                    <% if (item.metadata.author) { %>
+                      By <%= item.metadata.author %>
+                    <% } %>
+                    <% if (item.metadata.type) { %>
+                      • <%= item.metadata.type.charAt(0).toUpperCase() + item.metadata.type.slice(1) %>
+                    <% } %>
+                  </div>
+                  <% if (item.metadata.tags && Array.isArray(item.metadata.tags)) { %>
+                    <div>
+                      <% item.metadata.tags.slice(0, 5).forEach(tag => { %>
+                        <span class="tag"><%= tag %></span>
+                      <% }); %>
+                    </div>
+                  <% } %>
+                <% } %>
+              </div>
+              <a href="<%= item.url %>" class="button">Read More</a>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      
+      <p>
+        <a href="<%= profileUrl %>" class="button">Visit Your Dashboard</a>
+      </p>
+      
+      <div class="unsubscribe">
+        <p>To change your brief preferences, <a href="<%= settingsUrl %>">visit your settings</a>.</p>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>&copy; <%= new Date().getFullYear() %> Community.io. All rights reserved.</p>
+      <p>This is an AI-powered brief based on your interests and activity.</p>
+    </div>
+  </div>
+</body>
+</html>

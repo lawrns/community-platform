@@ -1,6 +1,9 @@
 /* Import Lumen Design System */
 @import '../styles/lumen.css';
 
+/* New commredesign components - purple/blue gradients and modern UI */
+@import '../styles/commredesign-components.css';
+
 /* Legacy styles for backward compatibility */
 @import '../styles/animations.css';
 @import '../styles/responsiveUtils.css';
@@ -8,14 +11,88 @@
 @import '../styles/refined-components.css';
 @import '../styles/typography.css';
 
+/* Global style overrides */
+@import '../styles/global-overrides.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
  
 @layer base {
   :root {
-    /* Dark mode toggle transition */
-    --theme-transition: 0.3s ease-in-out;
+    /* Base Design System - All values as CSS variables for consistency */
+    /* Background colors */
+    --bg-0: #05060a;
+    --bg-1: #0d0f15;
+    --bg-2: #171923;
+    --bg-surface: #ffffff;
+    
+    /* Brand colors with varying intensities */
+    --brand-50: #eaf3ff;
+    --brand-100: #d1e4ff;
+    --brand-200: #a7c9ff;
+    --brand-300: #7dadff;
+    --brand-400: #549bff;
+    --brand-500: #2d8bff;
+    --brand-600: #1e6ad4;
+    --brand-700: #154da9;
+    --brand-800: #0d337e;
+    --brand-900: #061953;
+    --brand-fade: rgba(45, 139, 255, 0.12);
+    
+    /* Neutral colors for text and borders */
+    --neutral-50: #f9fafb;
+    --neutral-100: #f3f4f6;
+    --neutral-200: #e5e7eb;
+    --neutral-300: #d1d5db;
+    --neutral-400: #9ca3af;
+    --neutral-500: #6b7280;
+    --neutral-600: #4b5563;
+    --neutral-700: #374151;
+    --neutral-800: #1f2937;
+    --neutral-900: #111827;
+
+    /* Radii */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+    --radius-l: 1.5rem;
+    --radius-xl: 2rem;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.03);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.06), 0 3px 6px rgba(0, 0, 0, 0.04);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 10px 10px rgba(0, 0, 0, 0.03);
+    --shadow-glass: 0 1px 1px rgba(255, 255, 255, 0.06), 0 2px 6px rgba(0, 0, 0, 0.25);
+    
+    /* Spacing - 8pt grid system */
+    --space-1: 0.25rem; /* 4px */
+    --space-2: 0.5rem;  /* 8px */
+    --space-3: 0.75rem; /* 12px */
+    --space-4: 1rem;    /* 16px */
+    --space-5: 1.25rem; /* 20px */
+    --space-6: 1.5rem;  /* 24px */
+    --space-8: 2rem;    /* 32px */
+    --space-10: 2.5rem; /* 40px */
+    --space-12: 3rem;   /* 48px */
+    --space-16: 4rem;   /* 64px */
+    --space-20: 5rem;   /* 80px */
+    --space-24: 6rem;   /* 96px */
+    --space-32: 8rem;   /* 128px */
+    
+    /* Motion */
+    --motion-ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+    --motion-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --motion-ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --motion-ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --motion-duration-ultra-fast: 20ms;
+    --motion-duration-fast: 100ms;
+    --motion-duration-normal: 240ms;
+    --motion-duration-slow: 400ms;
+
+    /* Legacy variables - map to new system */
     /* Surface colors (backgrounds) */
     --surface-1: 0 0% 100%;
     --surface-2: 260 40% 98%;
@@ -23,181 +100,115 @@
     --surface-accent: 260 30% 96.1%;
 
     /* Text/content colors */
-    --content-primary: 260 50% 10%;
-    --content-secondary: 260 30% 40%;
-    --content-tertiary: 260 20% 64%;
+    --content-primary: 260 60% 5%;
+    --content-secondary: 260 50% 25%;
+    --content-tertiary: 260 40% 40%;
     --content-inverse: 260 30% 98%;
     --content-on-primary: 0 0% 100%;
-    --content-on-accent: 260 50% 10%;
+    --content-on-accent: 0 0% 100%;
     --content-on-destructive: 0 0% 100%;
 
     /* Brand colors */
-    --brand-primary: 265 89% 62%;
-    --brand-secondary: 230 83% 65%;
-    --brand-tertiary: 190 90% 50%;
-
-    /* Accent colors for UI emphasis */
-    --accent-blue: 230 83% 65%;
-    --accent-purple: 265 89% 62%;
-    --accent-green: 160 84% 45%;
-    --accent-yellow: 48 96% 53%;
-    --accent-red: 0 84.2% 60.2%;
-
-    /* Semantic colors */
-    --semantic-success: 160 84% 45%;
-    --semantic-warning: 38 92% 50%;
-    --semantic-error: 0 84.2% 60.2%;
-    --semantic-info: 230 83% 65%;
+    --brand-primary: 145 61% 61%; /* Green */
+    --brand-secondary: 204 84% 52%; /* Blue */
+    --brand-tertiary: 42 97% 61%; /* Yellow */
 
     /* Legacy colors - maintain compatibility with existing code */
     --background: 0 0% 100%;
-    --foreground: 260 50% 10%;
+    --foreground: 260 60% 5%;
     --card: 0 0% 100%;
-    --card-foreground: 260 50% 10%;
+    --card-foreground: 260 60% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 260 50% 10%;
-    --primary: 265 89% 62%;
+    --popover-foreground: 260 60% 5%;
+    --primary: 145 61% 61%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 230 83% 65%;
+    --secondary: 204 84% 52%;
     --secondary-foreground: 0 0% 100%;
     --muted: 260 40% 96.1%;
-    --muted-foreground: 260 30% 40%;
-    --accent: 190 90% 50%;
-    --accent-foreground: 260 50% 10%;
+    --muted-foreground: 260 50% 25%;
+    --accent: 145 61% 61%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
     --border: 260 30% 92%;
     --input: 260 30% 92%;
-    --ring: 265 89% 62%;
-
-    /* Border radius */
-    --radius: 0.5rem;
-    --radius-xs: 0.125rem; /* 2px */
-    --radius-sm: 0.25rem;  /* 4px */
-    --radius-md: 0.375rem; /* 6px */
-    --radius-lg: 0.5rem;   /* 8px */
-    --radius-xl: 0.75rem;  /* 12px */
-    --radius-2xl: 1rem;    /* 16px */
-
-    /* Spacing system */
-    --spacing-4xs: 0.125rem; /* 2px */
-    --spacing-3xs: 0.25rem;  /* 4px */
-    --spacing-2xs: 0.5rem;   /* 8px */
-    --spacing-xs: 0.75rem;   /* 12px */
-    --spacing-sm: 1rem;      /* 16px */
-    --spacing-md: 1.5rem;    /* 24px */
-    --spacing-lg: 2rem;      /* 32px */
-    --spacing-xl: 3rem;      /* 48px */
-    --spacing-2xl: 4rem;     /* 64px */
-    --spacing-3xl: 6rem;     /* 96px */
-    --spacing-4xl: 8rem;     /* 128px */
-
-    /* Typography */
-    --font-size-caption: 0.75rem;  /* 12px */
-    --font-size-body-sm: 0.875rem; /* 14px */
-    --font-size-body: 1rem;       /* 16px */
-    --font-size-body-lg: 1.125rem; /* 18px */
-    --font-size-display-sm: 1.25rem; /* 20px */
-    --font-size-display: 1.5rem;    /* 24px */
-    --font-size-display-lg: 2rem;    /* 32px */
-    --font-size-display-xl: 2.5rem;  /* 40px */
-    --font-size-display-2xl: 3rem;   /* 48px */
-
-    /* Font weights */
-    --font-weight-regular: 400;
-    --font-weight-medium: 500;
-    --font-weight-semibold: 600;
-    --font-weight-bold: 700;
-
-    /* Line heights */
-    --line-height-tight: 1.2;
-    --line-height-snug: 1.33;
-    --line-height-normal: 1.5;
-    --line-height-relaxed: 1.66;
-    --line-height-loose: 2;
-
-    /* Shadow tokens */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-    --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
-
-    /* Animation */
-    --duration-fast: 150ms;
-    --duration-normal: 250ms;
-    --duration-slow: 350ms;
-
-    /* Animation easing */
-    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-out: cubic-bezier(0, 0, 0.2, 1);
-    --ease-in: cubic-bezier(0.4, 0, 1, 1);
-    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ring: 145 61% 61%;
   }
 
+  /* Dark mode */
   .dark {
+    --bg-0: #05060a;
+    --bg-1: #0d0f15;
+    --bg-2: #171923;
+    --bg-surface: #0d0f15;
+    
+    --brand-50: #1a365d;
+    --brand-100: #2a4975;
+    --brand-200: #3e5f9e;
+    --brand-300: #5475c7;
+    --brand-400: #6888e0;
+    --brand-500: #2d8bff;
+    --brand-600: #7d9ef5;
+    --brand-700: #93b4ff;
+    --brand-800: #bacefc;
+    --brand-900: #eaf3ff;
+    --brand-fade: rgba(45, 139, 255, 0.18);
+    
     /* Surface colors (backgrounds) */
-    --surface-1: 222.2 84% 4.9%;
-    --surface-2: 217.2 32.6% 13.5%;
-    --surface-3: 217.2 32.6% 17.5%;
-    --surface-accent: 217.2 32.6% 17.5%;
+    --surface-1: 222 47% 7%;
+    --surface-2: 222 34% 9%;
+    --surface-3: 222 24% 12%;
+    --surface-accent: 224 71% 4%;
 
     /* Text/content colors */
     --content-primary: 210 40% 98%;
-    --content-secondary: 215 20.2% 65.1%;
-    --content-tertiary: 215 16% 47%;
-    --content-inverse: 222.2 84% 4.9%;
-    --content-on-primary: 222.2 47.4% 11.2%;
-    --content-on-accent: 210 40% 98%;
-    --content-on-destructive: 210 40% 98%;
+    --content-secondary: 214 32% 80%;
+    --content-tertiary: 214 20% 60%;
+    --content-inverse: 216 60% 10%;
 
-    /* Brand colors */
-    --brand-primary: 210 40% 98%;
-    --brand-secondary: 217.2 32.6% 17.5%;
-    --brand-tertiary: 215 20.2% 65.1%;
-
-    /* Accent colors for UI emphasis - slightly muted for dark mode */
-    --accent-blue: 221 70% 55%;
-    --accent-purple: 270 65% 60%;
-    --accent-green: 142 60% 45%;
-    --accent-yellow: 48 90% 55%;
-    --accent-red: 0 72% 51%;
-
-    /* Semantic colors - adjusted for dark mode */
-    --semantic-success: 142 60% 45%;
-    --semantic-warning: 38 90% 55%;
-    --semantic-error: 0 72% 51%;
-    --semantic-info: 221 70% 55%;
-
-    /* Legacy colors - maintain compatibility with existing code */
-    --background: 222.2 84% 4.9%;
+    /* Legacy colors */
+    --background: 222 47% 7%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222 47% 7%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 47% 7%;
     --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+  }
 
-    /* Shadow tokens - darker for dark mode */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
-    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
-    --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.2);
+  /* Fluid typography system */
+  h1 {
+    font-size: clamp(2.25rem, 3vw + 1rem, 4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: clamp(1.75rem, 2vw + 1rem, 3rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-size: clamp(1.5rem, 1.5vw + 1rem, 2.25rem);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  h4 {
+    font-size: clamp(1.25rem, 1vw + 1rem, 1.75rem);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  p {
+    font-size: clamp(1rem, 0.5vw + 0.75rem, 1.125rem);
+    line-height: 1.6;
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 }
  
@@ -209,6 +220,12 @@
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
+  line-height: var(--line-height-normal);
+  letter-spacing: 0.01em;
+  font-feature-settings: "kern";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .page-transition {
@@ -255,17 +272,7 @@ body {
   background: hsl(var(--content-tertiary) / 0.5);
 }
 
-.dark ::-webkit-scrollbar-track {
-  background: hsl(var(--surface-2) / 0.5);
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: hsl(var(--content-tertiary) / 0.4);
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--content-tertiary) / 0.6);
-}
+/* Dark mode scrollbar styles removed */
 
 /* Card hover effects */
 .card-hover {
@@ -278,9 +285,76 @@ body {
   box-shadow: var(--shadow-xl);
 }
 
-.dark .card-hover:hover {
-  box-shadow: var(--shadow-xl);
+/* Dark mode card hover styles removed */
+
+/* Gradient text styling from commredesign */
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  display: inline-block;
 }
+
+.gradient-text-purple-blue {
+  background-image: linear-gradient(to right, hsl(var(--brand-primary)), hsl(var(--brand-secondary)));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.gradient-text-purple-blue-teal {
+  background-image: linear-gradient(to right, hsl(var(--brand-primary)), hsl(var(--brand-secondary)), hsl(var(--brand-tertiary)));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.gradient-text-blue-teal {
+  background-image: linear-gradient(to right, hsl(var(--brand-secondary)), hsl(var(--brand-tertiary)));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.gradient-text-teal-purple {
+  background-image: linear-gradient(to right, hsl(var(--brand-tertiary)), hsl(var(--brand-primary)));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Decorative elements from commredesign */
+.decorative-blob {
+  border-radius: 9999px;
+  position: absolute;
+  filter: blur(60px);
+  mix-blend-mode: multiply;
+  opacity: 0.2;
+  z-index: -1;
+}
+
+.decorative-blob-purple {
+  background-color: hsl(var(--accent-purple) / 0.7);
+}
+
+.decorative-blob-blue {
+  background-color: hsl(var(--accent-blue) / 0.7);
+}
+
+.decorative-blob-teal {
+  background-color: hsl(var(--brand-tertiary) / 0.7);
+}
+
+/* Glass effect from commredesign */
+.glass-card {
+  background-color: hsl(var(--background) / 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid hsl(var(--background) / 0.2);
+  border-radius: var(--radius-lg);
+}
+
+/* Dark mode glass card styles removed */
 
 /* Button hover effect */
 .btn-hover-effect {
@@ -306,9 +380,7 @@ body {
   width: 100%;
 }
 
-.dark .btn-hover-effect::before {
-  background-color: hsl(var(--content-primary) / 0.1);
-}
+/* Dark mode button hover styles removed */
 
 /* Mobile-first responsive design utilities */
 .responsive-container {

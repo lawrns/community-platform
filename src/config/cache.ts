@@ -31,7 +31,7 @@ if (redisClient) {
   });
 
   redisClient.on('error', (err) => {
-    logger.error('Redis connection error:', err);
+    logger.debug('Redis connection error:', err);
   });
 } else {
   logger.warn('Redis not configured. Using memory cache instead.');

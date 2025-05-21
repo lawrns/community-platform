@@ -168,12 +168,11 @@
 
 /* Link Accessibility */
 a {
-  text-decoration-thickness: 1px; /* Ensure underlines are visible */
-  text-underline-offset: 0.2em; /* Improve underline position */
+  text-decoration: none;
 }
 
 a:hover {
-  text-decoration-thickness: 2px; /* Thicker underline on hover for better visibility */
+  text-decoration: none;
 }
 
 /* Adjacent links spacing for touch targets */
@@ -267,10 +266,10 @@ input[type="reset"],
 /* Classes to ensure link contrast on different backgrounds */
 .bg-dark a:not(.btn) {
   color: var(--c-accent-light);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .bg-light a:not(.btn) {
   color: var(--c-accent-dark);
-  text-decoration: underline;
+  text-decoration: none;
 }

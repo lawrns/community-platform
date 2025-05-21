@@ -12,6 +12,8 @@ import { ContentType, ContentStatus } from '../../../models';
 import { AppError, BadRequestError, NotFoundError, ForbiddenError } from '../../../utils/errorHandler';
 import uploadRoutes from './uploads';
 
+import db from '../../../config/database';
+
 const router = Router();
 const contentRepo = new ContentRepository();
 
@@ -496,10 +498,29 @@ router.post('/:id/vote',
     
     res.json({
       success,
-      message: success 
-        ? `Successfully ${vote_type === 1 ? 'upvoted' : 'downvoted'} content` 
+      message: success
+        ? `Successfully ${vote_type === 1 ? 'upvoted' : 'downvoted'} content`
         : 'Failed to vote on content'
     });
+  })
+);
+/**
+ * @route GET /api/content/:id/vote-status
+ * @desc Get whether the authenticated user has upvoted the content
+ * @access Private
+ */
+router.get('/:id/vote-status',
+  authenticate,
+  requireVerified,
+  [param('id').isNumeric().withMessage('ID must be a number')],
+  asyncHandler(async (req, res) => {
+    const id = parseInt(req.params.id);
+    const result = await db.query(
+      'SELECT vote_type FROM user_votes WHERE user_id = $1 AND content_id = $2',
+      [req.user.id, id]
+    );
+    const has_upvoted = result.rows.length > 0 && result.rows[0].vote_type === 1;
+    res.json({ has_upvoted });
   })
 );
 

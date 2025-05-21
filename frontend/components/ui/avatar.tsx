@@ -47,4 +47,24 @@ const AvatarFallback = React.forwardRef<
 ))
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
 
-export { Avatar, AvatarImage, AvatarFallback }
+// Extended component that accepts initials directly
+interface AvatarWithInitialsProps extends React.ComponentPropsWithoutRef<typeof Avatar> {
+  initials?: string;
+  src?: string;
+  alt?: string;
+}
+
+const AvatarWithInitials = React.forwardRef<
+  React.ElementRef<typeof Avatar>,
+  AvatarWithInitialsProps
+>(({ className, initials, src, alt, ...props }, ref) => (
+  <Avatar ref={ref} className={className} {...props}>
+    {src && <AvatarImage src={src} alt={alt || ''} />}
+    <AvatarFallback>
+      {initials || (alt ? alt.charAt(0).toUpperCase() : 'U')}
+    </AvatarFallback>
+  </Avatar>
+));
+AvatarWithInitials.displayName = "AvatarWithInitials";
+
+export { Avatar, AvatarImage, AvatarFallback, AvatarWithInitials }

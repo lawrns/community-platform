@@ -33,6 +33,10 @@ const envSchema = z.object({
   AUTH0_CLIENT_ID: z.string().optional(),
   AUTH0_CLIENT_SECRET: z.string().optional(),
   
+  // WebAuthn
+  WEBAUTHN_RP_ID: z.string().optional(),
+  WEBAUTHN_RP_NAME: z.string().optional(),
+  
   // Storage
   STORAGE_PROVIDER: z.enum(['s3', 'local']).default('local'),
   S3_BUCKET: z.string().optional(),

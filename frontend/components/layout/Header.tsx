@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Image as ImageIcon, Wrench, Plus, MessagesSquare, Hash, ChevronDown, Search, Paintbrush, Columns, Layout, Accessibility, LayoutDashboard, User } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthContext';
@@ -22,14 +23,19 @@ import {
 export default function Header() {
   const { user, logout } = useAuth();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
 
   return (
     <Glass
-      variant="dark"
-      blur="md"
-      className="w-full border-b border-[var(--c-border-subtle)] sticky top-0 z-40 shadow-sm"
+      variant={isHomePage ? 'accent' : 'light'}
+      blur={isHomePage ? 'lg' : 'md'}
+      border={isHomePage ? 'none' : 'subtle'}
+      shadow={isHomePage ? 'none' : 'sm'}
+      interactive={isHomePage ? 'hover' : 'none'}
+      className="w-full sticky top-0 z-40 transition-all"
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className={`container mx-auto flex items-center justify-between px-4 ${isHomePage ? 'py-6' : 'h-16'}`}> 
         <div className="flex items-center gap-6">
           <Link href="/" className="group flex items-center gap-2 relative">
             <div className="absolute -inset-2 rounded-lg bg-[var(--c-accent)]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -46,13 +52,14 @@ export default function Header() {
           <nav className="hidden md:flex items-center gap-1">
             {/* Tools Dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="px-3 text-sm font-medium flex items-center gap-1 h-9"
-                  onMouseEnter={() => setHoveredItem('tools')}
-                  onMouseLeave={() => setHoveredItem(null)}
-                >
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                animated
+                className="px-3 text-sm font-medium flex items-center gap-1 h-9"
+                onMouseEnter={() => setHoveredItem('tools')}
+                onMouseLeave={() => setHoveredItem(null)}
+              >
                   <Wrench className="h-4 w-4 mr-1" />
                   Tools
                   <motion.span
@@ -105,9 +112,10 @@ export default function Header() {
             
             {/* Topics Dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
+            <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  animated
                   className="px-3 text-sm font-medium flex items-center gap-1 h-9"
                   onMouseEnter={() => setHoveredItem('topics')}
                   onMouseLeave={() => setHoveredItem(null)}
@@ -163,9 +171,10 @@ export default function Header() {
             
             {/* Design System Dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
+            <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  animated
                   className="px-3 text-sm font-medium flex items-center gap-1 h-9"
                   onMouseEnter={() => setHoveredItem('design')}
                   onMouseLeave={() => setHoveredItem(null)}
@@ -249,8 +258,6 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-3">
-          <LumenThemeToggle />
-          
           {user ? (
             <>
               <ButtonWithIcon

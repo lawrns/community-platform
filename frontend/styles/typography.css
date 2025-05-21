@@ -19,14 +19,14 @@
   --font-size-4xl: 2.027rem;   /* 32.4px - Display text */
   --font-size-5xl: 2.566rem;   /* 41.1px - Hero headings */
   
-  /* Line Height Values - Proportional to font size */
-  --line-height-tight: 1.1;    /* Headings, titles */
-  --line-height-snug: 1.25;    /* Subheadings */
-  --line-height-normal: 1.5;   /* Body text */
-  --line-height-relaxed: 1.625; /* Longer body text */
-  --line-height-loose: 1.8;    /* Very long text blocks */
+  /* Line Height Values - Proportional to font size - improved for readability */
+  --line-height-tight: 1.2;    /* Headings, titles */
+  --line-height-snug: 1.33;    /* Subheadings */
+  --line-height-normal: 1.6;   /* Body text */
+  --line-height-relaxed: 1.75; /* Longer body text */
+  --line-height-loose: 2.0;    /* Very long text blocks */
   
-  /* Font Weight Values */
+  /* Font Weight Values - adjusted for better readability */
   --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -41,7 +41,7 @@
   --letter-spacing-widest: 0.1em;
 }
 
-/* Text Colors */
+/* Text Colors - with higher contrast */
 .text-primary {
   color: var(--surface-foreground);
 }
@@ -52,6 +52,12 @@
 
 .text-accent {
   color: var(--surface-primary);
+}
+
+/* Additional helper for maximum contrast */
+.text-high-contrast {
+  color: var(--foreground);
+  font-weight: var(--font-weight-medium);
 }
 
 /* Typography Utilities */
@@ -252,10 +258,13 @@
   }
 }
 
-/* Prose Styles for Long Form Content */
+/* Prose Styles for Long Form Content - improved readability */
 .prose {
-  max-width: 65ch;
+  max-width: 68ch;
   color: var(--surface-foreground);
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-relaxed);
+  letter-spacing: 0.011em;
 }
 
 .prose p {

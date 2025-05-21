@@ -155,16 +155,194 @@ community.io will unify the fragmented landscape of AI discussion and discovery 
 
 ## Risks
 
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-| Low early-stage content volume | Low engagement | Med | Seed initial 200+ posts from invited experts; content grants |
-| Spam / low-quality answers | Reputation damage | High | AI filters + tiered posting limits for low-rep users |
-| Rapid tech changes in AI | Feature churn | Med | Modular microservices for AI features; regular roadmap reviews |
-| Monetisation backlash | User trust loss | Low | Transparent sponsorship labeling; community feedback loop |
+| Risk                            | Impact                 | Likelihood | Mitigation                                                                          |
+|---------------------------------|------------------------|------------|-------------------------------------------------------------------------------------|
+| Low early-stage content volume  | Low engagement         | Med        | Seed initial 200+ posts from invited experts; content grants                         |
+| Spam / low-quality answers      | Reputation damage      | High       | AI filters + tiered posting limits for low-rep users                                 |
+| Rapid tech changes in AI        | Feature churn          | Med        | Modular microservices for AI features; regular roadmap reviews                       |
+| Monetisation backlash           | User trust loss        | Low        | Transparent sponsorship labeling; community feedback loop                            |
 
-## Appendix
+## 9. Unique Value Proposition & Key Differentiators
 
-- Competitive landscape spreadsheet (separate doc)
-- Initial wireframes & sitemap (Figma link)
-- Claude & GPT research summaries
-- Architectural diagram (draw.io)
+While many Q&A and community platforms exist, community.io stands apart by combining deep AI-driven personalization and tooling with an ultra-polished, modern UX. Our core differentiators are:
+
+| Differentiator                     | Why It Matters                                                                                      |
+|------------------------------------|-----------------------------------------------------------------------------------------------------|
+| AI-Powered Personalized Feed       | Content recommendations adapt to each user’s interests and behavior—no generic “latest posts.”      |
+| Semantic Search + Lexical Fallback | Vector-based similarity search (pgvector) surfaces relevant threads even when keywords differ.      |
+| Integrated Tool Directory          | Rich, structured pages for AI tools—compare features, pricing, real-world reviews in one place.    |
+| Rich Content Creation & Versioning | Full WYSIWYG with code execution sandbox, auto-save, and rollback history for zero-fear editing.    |
+| Reputation & Gamification          | Badges, tiered privileges, and reputation-gated features drive quality contributions.               |
+| Hybrid Monolith + Microservices    | Fast iteration on core features with clear path to microservice-scale for AI workloads.            |
+| Vendor-Claimed Listings            | Tool vendors manage their own profiles, ensuring up-to-date pricing/use-case data.                  |
+| Onboarding Survey for Cold-Start   | New users complete a quick interest quiz to prime personalization and reduce “empty feed” lag.      |
+
+## 10. MVP Scope & Feature Breakdown
+
+To hit our 3-month web-MVP deadline, we’ll laser-focus on the P0 features and pick just a handful of P1 bits that boost our “wow” factor—particularly around UI/UX polish and unique tooling.
+
+| Area                               | In MVP (P0/P1)   | Notes on UX/Functionality Emphasis                                         |
+|------------------------------------|------------------|-----------------------------------------------------------------------------|
+| Account & Auth                     | P0               | Email/OAuth signup, email verify, smooth “social → email” merge flows.     |
+| Content Creation & Editing         | P0               | Rich-text + code blocks, live preview, autosave, one-click rollback history.|
+| Taxonomy & Tagging                 | P0               | Instant tag suggestions, typo correction, max-5-tag guardrails.             |
+| Search (Keyword & Semantic)        | P0               | pgvector integration, typeahead suggestions, 700 ms 95th-pct latency target.|
+| Reputation System                  | P0               | Upvotes, accepted answers, badge animations, tier unlocks at 250/1k/5k rep. |
+| Personalized Feed & Dashboard      | P0 + minimal P1  | Onboarding interest survey, card-based feed with smooth infinite scroll.    |
+| Notification Engine                | P0               | In-app real-time notifications + daily email digest with personalized highlights. |
+| Moderation & Governance            | P0               | AI-spam filter first pass, flag/queue UI for moderators, immutable audit logs. |
+| Tool Directory                     | P0               | Searchable directory UI, filter panel (category, license), vendor-claim workflow. |
+| Live Events & AMAs                 | P1               | Embedded third-party streams, auto-archive aggregator in content library.   |
+| Mobile-Responsive PWA (core flows) | P1               | Responsive layouts, “Add to Home” banner, offline read cache for posts.     |
+
+(P1 features in MVP are selectively chosen to heighten UX delight without jeopardizing timeline.)
+
+## 11. UI/UX Strategy & Design Principles
+
+We must deliver absolutely stunning UI/UX that delights power-users and newcomers alike, while meeting WCAG 2.1 AA standards and mobile-first best practices.
+
+### 11.1. Overarching Design Principles
+
+| Principle                    | Intent                                                                                  |
+|------------------------------|-----------------------------------------------------------------------------------------|
+| Clarity & Focus              | Minimal chrome—surface only the controls you need, when you need them.                   |
+| Speed & Responsiveness       | Instant feedback on hover, click, vote, search. Sub-200 ms UI animations.               |
+| Joyful Microinteractions     | Subtle animations for upvotes, badge unlocks, inbox pops to reinforce positive behavior.|
+| Consistency & Predictability | Unified design system with reusable components (buttons, cards, modals).                |
+| Accessibility First          | Keyboard-navigable, screen-reader labels, color-contrast ratios ≥ 4.5:1.                |
+| Brand Personality            | Friendly, modern, slightly playful—our tone is inclusive and encouraging.               |
+
+### 11.2. Design System Highlights
+
+* Color Palette: Vibrant accent (AI-electric-blue) against muted neutrals; light/dark mode toggle.
+* Typography: Sans-serif system stack (e.g. Inter/Roboto) for readability and performance.
+* Iconography: Custom SVG icons with consistent stroke weights and friendly curves.
+* Motion: Easing curves (cubic-bezier(.25,.8,.25,1)), 150–300 ms duration for most transitions.
+
+### 11.3. Core Page Wireframe Sketches
+
+1. Homepage / Feed
+   * Top nav: logo, search bar, post button, notifications, profile menu.
+2. Left rail: interests filter, trending tags, upcoming events.
+3. Main feed: card grid/list toggle, infinite scroll, contextual “Up next” recommendations.
+4. Question Detail / Answer Composer
+   * Sticky question header, voting sidebar.
+   * Composer pane with live Markdown preview, “Run code” sandbox toggle.
+   * Related content sidebar (AI-suggested threads & documentation).
+5. Tool Directory
+   * Filter panel (category, pricing, maturity).
+   * Grid of tool cards with logo, rating, vendor status badge.
+   * Tool detail modal/page with pricing matrix, use-case bullets, user reviews.
+6. Profile / Reputation Dashboard
+   * Rep score gauge, badge wall, recent contributions timeline.
+   * Settings tab for notification & privacy preferences.
+
+## 12. Implementation Roadmap & Milestones
+
+A tight, three-sprint cadence (2 weeks per sprint + 1 week buffer per sprint for QA/bugfix) gets us to a beta launch at ~12 weeks.
+
+| Sprint             | Duration     | Objectives                                                                                          |
+|--------------------|--------------|-----------------------------------------------------------------------------------------------------|
+| Sprint 1           | Weeks 1–3    | Auth flows, basic posting/editing, taxonomy/tagging, homepage scaffolding.                          |
+| Sprint 2           | Weeks 4–6    | Search engine integration, reputation/voting, notifications, tool directory core.                   |
+| Sprint 3           | Weeks 7–9    | Personalized feed, moderation pipeline, live events embed, PWA shell.                               |
+| Beta Stabilization | Weeks 10–12  | End-to-end testing, load/perf tuning, accessibility audit, polish UI microinteractions, launch prep.|
+
+### Key Milestones
+
+* End of Week 3: Internal alpha (core Q&A flows + tagging).
+* End of Week 6: Feature-complete beta (search, reputation, directory).
+* End of Week 9: Public beta release (personalization + PWA).
+* End of Week 12: General availability (marketing website live, onboarding campaigns).
+
+## 13. Next Steps & Deliverables
+
+1. Finalize MVP Specs: Lock down exact API contracts, data schemas, and UX edge cases.
+2. Design Handoff: Complete high-fi Figma screens for all core flows; generate component library.
+3. Architecture Spike: Prototype pgvector integration and live code sandbox performance.
+4. Dev Kickoff: Standup sprint 1 backlog, assign engineers & designers, configure CI/CD pipelines.
+5. User Testing Loop: Recruit 20+ pilot users (Priya/Miguel/Sofia profiles) for bi-weekly feedback.
+
+## 14. Success Metrics & KPIs
+
+We’ll measure both adoption and quality/engagement to ensure we’re building something people love and keep coming back to.
+
+| Metric                        | Definition                                                  | Q1 Target    |
+|-------------------------------|-------------------------------------------------------------|--------------|
+| Monthly Active Users (MAU)    | Unique users who visit and perform ≥1 key action (post, comment, vote, search). | 10,000       |
+| Day-1 Retention               | % of new sign-ups who return at least once within 24 hours. | 40%          |
+| Time-to-First-Answer          | Median time from question post → accepted answer.            | ≤ 30 minutes |
+| Search Click-Through Rate     | % of searches (semantic + lexical) with a click on result.   | ≥ 60%        |
+| Onboarding Completion         | % new users finishing the interest survey & setting tags.    | ≥ 75%        |
+| Engagement Score              | Avg. # actions (posts + comments + votes) per MAU.           | ≥ 3/actions  |
+| Tool-Directory Adoption       | % of active users who view ≥1 tool profile per month.        | ≥ 25%        |
+| Code-Sandbox Utilization      | % of posts using the runnable code sandbox feature.          | ≥ 20%        |
+
+## 15. Key Risks & Mitigations
+
+| Risk                               | Mitigation                                                                                      |
+|------------------------------------|------------------------------------------------------------------------------------------------|
+| Cold-start personalization: sparse data early on | Leverage onboarding survey to prime user interests; Auto-recommend popular tags & threads until enough data. |
+| Search latency > target (700 ms)   | Implement result caching & query batching; Pre-warm pgvector indices; monitor 95th-pct tail.     |
+| Vendor directory content gaps      | Early outreach & self-serve vendor portal build; Seed MVP with 50+ tool profiles via data-entry sprints. |
+| Overrun on core engineering velocity | Strict P0/P1 gating; only pull in P1 if sprint buffer; Weekly sprint health checks; escalate blockers early. |
+| Moderation workload spikes         | Train AI-spam filter with initial datasets; Ramp up community moderators; build clear SLAs.       |
+
+## 16. Dependencies & Assumptions
+
+**External Dependencies**
+- pgvector (PostgreSQL extension) for semantic search.
+- Third-party auth providers (Google, GitHub OAuth).
+- Figma design system & component library delivered by end of Sprint 0.
+- AWS / GCP credits for sandbox code execution environment.
+
+**Internal Assumptions**
+- Dedicated data-ingestion sprint to seed tool directory before Beta.
+- Availability of 2–3 full-time engineers and 1 designer per sprint.
+- DevOps support for CI/CD, infra provisioning, monitoring.
+
+## 17. Team & Governance
+
+**Core Squad (12-week window)**
+| Role                   | Name(s)           | Responsibilities                             |
+|------------------------|-------------------|----------------------------------------------|
+| Product Lead           | Alice / Priya     | PRD owner, roadmap, stakeholder alignment    |
+| Engineering Lead       | Miguel            | Architecture, sprint planning, code reviews  |
+| Backend Engineers (2)  | TBD               | API, DB schema, search, notifications engine |
+| Frontend Engineers (2) | TBD               | React UI, rich-text editor, PWA shell        |
+| Designer               | Sofia             | UX flows, high-fi mocks, design system       |
+| QA / SRE               | TBD               | Test plans, load/perf tuning, monitoring     |
+| Community Moderator    | TBD               | Pilot-user recruitment, feedback loop        |
+
+**Steering Committee (bi-weekly)**
+Product Lead · Engineering Lead · Designer · Head of Growth · Head of Community
+
+## 18. Budget & Resource Plan
+
+| Category                   | Cost Driver                    | 3-Month Estimate |
+|----------------------------|--------------------------------|------------------|
+| Personnel                  | 6 FTEs @ blended rate          | $360K            |
+| Cloud Infra                | Compute, storage, sandbox ops  | $15K             |
+| Third-Party Services       | pgvector licensing, monitoring | $5K              |
+| UX Research & Testing      | Pilot incentives (20 users)    | $5K              |
+| Contingency (10%)          | Buffer                         | $39K             |
+| **Total**                  |                                | **$424K**        |
+
+## 19. Marketing & Launch Strategy
+
+**Pre-Launch (Weeks 1–6)**
+- Build landing page + waitlist with early-access call-to-action.
+- Run social-media teaser campaigns & developer newsletters.
+- Recruit 20 pilot users (target profiles: data scientists, dev-tool authors).
+
+**Beta Launch (End of Week 9)**
+- Invite pilot cohort → collect qualitative+quantitative feedback.
+- Publish “Inside community.io” blog series on dev platforms.
+- Host live AMA to demo features & drive grassroots evangelism.
+
+**GA Launch (End of Week 12)**
+- Press release + partnered blog posts (e.g. Hacker News, DEV.to).
+- Paid ads: targeted on AI/ML/dev tool verticals.
+- Webinar series + hands-on workshops with community leaders.
+
+*With success metrics, risks mitigated, clear ownership, budget aligned, and a go-to-market plan set, we’re ready to kick off the sprints and deliver a world-class AI-powered community platform in 12 weeks. Please review and flag any gaps or questions!* 

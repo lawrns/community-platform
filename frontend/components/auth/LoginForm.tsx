@@ -13,6 +13,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { getSupabase } from "@/lib/supabase"
+import WebAuthnButton from "./WebAuthnButton"
+import { Separator } from "@/components/ui/separator"
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -187,6 +189,28 @@ export default function LoginForm() {
           GitHub
         </Button>
       </div>
+      
+      <div className="relative my-4">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-white dark:bg-slate-900 px-2 text-gray-500">Or use a passkey</span>
+        </div>
+      </div>
+      
+      <WebAuthnButton 
+        mode="login"
+        className="w-full"
+        username={form.getValues().email || undefined}
+        onSuccess={(result) => {
+          router.push("/dashboard")
+          router.refresh()
+        }}
+        onError={(error) => {
+          setError(error.message || "Passkey authentication failed")
+        }}
+      />
     </motion.div>
   )
 }

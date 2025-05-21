@@ -11,6 +11,7 @@ import cache from './config/cache';
 import { createServer } from 'http';
 import { notificationService } from './services/notifications/notificationService';
 import { notificationScheduler } from './services/notifications/scheduledJobs';
+import { dailyBriefScheduler } from './services/recommendations/scheduledJobs';
 
 /**
  * Start server and initialize services
@@ -29,9 +30,16 @@ async function startServer() {
     // Start notification scheduler
     notificationScheduler.start();
     
-    // Start HTTP server
-    const server = httpServer.listen(env.PORT, () => {
-      logger.info(`Server running in ${env.NODE_ENV} mode on port ${env.PORT}`);
+    // Start daily brief scheduler
+    dailyBriefScheduler.start();
+    
+    // Start HTTP server (supports --port CLI flag)
+    const portIndex = process.argv.indexOf('--port');
+    const portArg   = portIndex > -1 ? process.argv[portIndex + 1] : undefined;
+    const port      = portArg ? Number(portArg) : env.PORT;
+
+    const server = httpServer.listen(port, () => {
+      logger.info(`Server running in ${env.NODE_ENV} mode on port ${port}`);
       logger.info(`API URL: ${env.API_URL}`);
     });
     
@@ -70,6 +78,9 @@ function setupGracefulShutdown(server: import('http').Server) {
         
         // Stop notification scheduler
         notificationScheduler.stop();
+        
+        // Stop daily brief scheduler
+        dailyBriefScheduler.stop();
         
         logger.info('Graceful shutdown completed');
         process.exit(0);

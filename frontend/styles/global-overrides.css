@@ -1,0 +1,37 @@
+/* Global style overrides */
+
+/* Override Tailwind hover:underline class to prevent underlines on hover */
+.hover\:underline:hover {
+  text-decoration: none !important;
+}
+
+/* Override any hardcoded underline styles */
+a:hover {
+  text-decoration: none !important;
+}
+
+.bg-dark a:not(.btn):hover,
+.bg-light a:not(.btn):hover {
+  text-decoration: none !important;
+}
+
+/* Softer borders site-wide */
+.border,
+[class*="border-"] {
+  border-width: 0.5px !important;
+  border-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+.border-t,
+.border-r,
+.border-b,
+.border-l {
+  border-width: 0.5px !important;
+  border-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Softer focus rings */
+*:focus-visible {
+  box-shadow: 0 0 0 1.5px rgba(8, 145, 178, 0.3) !important;
+  outline: none !important;
+}

@@ -13,6 +13,8 @@ import moderationRoutes from './moderation';
 import userRoutes from './users';
 import searchRoutes from './search';
 import feedRoutes from './feed';
+import votesRoutes from './votes';
+import briefsRoutes from './briefs';
 
 const router = Router();
 
@@ -36,5 +38,7 @@ router.use('/moderation', moderationRoutes);
 router.use('/users', userRoutes);
 router.use('/search', searchRoutes);
 router.use('/feed', feedRoutes);
+router.use('/votes', votesRoutes);
+router.use('/briefs', briefsRoutes);
 
 export default router;

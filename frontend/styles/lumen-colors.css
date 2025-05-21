@@ -4,54 +4,8 @@
  */
 
 :root {
-  /* === Base Theme - Dark Mode First === */
+  /* === Base Theme - Light Mode First === */
   
-  /* Background */
-  --c-bg: #0B0D0F;
-  
-  /* Surface layers */
-  --c-surface-1: #121418;
-  --c-surface-2: #1A1E24;
-  --c-surface-3: #22262D;
-  --c-surface-glass: rgba(14, 18, 23, 0.6);
-  
-  /* Text colors */
-  --c-text-primary: #E3E7EB;
-  --c-text-secondary: #94A3B8;
-  --c-text-tertiary: #64748B;
-  
-  /* Electric teal accent - primary interactive color */
-  --c-accent: #0AE9E9;
-  --c-accent-light: #5FF3F3;
-  --c-accent-dark: #0891B2;
-  
-  /* Functional colors */
-  --c-danger: #EF4444;
-  --c-warning: #F59E0B;
-  --c-success: #10B981;
-  --c-info: #3B82F6;
-  
-  /* Borders and dividers */
-  --c-border-subtle: rgba(255, 255, 255, 0.08);
-  --c-border-strong: rgba(255, 255, 255, 0.15);
-  
-  /* Focus glow */
-  --shadow-focus: 0 0 0 2px rgba(10, 233, 233, 0.4);
-  --shadow-focus-error: 0 0 0 2px rgba(239, 68, 68, 0.4);
-  
-  /* Elevation shadows */
-  --shadow-elev-1: 0 2px 4px rgba(0, 0, 0, 0.2);
-  --shadow-elev-2: 0 4px 8px rgba(0, 0, 0, 0.2);
-  --shadow-elev-3: 0 8px 16px rgba(0, 0, 0, 0.2);
-  
-  /* Accent Glow */
-  --shadow-glow-sm: 0 0 8px rgba(10, 233, 233, 0.3);
-  --shadow-glow-md: 0 0 15px rgba(10, 233, 233, 0.4);
-  --shadow-glow-lg: 0 0 30px rgba(10, 233, 233, 0.5);
-}
-
-/* === Light Theme Colors - Derived from the dark theme === */
-.light-theme {
   /* Background */
   --c-bg: #F9FAFB;
   
@@ -59,12 +13,58 @@
   --c-surface-1: #FFFFFF;
   --c-surface-2: #F3F4F6;
   --c-surface-3: #E5E7EB;
-  --c-surface-glass: rgba(255, 255, 255, 0.6);
+  --c-surface-glass: rgba(255, 255, 255, 0.75);
   
-  /* Text colors */
-  --c-text-primary: #1F2937;
-  --c-text-secondary: #4B5563;
-  --c-text-tertiary: #6B7280;
+  /* Text colors - improved contrast */
+  --c-text-primary: #111827;
+  --c-text-secondary: #374151;
+  --c-text-tertiary: #4B5563;
+  
+  /* Electric teal accent - primary interactive color */
+  --c-accent: #0891B2;
+  --c-accent-light: #0AE9E9;
+  --c-accent-dark: #036881;
+  
+  /* Functional colors */
+  --c-danger: #B91C1C;
+  --c-warning: #B45309;
+  --c-success: #059669;
+  --c-info: #2563EB;
+  
+  /* Borders and dividers */
+  --c-border-subtle: rgba(0, 0, 0, 0.03);
+  --c-border-strong: rgba(0, 0, 0, 0.08);
+  
+  /* Focus glow */
+  --shadow-focus: 0 0 0 2px rgba(8, 145, 178, 0.4);
+  --shadow-focus-error: 0 0 0 2px rgba(185, 28, 28, 0.4);
+  
+  /* Elevation shadows - lighter for light mode */
+  --shadow-elev-1: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-elev-2: 0 4px 8px rgba(0, 0, 0, 0.05);
+  --shadow-elev-3: 0 8px 16px rgba(0, 0, 0, 0.05);
+  
+  /* Accent Glow */
+  --shadow-glow-sm: 0 0 8px rgba(8, 145, 178, 0.2);
+  --shadow-glow-md: 0 0 15px rgba(8, 145, 178, 0.3);
+  --shadow-glow-lg: 0 0 30px rgba(8, 145, 178, 0.4);
+}
+
+/* === Light Theme Colors - Derived from the dark theme === */
+.light {
+  /* Background */
+  --c-bg: #F9FAFB;
+  
+  /* Surface layers */
+  --c-surface-1: #FFFFFF;
+  --c-surface-2: #F3F4F6;
+  --c-surface-3: #E5E7EB;
+  --c-surface-glass: rgba(255, 255, 255, 0.75);
+  
+  /* Text colors - improved contrast */
+  --c-text-primary: #111827;
+  --c-text-secondary: #374151;
+  --c-text-tertiary: #4B5563;
   
   /* Electric teal accent - adjusted for light mode */
   --c-accent: #0891B2;
@@ -78,17 +78,17 @@
   --c-info: #2563EB;
   
   /* Borders and dividers */
-  --c-border-subtle: rgba(0, 0, 0, 0.06);
-  --c-border-strong: rgba(0, 0, 0, 0.12);
+  --c-border-subtle: rgba(0, 0, 0, 0.03);
+  --c-border-strong: rgba(0, 0, 0, 0.08);
   
   /* Focus glow */
   --shadow-focus: 0 0 0 2px rgba(8, 145, 178, 0.4);
   --shadow-focus-error: 0 0 0 2px rgba(185, 28, 28, 0.4);
   
   /* Elevation shadows - lighter for light mode */
-  --shadow-elev-1: 0 2px 4px rgba(0, 0, 0, 0.08);
-  --shadow-elev-2: 0 4px 8px rgba(0, 0, 0, 0.08);
-  --shadow-elev-3: 0 8px 16px rgba(0, 0, 0, 0.08);
+  --shadow-elev-1: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-elev-2: 0 4px 8px rgba(0, 0, 0, 0.05);
+  --shadow-elev-3: 0 8px 16px rgba(0, 0, 0, 0.05);
   
   /* Accent Glow */
   --shadow-glow-sm: 0 0 8px rgba(8, 145, 178, 0.2);

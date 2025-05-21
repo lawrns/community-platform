@@ -3,6 +3,21 @@
  * Type definitions for database entities
  */
 
+// WebAuthn credential model
+export interface WebAuthnCredential {
+  id?: number;
+  user_id: number;
+  credential_id: string;
+  public_key: string;
+  counter: number;
+  credential_device_type: string;
+  credential_backed_up: boolean;
+  transports?: string[];
+  name?: string;
+  created_at: Date;
+  last_used_at?: Date;
+}
+
 // Moderation related enums
 export enum FlagReason {
   SPAM = 'spam',
@@ -119,6 +134,7 @@ export interface User {
   auth_provider?: string;
   auth_provider_id?: string;
   password_hash?: string;
+  webauthn_enabled?: boolean;
   created_at: Date;
   updated_at: Date;
   // Virtual properties for admin status
@@ -320,8 +336,32 @@ export interface UserVote {
   review_id?: number;
   review?: ToolReview;
   vote_type: VoteType;
+  vote_weight: number;
+  credits_spent: number;
   created_at: Date;
   updated_at: Date;
+}
+
+// Vote credits model
+export interface VoteCredits {
+  user_id: number;
+  available_credits: number;
+  total_earned_credits: number;
+  last_credit_refresh: Date;
+  created_at: Date;
+  updated_at: Date;
+}
+
+// Vote credit transaction model
+export interface VoteCreditTransaction {
+  id: number;
+  user_id: number;
+  credits_change: number;
+  reason: string;
+  content_id?: number;
+  tool_id?: number;
+  review_id?: number;
+  created_at: Date;
 }
 
 // Reputation history model
@@ -334,4 +374,50 @@ export interface ReputationHistory {
   content_id?: number;
   content?: Content;
   created_at: Date;
+}
+
+// Daily Brief Types
+export interface DailyBrief {
+  id: string;
+  user_id: string;
+  title: string;
+  summary: string;
+  generated_at: Date;
+  read_at?: Date;
+  expired_at: Date;
+  metadata?: Record<string, any>;
+}
+
+export interface BriefItem {
+  id: string;
+  brief_id: string;
+  content_type: string;
+  content_id: string;
+  title: string;
+  summary: string;
+  relevance_score: number;
+  position: number;
+  metadata?: Record<string, any>;
+}
+
+export interface BriefInteraction {
+  id: string;
+  brief_id: string;
+  item_id?: string;
+  user_id: string;
+  interaction_type: 'view' | 'click' | 'save' | 'share' | 'dismiss';
+  created_at: Date;
+  metadata?: Record<string, any>;
+}
+
+export interface UserBriefPreferences {
+  user_id: string;
+  enabled: boolean;
+  frequency: 'daily' | 'weekly' | 'monthly';
+  content_types: string[];
+  preferred_time: string;
+  preferred_timezone: string;
+  max_items: number;
+  email_delivery: boolean;
+  last_updated: Date;
 }

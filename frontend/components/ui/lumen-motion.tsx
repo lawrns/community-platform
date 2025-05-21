@@ -5,149 +5,149 @@ import { motion, AnimatePresence, Variant, Variants } from "framer-motion";
 import { useReducedMotion } from "framer-motion";
 
 // Predefined animation variants that follow the 120ms micro-delight guideline
-export const microDelightVariants = {
+const microDelightVariants = {
   // Fade effect
   fade: {
     initial: { opacity: 0 },
     animate: { opacity: 1, transition: { duration: 0.12 } },
     exit: { opacity: 0, transition: { duration: 0.12 } }
   },
-  
+
   // Slide up entrance
   slideUp: {
     initial: { opacity: 0, y: 10 },
-    animate: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { 
-        type: "spring", 
-        stiffness: 500, 
-        damping: 30, 
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 30,
         duration: 0.12,
-      } 
+      }
     },
-    exit: { 
-      opacity: 0, 
-      y: 10, 
-      transition: { duration: 0.12 } 
+    exit: {
+      opacity: 0,
+      y: 10,
+      transition: { duration: 0.12 }
     }
   },
-  
+
   // Slide down (for dropdowns)
   slideDown: {
     initial: { opacity: 0, y: -10 },
-    animate: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { 
-        type: "spring", 
-        stiffness: 500, 
-        damping: 30, 
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 30,
         duration: 0.12,
-      } 
+      }
     },
-    exit: { 
-      opacity: 0, 
-      y: -10, 
-      transition: { duration: 0.12 } 
+    exit: {
+      opacity: 0,
+      y: -10,
+      transition: { duration: 0.12 }
     }
   },
-  
+
   // Scale effect (for buttons, cards)
   scale: {
     initial: { opacity: 0, scale: 0.96 },
-    animate: { 
-      opacity: 1, 
-      scale: 1, 
-      transition: { 
-        type: "spring", 
-        stiffness: 500, 
-        damping: 30, 
+    animate: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 30,
         duration: 0.12,
-      } 
+      }
     },
-    exit: { 
-      opacity: 0, 
-      scale: 0.96, 
-      transition: { duration: 0.12 } 
+    exit: {
+      opacity: 0,
+      scale: 0.96,
+      transition: { duration: 0.12 }
     }
   },
-  
+
   // Scale with bounce (more playful)
   scaleBounce: {
     initial: { opacity: 0, scale: 0.9 },
-    animate: { 
-      opacity: 1, 
-      scale: 1, 
-      transition: { 
-        type: "spring", 
-        stiffness: 300, 
-        damping: 10, 
+    animate: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 10,
         duration: 0.12,
-      } 
+      }
     },
-    exit: { 
-      opacity: 0, 
-      scale: 0.9, 
-      transition: { duration: 0.12 } 
+    exit: {
+      opacity: 0,
+      scale: 0.9,
+      transition: { duration: 0.12 }
     }
   },
-  
+
   // For staggered children animations
   container: {
-    initial: {}, 
-    animate: { 
-      transition: { 
+    initial: {},
+    animate: {
+      transition: {
         staggerChildren: 0.05,
         delayChildren: 0.03,
-      } 
+      }
     },
     exit: { transition: { staggerChildren: 0.05 } }
   },
-  
+
   // Item for staggered children
   item: {
     initial: { opacity: 0, y: 10 },
-    animate: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.12 } 
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.12 }
     },
-    exit: { 
-      opacity: 0, 
-      y: 10, 
-      transition: { duration: 0.12 } 
+    exit: {
+      opacity: 0,
+      y: 10,
+      transition: { duration: 0.12 }
     }
   }
 };
 
 // Interaction variants for hover/tap effects
-export const interactionVariants = {
+const interactionVariants = {
   // Button press effect
   buttonTap: {
     tap: { scale: 0.98, transition: { duration: 0.12 } }
   },
-  
+
   // Card hover effect
   cardHover: {
-    hover: { 
-      y: -4, 
+    hover: {
+      y: -4,
       boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
-      transition: { duration: 0.12 } 
+      transition: { duration: 0.12 }
     }
   },
-  
+
   // Gentle glow on hover
   glowHover: {
-    hover: { 
+    hover: {
       boxShadow: "0 0 15px rgba(10, 233, 233, 0.4)",
-      transition: { duration: 0.12 } 
+      transition: { duration: 0.12 }
     }
   }
 };
 
 // Attention-getting animations
-export const attentionVariants = {
+const attentionVariants = {
   // Pulse animation
   pulse: {
     animate: {
@@ -159,7 +159,7 @@ export const attentionVariants = {
       }
     }
   },
-  
+
   // Subtle shake (for errors)
   shake: {
     animate: {
@@ -170,7 +170,7 @@ export const attentionVariants = {
       }
     }
   },
-  
+
   // Vote burst animation
   burst: {
     animate: {
@@ -215,47 +215,47 @@ export const MicroMotion: React.FC<MicroMotionProps> = ({
 }) => {
   const prefersReducedMotion = useReducedMotion();
   const [hasMounted, setHasMounted] = useState(false);
-  
+
   useEffect(() => {
     setHasMounted(true);
   }, []);
-  
+
   // If user prefers reduced motion, don't animate
   if (prefersReducedMotion) {
     const Component = tag as any;
     return <Component className={className}>{children}</Component>;
   }
-  
+
   // Get the selected animation variant
   const selectedVariant = microDelightVariants[variant];
-  
+
   // Apply custom duration if provided
-  const customTransition = duration 
+  const customTransition = duration
     ? {
         initial: { ...selectedVariant.initial },
-        animate: { 
-          ...selectedVariant.animate, 
-          transition: { 
+        animate: {
+          ...selectedVariant.animate,
+          transition: {
             ...selectedVariant.animate.transition,
-            duration 
-          } 
+            duration
+          }
         },
-        exit: { 
-          ...selectedVariant.exit, 
-          transition: { 
+        exit: {
+          ...selectedVariant.exit,
+          transition: {
             ...selectedVariant.exit.transition,
-            duration 
-          } 
+            duration
+          }
         }
       }
     : selectedVariant;
-  
+
   // For SSR compatibility
   if (!hasMounted) {
     const Component = tag as any;
     return <Component className={className}>{children}</Component>;
   }
-  
+
   return (
     <AnimatePresence mode="wait">
       {animate && (
@@ -293,16 +293,16 @@ export const StaggerContainer: React.FC<StaggerContainerProps> = ({
 }) => {
   const prefersReducedMotion = useReducedMotion();
   const [hasMounted, setHasMounted] = useState(false);
-  
+
   useEffect(() => {
     setHasMounted(true);
   }, []);
-  
+
   // If user prefers reduced motion, don't animate
   if (prefersReducedMotion) {
     return <div className={className}>{children}</div>;
   }
-  
+
   // Custom stagger delay timing
   const staggerVariants = {
     ...microDelightVariants.container,
@@ -315,12 +315,12 @@ export const StaggerContainer: React.FC<StaggerContainerProps> = ({
       }
     }
   };
-  
+
   // For SSR compatibility
   if (!hasMounted) {
     return <div className={className}>{children}</div>;
   }
-  
+
   return (
     <AnimatePresence mode="wait">
       {animate && (
@@ -334,8 +334,8 @@ export const StaggerContainer: React.FC<StaggerContainerProps> = ({
           {React.Children.map(children, (child, index) => {
             if (React.isValidElement(child)) {
               return (
-                <motion.div 
-                  key={index} 
+                <motion.div
+                  key={index}
                   variants={microDelightVariants.item}
                 >
                   {child}
@@ -373,24 +373,24 @@ export const Interactive: React.FC<InteractiveProps> = ({
   tag = "div",
 }) => {
   const prefersReducedMotion = useReducedMotion();
-  
+
   // Motion properties
   const motionProps: any = {
     className,
     onClick: disabled ? undefined : onClick,
     style: { cursor: onClick && !disabled ? "pointer" : undefined },
   };
-  
+
   // Add hover effect if specified
   if (hoverEffect && !prefersReducedMotion && !disabled) {
     motionProps.whileHover = interactionVariants[hoverEffect].hover;
   }
-  
+
   // Add tap effect if specified
   if (tapEffect && !prefersReducedMotion && !disabled) {
     motionProps.whileTap = { scale: 0.98 };
   }
-  
+
   // Add glow effect if specified
   if (glowEffect && !prefersReducedMotion && !disabled) {
     motionProps.whileHover = {
@@ -398,7 +398,7 @@ export const Interactive: React.FC<InteractiveProps> = ({
       ...interactionVariants.glowHover.hover
     };
   }
-  
+
   const Component = tag as any;
   return <motion.div {...motionProps}>{children}</motion.div>;
 };
@@ -420,15 +420,15 @@ export const Attention: React.FC<AttentionProps> = ({
   onComplete,
 }) => {
   const prefersReducedMotion = useReducedMotion();
-  
+
   // If user prefers reduced motion, don't animate
   if (prefersReducedMotion) {
     return <div className={className}>{children}</div>;
   }
-  
+
   // Get appropriate attention variant
   const selectedVariant = attentionVariants[effect];
-  
+
   return (
     <motion.div
       className={className}
@@ -441,4 +441,5 @@ export const Attention: React.FC<AttentionProps> = ({
   );
 };
 
+// Export all components and variants
 export { microDelightVariants, interactionVariants, attentionVariants };

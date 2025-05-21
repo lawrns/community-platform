@@ -13,6 +13,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { getSupabase } from "@/lib/supabase"
+import { useAuth } from "./AuthContext"
+import { toast } from "@/components/ui/use-toast"
 
 const formSchema = z.object({
   username: z
@@ -244,6 +246,14 @@ export default function RegisterForm() {
           GitHub
         </Button>
       </div>
+      
+      {success && (
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-500">
+            After verifying your email, you'll be able to set up a passkey for passwordless login.
+          </p>
+        </div>
+      )}
     </motion.div>
   )
 }
